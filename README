@@ -1,13 +1,13 @@
 XML::Bare
-Version 0.01
+Version 0.02
 ------------
 
 INSTALLATION
-  Download XML-Bare-0.01.tar.gz and untar it:
-    % tar -xzf XML-Bare-0.01.tar.gz
+  Download XML-Bare-0.02.tar.gz and untar it:
+    % tar -xzf XML-Bare-0.02.tar.gz
     
   Follow the standard steps for making and compiling a perl module:
-    % cd XML-Bare-0.01
+    % cd XML-Bare-0.02
     % perl Makefile.PL
     % make
     % make test

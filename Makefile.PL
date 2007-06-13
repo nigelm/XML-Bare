@@ -6,7 +6,7 @@ WriteMakefile(
   ABSTRACT => 'A minimal XML parser that uses C++ to generate a folded perl hash.',
   CC        => 'g++',
   NAME      => 'XML::Bare',
-  VERSION   => "0.01",
+  VERSION_FROM => 'Bare.pm',
   LIBS      => ['-lm -lstdc++'],
   OBJECT    => 'XML-Bare.o XML-Bare_wrap.o',
   LD        => 'g++',
