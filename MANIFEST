@@ -1,0 +1,10 @@
+Bare.pm
+Makefile.PL
+MANIFEST
+META.yml
+parser.cc
+README
+t/Basic.t
+XML-Bare.cc
+XML-Bare.i
+XML-Bare_wrap.cxx

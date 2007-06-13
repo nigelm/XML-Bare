@@ -1,0 +1,54 @@
+XML::Bare
+Version 0.01
+------------
+
+INSTALLATION
+  Download XML-Bare-0.01.tar.gz and untar it:
+    % tar -xzf XML-Bare-0.01.tar.gz
+    
+  Follow the standard steps for making and compiling a perl module:
+    % cd XML-Bare-0.01
+    % perl Makefile.PL
+    % make
+    % make test
+    % make install
+
+MODIFICATION
+  The standard distribution of this library includes a
+  precreated XML-Bare_wrap.cxx file. This file is a wrapper
+  for the C++ library so that it can interface with Perl. It
+  was created using Swig from the XML-Bare.i specification
+  file.
+  
+  If you need to modify the parser enough that the specification
+  file needs to be changes you will need to recreate the wrapper
+  file.
+  
+  Assuming you have Swig installed, you can use the following
+  to do so:
+    % swig -c++ -perl5 -module XML::Bare XML-Bare.i
+    
+  Note that using the above command will wipe out the current
+  Bare.pm. The one included in the distribution is a not
+  just the swig code; it includes all of the custom module
+  code as well.
+  
+  All of the custom code will need to be manually inserted
+  into the newly generated Bare.pm file. ( presumably by
+  copying and pasting from the original Bare.pm included
+  with the dist )
+
+COPYRIGHT
+  Copyright (C) 2007 David Helkowski
+  
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 2 of the
+  License, or (at your option) any later version.  You may also can
+  redistribute it and/or modify it under the terms of the Perl
+  Artistic License.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
