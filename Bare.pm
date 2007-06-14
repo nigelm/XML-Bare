@@ -10,7 +10,7 @@ package XML::Bare;
 
 @EXPORT = qw( );
 
-$VERSION = "0.02";
+$VERSION = "0.03";
 # revision A
 
 sub new {
@@ -286,7 +286,7 @@ XML::Bare - Minimal XML parser implemented via a C++ state engine
 
 =head1 VERSION
 
-0.02
+0.03
 
 =head1 SYNOPSIS
 
@@ -481,7 +481,7 @@ equal to the first continuous string of text besides a subnode.
 
 =head1 LICENSE
 
-XML::Bare version 0.02
+XML::Bare version 0.03
 Copyright (C) 2007 David Helkowski
 
 This program is free software; you can redistribute it and/or
