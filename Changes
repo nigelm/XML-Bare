@@ -1,5 +1,11 @@
 XML::Perl Changelog
 
+0.04 ( 06-15-07 )
+  - Added clean function
+  - Added merge function
+  - Bugfix: xml output indentation was off due to parser changes in 0.03
+  - Updated documentation
+
 0.03 ( 06-14-07 )
   - Modified makefile to work under windows with Activestate and MSVC
   - Cleaned up parser some and fixed basic mixed xml

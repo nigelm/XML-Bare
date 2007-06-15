@@ -9,8 +9,9 @@ bootstrap XML::Bare;
 package XML::Bare;
 
 @EXPORT = qw( );
+@EXPORT_OK = qw(merge clean);
 
-$VERSION = "0.03";
+$VERSION = "0.04";
 # revision A
 
 sub new {
@@ -22,6 +23,34 @@ sub new {
   bless $self, $class;
   
   return $self;
+}
+
+sub merge {
+  # shift in the two array references as well as the field to merge on
+  my $a = shift;
+  my $b = shift;
+  my $id = shift;
+  my %hash = map { $_->{ $id } ? ( $_->{ $id }->{ 'value' } => $_ ) : ( 0 => 0 ) } @$a;
+  for my $one ( @$b ) {
+    next if( !$one->{ $id } );
+    my $short = $hash{ $one->{ $id }->{ 'value' } };
+    foreach my $key ( keys %$one ) {
+      next if( $key eq 'pos' || $key eq 'id' );
+      $short->{ $key } = $one->{ $key };
+    }
+  }
+  return $a;  
+}
+
+sub clean {
+  my $ob = new XML::Bare( @_ );
+  my $root = $ob->parse();
+  $ob->{'file'} = $ob->{'save'} if( $ob->{'save'} && "$ob->{'save'}" ne "1" );
+  if( $ob->{'save'} ) {
+    $ob->save();
+    return;
+  }
+  return $ob->xml( $root );
 }
 
 # Load a file using XML::DOM, convert it to a hash, and return the hash
@@ -219,7 +248,7 @@ sub obj2xml {
   $pad = '' if( $level == 1 );
   my $xml  = '';
   my $att  = '';
-  my $imm  = 0;
+  my $imm  = 1;
   return '' if( !$objs );
   my @dex = sort
     { 
@@ -240,11 +269,13 @@ sub obj2xml {
     my $obj  = $objs->{ $i } || '';
     my $type = ref( $obj );
     if( $type eq 'ARRAY' ) {
+      $imm = 0;
       for( my $j = 0; $j <= $#$obj; $j++ ) {
         $xml .= obj2xml( $obj->[ $j ], $i, $pad.'  ', $level+1 );
       }
     }
     elsif( $type eq 'HASH' ) {
+      $imm = 0;
       if( $obj->{ 'att' } ) {
         $att .= ' ' . $i . '="' . $obj->{ 'value' } . '"';
       }
@@ -254,7 +285,7 @@ sub obj2xml {
     }
     else {
       if( $i eq 'value' ) {
-        $imm = 1;
+        #$imm = 1;
         if( $obj && $obj =~ /[<>&;]/ ) {
           $xml .= '<![CDATA[' . $obj . ']]>';
         }
@@ -267,13 +298,15 @@ sub obj2xml {
       }
     }
   }
-  $imm = 1 if( ! $#dex );
+  #$imm = 0 if( $#dex < 1 );
+  #$imm = 1 if( ! $#dex );
   my $pad2 = $imm ? '' : $pad;
   my $cr = $imm ? '' : "\n";
   if( $name ) {
     $xml = $pad . '<' . $name . $att . '>' . $cr . $xml . $pad2 . '</' . $name . '>';
   }
-  return $xml."\n";
+  return $xml."\n" if( $level );
+  return $xml;
 }
 
 1;
@@ -286,7 +319,7 @@ XML::Bare - Minimal XML parser implemented via a C++ state engine
 
 =head1 VERSION
 
-0.03
+0.04
 
 =head1 SYNOPSIS
 
@@ -460,40 +493,182 @@ equal to the first continuous string of text besides a subnode.
 
 =head2 Module Functions
 
-  $xml->parse();
+=over 2
+
+=item * C<< $ob = new XML::Bare( text => "[some xml]" ) >>
+
+Create a new XML object, with the given text as the xml source.
+
+=item * C<< $object = new XML::Bare( file => "[filename]" ) >>
+
+Create a new XML object, with the given filename/path as the xml source
+
+=item * C<< $object = new XML::Bare( text => "[some xml]", file => "[filename]" ) >>
+
+Create a new XML object, with the given text as the xml input, and the given
+filename/path as the potential output ( used by save() )
+
+=item * C<< $tree = $object->parse() >>
+
+Parse the xml of the object and return a tree reference
+
+=item * C<< $text = $object->xml( [root] ) >>
+
+Take the hash tree in [root] and turn it into cleanly indented ( 2 spaces )
+XML text.
+
+=item * C<< $object->save() >>
+
+The the current tree in the object, cleanly indent it, and save it
+to the file paramter specified when creating the object.
+
+=item * C<< $text = XML::Bare::clean( text => "[some xml]" ) >>
+
+Shortcut to creating an xml object and immediately turning it into clean xml text.
+
+=item * C<< $text = XML::Bare::clean( file => "[filename]" ) >>
+
+Similar to previous.
+
+=item * C<< XML::Bare::clean( file => "[filename]", save => 1 ) >>
+
+Clean up the xml in the file, saving the results back to the file
+
+=item * C<< XML::Bare::clean( text => "[some xml]", save => "[filename]" ) >>
+
+Clean up the xml provided, and save it into the specified file.
+
+=item * C<< XML::Bare::clean( file => "[filename1]", save => "[filename2]" ) >>
+
+Clean up the xml in filename1 and save the results to filename2.
+
+=item * C<< $object->add_node( [node], [nodeset name], name => value, name2 => value2, ... ) >>
+
+  Example:
+    $object->add_node( $root->{xml}, 'item', name => 'Bob' );
+    
+  Result:
+    <xml>
+      <item>
+        <name>Bob</name>
+      </item>
+    </xml>
+
+=item * C<< $object->del_node( [node], [nodeset name], name => value ) >>
+
+  Example:
+    Starting XML:
+      <xml>
+        <a>
+          <b>1</b>
+        </a>
+        <a>
+          <b>2</b>
+        </a>
+      </xml>
+      
+    Code:
+      $xml->del_node( $root->{xml}, 'a', b=>'1' );
+    
+    Ending XML:
+      <xml>
+        <a>
+          <b>2</b>
+        </a>
+      </xml>
+
+=item * C<< $object->find_node( [node], [nodeset name], name => value ) >>
+
+  Example:
+    Starting XML:
+      <xml>
+        <ob>
+          <key>1</key>
+          <val>a</val>
+        </ob>
+        <ob>
+          <key>2</key>
+          <val>b</val>
+        </ob>
+      </xml>
+      
+    Code:
+      $object->find_node( $root->{xml}, 'ob', key => '1' )->{val}->{value} = 'test';
+      
+    Ending XML:
+      <xml>
+        <ob>
+          <key>1</key>
+          <val>test</val>
+        </ob>
+        <ob>
+          <key>2</key>
+          <val>b</val>
+        </ob>
+      </xml>
+
+=item * C<< XML::Bare::merge( [nodeset1], [nodeset2], [id node name] ) >>
+
+Merges the nodes from nodeset2 into nodeset1, matching the contents of
+each node based up the content in the id node.
+
+Example:
+
+  Code:
+    my $ob1 = new XML::Bare( text => "
+      <xml>
+        <multi_a/>
+        <a>bob</a>
+        <a>
+          <id>1</id>
+          <color>blue</color>
+        </a>
+      </xml>" );
+    my $ob2 = new XML::Bare( text => "
+      <xml>
+        <multi_a/>
+        <a>john</a>
+        <a>
+          <id>1</id>
+          <name>bob</name>
+          <bob>1</bob>
+        </a>
+      </xml>" );
+    my $root1 = $ob1->parse();
+    my $root2 = $ob2->parse();
+    merge( $root1->{'xml'}->{'a'}, $root2->{'xml'}->{'a'}, 'id' );
+    print $ob1->xml( $root1 );
   
-  $xml->add_node( $root->{xml}, 'item', name => 'Bob' );
-  <xml><item><name>Bob</name></item></xml>
-  
-  <xml> <a><b>1</b></a> <a><b>2</b></a> </xml>
-  $xml->del_node( $root->{xml}, 'a', b=>'1' );
-  <xml> <a><b>2</b></a> </xml>
-  
-  <xml> <ob> <key>1</key> <val>a</val> </ob> <ob> <key>2</key> <val>b</val> </ob> </xml>
-  $xml->find_node( $root->{xml}, 'ob', key => '1' )->{val}->{value} = 'test';
-  <xml> <ob> <key>1</key> <val>test</val> </ob> <ob> <key>2</key> <val>b</val> </ob> </xml>
-  
-  print $xml->xml( $root );
-  ( prints clean xml output )
-  
-  $xml->save();
-  ( saves to file location specified when xml object created ):q
+  Output:
+    <xml>
+      <multi_a></multi_a>
+      <a>bob</a>
+      <a>
+        <id>1</id>
+        <color>blue</color>
+        <name>bob</name>
+        <bob>1</bob>
+      </a>
+    </xml>
+
+
+=back
 
 =head1 LICENSE
 
-XML::Bare version 0.03
-Copyright (C) 2007 David Helkowski
-
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the
-License, or (at your option) any later version.  You may also can
-redistribute it and/or modify it under the terms of the Perl
-Artistic License.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+  XML::Bare version 0.04
+  Copyright (C) 2007 David Helkowski
+  
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License as
+  published by the Free Software Foundation; either version 2 of the
+  License, or (at your option) any later version.  You may also can
+  redistribute it and/or modify it under the terms of the Perl
+  Artistic License.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
 =cut

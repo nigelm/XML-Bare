@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 require 5.006;
 if( $^O ne 'MSWin32' ) {
   WriteMakefile(
-    AUTHOR   => 'David Helkowski <test@codechild.com>',
+    AUTHOR   => 'David Helkowski <cpan@codechild.com>',
     ABSTRACT => 'A minimal XML parser that uses C++ to generate a folded perl hash.',
     CC        => 'g++',
     NAME      => 'XML::Bare',
@@ -20,7 +20,7 @@ else {
   use Config;
   my $libpath = Config->{'archlibexp'};
   WriteMakefile(
-    AUTHOR   => 'David Helkowski <test@codechild.com>',
+    AUTHOR   => 'David Helkowski <cpan@codechild.com>',
     ABSTRACT => 'A minimal XML parser that uses C++ to generate a folded perl hash.',
     CCFLAGS   => '/MT /DWIN32',
     NAME      => 'XML::Bare',
