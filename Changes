@@ -1,4 +1,10 @@
-XML::Perl Changelog
+XML::Bare Changelog
+
+0.05 ( 6-16-07 )
+  - Ceased using c++ for swig interface; it caused compilation issues on some platforms
+  - Fix further output indentation issues due to {value} always being displayed.
+    {value} is now displayed as documented.
+  - First line of changes was incorrect previously
 
 0.04 ( 06-15-07 )
   - Added clean function

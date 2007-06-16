@@ -11,8 +11,7 @@ package XML::Bare;
 @EXPORT = qw( );
 @EXPORT_OK = qw(merge clean);
 
-$VERSION = "0.04";
-# revision A
+$VERSION = "0.05";
 
 sub new {
   my $class = shift; 
@@ -286,11 +285,13 @@ sub obj2xml {
     else {
       if( $i eq 'value' ) {
         #$imm = 1;
-        if( $obj && $obj =~ /[<>&;]/ ) {
-          $xml .= '<![CDATA[' . $obj . ']]>';
-        }
-        else {
-          $xml .= $obj;
+        if( $#dex < 2 ) {
+          if( $obj && $obj =~ /[<>&;]/ ) {
+            $xml .= '<![CDATA[' . $obj . ']]>';
+          }
+          else {
+            $xml .= $obj;
+          }
         }
       }
       else {
@@ -299,7 +300,7 @@ sub obj2xml {
     }
   }
   #$imm = 0 if( $#dex < 1 );
-  #$imm = 1 if( ! $#dex );
+  #$imm = 1 if( $#dex );
   my $pad2 = $imm ? '' : $pad;
   my $cr = $imm ? '' : "\n";
   if( $name ) {
@@ -319,7 +320,7 @@ XML::Bare - Minimal XML parser implemented via a C++ state engine
 
 =head1 VERSION
 
-0.04
+0.05
 
 =head1 SYNOPSIS
 
@@ -656,7 +657,7 @@ Example:
 
 =head1 LICENSE
 
-  XML::Bare version 0.04
+  XML::Bare version 0.05
   Copyright (C) 2007 David Helkowski
   
   This program is free software; you can redistribute it and/or

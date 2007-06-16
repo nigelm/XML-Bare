@@ -26,7 +26,7 @@ MODIFICATION
   
   Assuming you have Swig installed, you can use the following
   to do so:
-    % swig -c++ -perl5 -module XML::Bare XML-Bare.i
+    % swig -perl5 -module XML::Bare XML-Bare.i
     
   Note that using the above command will wipe out the current
   Bare.pm. The one included in the distribution is a not

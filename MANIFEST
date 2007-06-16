@@ -8,4 +8,4 @@ README
 t/Basic.t
 XML-Bare.cc
 XML-Bare.i
-XML-Bare_wrap.cxx
+XML-Bare_wrap.c
