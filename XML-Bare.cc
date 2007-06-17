@@ -1,4 +1,19 @@
 #include "parser.cc"
+
+  extern "C" void parse( char *text );
+  extern "C" int num_nodes();
+  extern "C" void descend();
+  extern "C" void ascend();
+  extern "C" void next_node();
+  extern "C" char *node_name();
+  extern "C" char *node_value();
+  extern "C" int node_type();
+  extern "C" int num_att();
+  extern "C" void first_att();
+  extern "C" void next_att();
+  extern "C" char *att_name();
+  extern "C" char *att_value();
+
 parserc parser;
 void parse( char *text ) { parser.parse( text ); }
 int  num_nodes  () { return parser.num_nodes (); }

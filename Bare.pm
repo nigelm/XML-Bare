@@ -11,7 +11,7 @@ package XML::Bare;
 @EXPORT = qw( );
 @EXPORT_OK = qw(merge clean);
 
-$VERSION = "0.05";
+$VERSION = "0.06";
 
 sub new {
   my $class = shift; 
@@ -320,7 +320,7 @@ XML::Bare - Minimal XML parser implemented via a C++ state engine
 
 =head1 VERSION
 
-0.05
+0.06
 
 =head1 SYNOPSIS
 
@@ -657,7 +657,7 @@ Example:
 
 =head1 LICENSE
 
-  XML::Bare version 0.05
+  XML::Bare version 0.06
   Copyright (C) 2007 David Helkowski
   
   This program is free software; you can redistribute it and/or

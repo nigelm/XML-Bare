@@ -1,5 +1,10 @@
 XML::Bare Changelog
 
+0.06 ( 6-17-07 )
+  - Modified Makefile to use custom script to switch between g++ and gcc for
+    compilation. Even as c, swig interface still did not compile properly with
+    g++ on some systems.
+
 0.05 ( 6-16-07 )
   - Ceased using c++ for swig interface; it caused compilation issues on some platforms
   - Fix further output indentation issues due to {value} always being displayed.

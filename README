@@ -1,13 +1,13 @@
 XML::Bare
-Version 0.04
+Version 0.06
 ------------
 
 INSTALLATION
-  Download XML-Bare-0.03.tar.gz and untar it:
-    % tar -xzf XML-Bare-0.03.tar.gz
+  Download XML-Bare-0.06.tar.gz and untar it:
+    % tar -xzf XML-Bare-0.06.tar.gz
     
   Follow the standard steps for making and compiling a perl module:
-    % cd XML-Bare-0.03
+    % cd XML-Bare-0.06
     % perl Makefile.PL
     % make
     % make test
@@ -15,7 +15,7 @@ INSTALLATION
 
 MODIFICATION
   The standard distribution of this library includes a
-  precreated XML-Bare_wrap.cxx file. This file is a wrapper
+  precreated XML-Bare_wrap.c file. This file is a wrapper
   for the C++ library so that it can interface with Perl. It
   was created using Swig from the XML-Bare.i specification
   file.

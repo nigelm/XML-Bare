@@ -5,7 +5,7 @@ if( $^O ne 'MSWin32' ) {
   WriteMakefile(
     AUTHOR   => 'David Helkowski <cpan@codechild.com>',
     ABSTRACT => 'A minimal XML parser that uses C++ to generate a folded perl hash.',
-    CC        => 'g++',
+    CC        => 'perl gcust.pl',
     NAME      => 'XML::Bare',
     VERSION_FROM => 'Bare.pm',
     LIBS      => ['-lm -lstdc++'],
