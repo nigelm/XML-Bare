@@ -1,5 +1,9 @@
 XML::Bare Changelog
 
+0.07 ( 6-19-07 )
+  - Modified custom script because it was incorrect in its use of redirection, causing
+    some platforms to fail to compile.
+
 0.06 ( 6-17-07 )
   - Modified Makefile to use custom script to switch between g++ and gcc for
     compilation. Even as c, swig interface still did not compile properly with

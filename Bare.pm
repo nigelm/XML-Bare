@@ -11,7 +11,7 @@ package XML::Bare;
 @EXPORT = qw( );
 @EXPORT_OK = qw(merge clean);
 
-$VERSION = "0.06";
+$VERSION = "0.07";
 
 sub new {
   my $class = shift; 
@@ -490,6 +490,11 @@ equal to the first continuous string of text besides a subnode.
   </node>
   ( the value of node is "\n  " )
 
+=item * The backend library does not free the memory associated
+with the tree structure after the tree has been converted to a perl
+object. If a script continues to run without terminating, memory will
+eventually run out. This issue will be fixed in an upcoming version.
+  
 =back
 
 =head2 Module Functions
@@ -657,7 +662,7 @@ Example:
 
 =head1 LICENSE
 
-  XML::Bare version 0.06
+  XML::Bare version 0.07
   Copyright (C) 2007 David Helkowski
   
   This program is free software; you can redistribute it and/or

@@ -1,17 +1,21 @@
 XML::Bare
-Version 0.06
 ------------
 
 INSTALLATION
-  Download XML-Bare-0.06.tar.gz and untar it:
-    % tar -xzf XML-Bare-0.06.tar.gz
+  Download XML-Bare-latest.tar.gz and untar it:
+    % tar -xzf XML-Bare-latest.tar.gz
     
   Follow the standard steps for making and compiling a perl module:
-    % cd XML-Bare-0.06
+    % cd XML-Bare-X.XX ( X.XX = the latest version )
     % perl Makefile.PL
     % make
     % make test
     % make install
+    
+REQUIREMENTS
+  Being that the backend library is written in C++, g++ must be
+  installed in order to install this library. It seems some testers
+  are ignoring this ever so obvious fact...
 
 MODIFICATION
   The standard distribution of this library includes a
