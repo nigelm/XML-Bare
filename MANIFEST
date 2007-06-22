@@ -1,12 +1,11 @@
 Bare.pm
+Bare.xs
 Changes
-gcust.pl
 Makefile.PL
 MANIFEST
 META.yml
-parser.cc
+parser.c
+parser.h
 README
 t/Basic.t
-XML-Bare.cc
-XML-Bare.i
-XML-Bare_wrap.c
+XML-Bare.c

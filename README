@@ -12,36 +12,6 @@ INSTALLATION
     % make test
     % make install
     
-REQUIREMENTS
-  Being that the backend library is written in C++, g++ must be
-  installed in order to install this library. It seems some testers
-  are ignoring this ever so obvious fact...
-
-MODIFICATION
-  The standard distribution of this library includes a
-  precreated XML-Bare_wrap.c file. This file is a wrapper
-  for the C++ library so that it can interface with Perl. It
-  was created using Swig from the XML-Bare.i specification
-  file.
-  
-  If you need to modify the parser enough that the specification
-  file needs to be changes you will need to recreate the wrapper
-  file.
-  
-  Assuming you have Swig installed, you can use the following
-  to do so:
-    % swig -perl5 -module XML::Bare XML-Bare.i
-    
-  Note that using the above command will wipe out the current
-  Bare.pm. The one included in the distribution is a not
-  just the swig code; it includes all of the custom module
-  code as well.
-  
-  All of the custom code will need to be manually inserted
-  into the newly generated Bare.pm file. ( presumably by
-  copying and pasting from the original Bare.pm included
-  with the dist )
-
 COPYRIGHT
   Copyright (C) 2007 David Helkowski
   

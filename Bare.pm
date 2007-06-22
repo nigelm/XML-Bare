@@ -4,14 +4,22 @@ require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-package XML::Barec;
-bootstrap XML::Bare;
-package XML::Bare;
+$VERSION = "0.10";
+
+bootstrap XML::Bare $VERSION;
 
 @EXPORT = qw( );
 @EXPORT_OK = qw(merge clean);
 
-$VERSION = "0.07";
+=head1 NAME
+
+XML::Bare - Minimal XML parser implemented via a C++ state engine
+
+=head1 VERSION
+
+0.10
+
+=cut
 
 sub new {
   my $class = shift; 
@@ -73,8 +81,9 @@ sub parse {
     close( XML );
   }
   
-  XML::Barec::parse( $text );
+  XML::Bare::c_parse( $text );
   $self->{ 'xml' } = $self->xml2obj();
+  XML::Bare::free_tree();
   
   return $self->{ 'xml' };
 }
@@ -169,19 +178,19 @@ sub xml2obj {
   my %output;
   my %outnodes;
   my @outnodenames;
-  my $length = XML::Barec::num_nodes();
+  my $length = XML::Bare::num_nodes();
   
   if( $length == 0 ) {
-    my $nodename = XML::Barec::node_name();
-    my $nodevalue = XML::Barec::node_value();
+    my $nodename = XML::Bare::node_name();
+    my $nodevalue = XML::Bare::node_value();
     $output{ 'value' } = $nodevalue;
   }
   else {
-    my $nodevalue = XML::Barec::node_value();
+    my $nodevalue = XML::Bare::node_value();
     $output{ 'value' } = $nodevalue;
-    XML::Barec::descend();
+    XML::Bare::descend();
     for( my $i = 0; $i < $length; $i++ ) {
-      my $nodename = XML::Barec::node_name();
+      my $nodename = XML::Bare::node_name();
       
       if( !$outnodes{ $nodename } ) {
         my @newarray;
@@ -191,7 +200,7 @@ sub xml2obj {
       my $nodea = $outnodes{ $nodename };
       push( @$nodea, xml2obj() );
       
-      XML::Barec::next_node() if( $i != ( $length - 1 ) );
+      XML::Bare::next_node() if( $i != ( $length - 1 ) );
     }
     
     for( my $i = 0; $i <= $#outnodenames; $i++ ) {
@@ -214,18 +223,18 @@ sub xml2obj {
       }
     }
       
-    XML::Barec::ascend();
+    XML::Bare::ascend();
   }
   
-  my $numatts = XML::Barec::num_att();
+  my $numatts = XML::Bare::num_att();
   if( $numatts ) {
-    XML::Barec::first_att();
+    XML::Bare::first_att();
     for( my $i = 0; $i < $numatts; $i++ ) {
       my %newhash;
-      $output{ XML::Barec::att_name() } = \%newhash;
-      $newhash{ 'value' } = XML::Barec::att_value();
+      $output{ XML::Bare::att_name() } = \%newhash;
+      $newhash{ 'value' } = XML::Bare::att_value();
       $newhash{ 'att'   }   = 1;
-      XML::Barec::next_att() if( $i != ( $numatts - 1 ) );
+      XML::Bare::next_att() if( $i != ( $numatts - 1 ) );
     }
   }
   
@@ -313,14 +322,6 @@ sub obj2xml {
 1;
 
 __END__
-
-=head1 NAME
-
-XML::Bare - Minimal XML parser implemented via a C++ state engine
-
-=head1 VERSION
-
-0.06
 
 =head1 SYNOPSIS
 
@@ -490,11 +491,6 @@ equal to the first continuous string of text besides a subnode.
   </node>
   ( the value of node is "\n  " )
 
-=item * The backend library does not free the memory associated
-with the tree structure after the tree has been converted to a perl
-object. If a script continues to run without terminating, memory will
-eventually run out. This issue will be fixed in an upcoming version.
-  
 =back
 
 =head2 Module Functions
@@ -662,7 +658,6 @@ Example:
 
 =head1 LICENSE
 
-  XML::Bare version 0.07
   Copyright (C) 2007 David Helkowski
   
   This program is free software; you can redistribute it and/or

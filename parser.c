@@ -1,158 +1,128 @@
-#define QK_OUTSIDE   0
-#define QK_VAL_1     1
-#define QK_COMMENT   2
-#define QK_PI        3
-#define QK_BANG      4
-#define QK_CDATA     5
-#define QK_NAME_1    6
-#define QK_NAME_X    7
-#define QK_NAME_GAP  8
-#define QK_ATT_SPACE 9
-#define QK_ATT_NAME  10
-#define QK_ATT_EQ1   11
-#define QK_ATT_EQX   12
-#define QK_ATT_QUOT  13
-#define QK_ENAME_X   14
-#define QK_ERROR     15
-#define QK_VAL_X     16
+#include "parser.h"
 
-
-#ifndef NULL
-  #define NULL 0x00
-#endif
-
-class attc;
-
-class nodec {
-  public:
-  nodec *curchild;
-  nodec *parent;
-  nodec *next;
-  nodec *firstchild;
-  nodec *lastchild;
-  attc  *firstatt;
-  attc  *lastatt;
-  int   numchildren;
-  int   numatt;
-  char  *name;
-  int   namelen;
-  char  *value;
-  int   vallen;
-  int   type; // cdata or normal
-  int   numvals;
-  nodec( nodec *newparent );
-  nodec();
-  nodec *addchild( char *newname, int newnamelen ) { return addchild(newname,newnamelen,0,0,0); };
-  nodec *addchild( char *newname, int newnamelen, char *newval, int newvallen, int newtype );
-  attc  *addatt  ( char *newname, int newnamelen ) { return addatt( newname, newnamelen, 0, 0 ); };
-  attc  *addatt  ( char *newname, int newnamelen, char *newval, int newvallen );
+struct nodec *nodec_addchild( struct nodec *self, char *newname, int newnamelen ) {
+  return nodec_addchildr( self, newname,newnamelen,0,0,0);
+};
+struct attc *nodec_addatt  ( struct nodec *self, char *newname, int newnamelen ) {
+  return nodec_addattr( self, newname, newnamelen, 0, 0 );
 };
 
-class attc {
-  public:
-  nodec *parent;
-  attc  *next;
-  char  *name;
-  int   namelen;
-  char  *value;
-  int   vallen;
-  attc( nodec *newparent );
-};
+void  parserc_descend    ( struct parserc *self ) { self->pcurnode = self->pcurnode->firstchild;  };
+void  parserc_ascend     ( struct parserc *self ) { self->pcurnode = self->pcurnode->parent;      };
+int   parserc_num_nodes  ( struct parserc *self ) { return           self->pcurnode->numchildren; };
+int   parserc_num_att    ( struct parserc *self ) { return           self->pcurnode->numatt;      };
+void  parserc_next_node  ( struct parserc *self ) { self->pcurnode = self->pcurnode->next;        };
+void  parserc_next_att   ( struct parserc *self ) { self->curatt   = self->curatt  ->next;        };
+void  parserc_first_att  ( struct parserc *self ) { self->curatt   = self->pcurnode->firstatt;    };
+int   parserc_node_type  ( struct parserc *self ) { return           self->pcurnode->type;        };
 
-class parserc {
-  nodec *pcurnode;
-  attc  *curatt;
-  public:
-  nodec *parse( char *newbuf );
-  void  descend    () { pcurnode = pcurnode->firstchild;  };
-  void  ascend     () { pcurnode = pcurnode->parent;      };
-  int   num_nodes  () { return     pcurnode->numchildren; };
-  int   num_att    () { return     pcurnode->numatt;      };
-  void  next_node  () { pcurnode = pcurnode->next;        };
-  void  next_att   () { curatt   = curatt  ->next;        };
-  void  first_att  () { curatt   = pcurnode->firstatt;    };
-  int   node_type  () { return     pcurnode->type;        };
-  char  *node_name ();
-  char  *node_value();
-  char  *att_name  ();
-  char  *att_value ();
-};
-
-char *parserc::node_name() {
-  if( !pcurnode->name ) return "";
-  int len = pcurnode->namelen;
+char *parserc_node_name( struct parserc *self ) {
+  if( !self->pcurnode->name ) return "";
+  int len = self->pcurnode->namelen;
   if( !len ) return "";
-  pcurnode->name[ len ] = 0x00;
-  return pcurnode->name;
+  self->pcurnode->name[ len ] = 0x00;
+  return self->pcurnode->name;
 }
 
-char *parserc::node_value() {
-  if( !pcurnode->value ) return "";
-  int len = pcurnode->vallen;
+char *parserc_node_value( struct parserc *self ) {
+  if( !self->pcurnode->value ) return "";
+  int len = self->pcurnode->vallen;
   if( !len ) return "";
-  pcurnode->value[ len ] = 0x00;
-  return pcurnode->value;
+  self->pcurnode->value[ len ] = 0x00;
+  return self->pcurnode->value;
 }
 
-char *parserc::att_name() {
-  int len = curatt->namelen;
+char *parserc_att_name( struct parserc *self ) {
+  int len = self->curatt->namelen;
   if(!len) return "";
-  curatt->name[ curatt->namelen ] = 0x00;
-  return curatt->name;
+  self->curatt->name[ self->curatt->namelen ] = 0x00;
+  return self->curatt->name;
 }
 
-char *parserc::att_value() {
-  int len = curatt->vallen;
+char *parserc_att_value( struct parserc *self ) {
+  int len = self->curatt->vallen;
   if(!len) return "";
-  curatt->value[ curatt->vallen ] = 0x00;
-  return curatt->value;
+  self->curatt->value[ self->curatt->vallen ] = 0x00;
+  return self->curatt->value;
 }
 
-nodec::nodec( nodec *newparent ) {
-  next        = NULL;
-  parent      = newparent;
-  firstchild  = NULL;
-  lastchild   = NULL;
-  numchildren = 0;
-  numatt      = 0;
-  namelen     = 0;
-  vallen      = 0;
-  numvals     = 0;
+struct nodec *new_nodecp( struct nodec *newparent ) {
+  struct nodec *self = (struct nodec *) malloc( sizeof( struct nodec ) );
+  self->next        = NULL;
+  self->parent      = newparent;
+  self->firstchild  = NULL;
+  self->lastchild   = NULL;
+  self->numchildren = 0;
+  self->numatt      = 0;
+  self->namelen     = 0;
+  self->vallen      = 0;
+  self->numvals     = 0;
+  return self;
 }
 
-nodec::nodec() {
-  next        = NULL;
-  parent      = NULL;
-  firstchild  = NULL;
-  lastchild   = NULL;
-  numchildren = 0;
-  numatt      = 0;
-  name        = 0x00;
-  value       = 0x00;
-  namelen     = 0;
-  vallen      = 0;
+struct nodec *new_nodec() {
+  struct nodec *self = (struct nodec *) malloc( sizeof( struct nodec ) );
+  self->next        = NULL;
+  self->parent      = NULL;
+  self->firstchild  = NULL;
+  self->lastchild   = NULL;
+  self->numchildren = 0;
+  self->numatt      = 0;
+  self->name        = 0x00;
+  self->value       = 0x00;
+  self->namelen     = 0;
+  self->vallen      = 0;
+  return self;
 }
 
-attc::attc( nodec *newparent ) {
-  next    = NULL;
-  parent  = newparent;
-  namelen = 0;
-  vallen  = 0;
-  name    = 0x00;
-  value   = 0x00;
+void del_nodec( struct nodec *node ) {
+  struct nodec *curnode;
+  struct attc *curatt;
+  struct nodec *next;
+  struct attc *nexta;
+  if( node->numchildren ) {
+    curnode = node->firstchild;
+    while( 1 ) {
+      next = curnode->next;
+      del_nodec( curnode );
+      curnode = next;
+      if( !curnode ) break;
+    }
+  }
+  if( node->numatt ) {
+    curatt = node->firstatt;
+    while( 1 ) {
+      nexta = curatt->next;
+      free( curatt );
+      curatt = nexta;
+      if( !curatt ) break;
+    }
+  }
+  free( node );
 }
 
-nodec* parserc::parse( char *xmlin ) {
-    nodec *root = new nodec;
-    
+struct attc* new_attc( struct nodec *newparent ) {
+  struct attc *self = (struct attc *) malloc( sizeof( struct attc ) );
+  self->next    = NULL;
+  self->parent  = newparent;
+  self->namelen = 0;
+  self->vallen  = 0;
+  self->name    = 0x00;
+  self->value   = 0x00;
+  return self;
+}
+
+struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
+    struct nodec *root = new_nodec();
+
     char  *tagname, *attname, *attval, *val;
     int   pos         = 0;
     int   state       = QK_VAL_1;
     int   tagname_len = 0;
     int   attname_len = 0;
     int   attval_len  = 0;
-    nodec *curnode    = root;
-    attc  *curatt     = NULL;
+    struct nodec *curnode    = root;
+    struct attc  *curatt     = NULL;
     char  let;
     
     while( 1 ) {
@@ -287,17 +257,17 @@ nodec* parserc::parse( char *xmlin ) {
 
             case QK_NAME_X: // grabbing tag name
                 if( let == ' ' || let == 0x0d || let == 0x0a ) {
-                    curnode                = curnode->addchild( tagname, tagname_len );
+                    curnode                = nodec_addchild( curnode, tagname, tagname_len );
                     state                  = QK_NAME_GAP;
                     attname_len            = 0;
                 }
                 else if( let == '>' ) {
-                    curnode                = curnode->addchild( tagname, tagname_len );
+                    curnode                = nodec_addchild( curnode, tagname, tagname_len );
                     state                  = QK_VAL_1;
                 }
                 else if( let == '/' ) {
                     state                  = QK_VAL_1;
-                    curnode->addchild( tagname, tagname_len );
+                    nodec_addchild( curnode, tagname, tagname_len );
                     tagname_len            = 0;
                     pos++;
                 }
@@ -358,7 +328,7 @@ nodec* parserc::parse( char *xmlin ) {
                     attname_len++;
                     break;
                 }
-                curatt = curnode->addatt( attname, attname_len );
+                curatt = nodec_addatt( curnode, attname, attname_len );
                 attname_len            = 0;
                 break;
 
@@ -428,44 +398,44 @@ nodec* parserc::parse( char *xmlin ) {
         }
         pos++;
     }
-    pcurnode = root;
-    pcurnode->curchild = pcurnode->firstchild;
+    self->pcurnode = root;
+    self->pcurnode->curchild = self->pcurnode->firstchild;
     return root;
 }
 
-nodec *nodec::addchild( char *newname, int newnamelen, char *newval, int newvallen, int newtype ) {
-  nodec *newnode   = new nodec( this );
+struct nodec *nodec_addchildr(  struct nodec *self, char *newname, int newnamelen, char *newval, int newvallen, int newtype ) {
+  struct nodec *newnode = new_nodecp( self );
   newnode->name    = newname;
   newnode->namelen = newnamelen;
   newnode->value   = newval;
   newnode->vallen  = newvallen;
   newnode->type    = newtype;
-  if( numchildren == 0 ) {
-    firstchild = newnode;
-    lastchild  = newnode;
+  if( self->numchildren == 0 ) {
+    self->firstchild = newnode;
+    self->lastchild  = newnode;
   }
   else {
-    lastchild->next = newnode;
-    lastchild = newnode;
+    self->lastchild->next = newnode;
+    self->lastchild = newnode;
   }
-  numchildren++;
+  self->numchildren++;
   return newnode;
 }
 
-attc *nodec::addatt( char *newname, int newnamelen, char *newval, int newvallen ) {
-  attc *newatt    = new attc( this );
+struct attc *nodec_addattr( struct nodec *self, char *newname, int newnamelen, char *newval, int newvallen ) {
+  struct attc *newatt    = new_attc( self );
   newatt->name    = newname;
   newatt->namelen = newnamelen;
   newatt->value   = newval;
   newatt->vallen  = newvallen;
-  if( numatt == 0 ) {
-    firstatt = newatt;
-    lastatt  = newatt;
+  if( self->numatt == 0 ) {
+    self->firstatt = newatt;
+    self->lastatt  = newatt;
   }
   else {
-    lastatt->next = newatt;
-    lastatt = newatt;
+    self->lastatt->next = newatt;
+    self->lastatt = newatt;
   }
-  numatt++;
+  self->numatt++;
   return newatt;
 }

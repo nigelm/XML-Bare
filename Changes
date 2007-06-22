@@ -1,5 +1,16 @@
 XML::Bare Changelog
 
+0.10 ( 6-21-07 )
+  - Made XS routines 30% more efficient. Speed of parsing and perl hash creation
+    is now very good in comparison to all currently available alternatives in perl.
+
+0.09 ( 6-20-07 )
+  - Rewrote library using XS instead of swig.
+
+0.08 ( 6-20-07 )
+  - Parser has been rewritten in C to avoid dependency on g++.
+  - After node parsing C tree structure memory is now freed.
+
 0.07 ( 6-19-07 )
   - Modified custom script because it was incorrect in its use of redirection, causing
     some platforms to fail to compile.

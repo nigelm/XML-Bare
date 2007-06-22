@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:                XML-Bare
-version:             0.07
-abstract:            A minimal XML parser that uses C++ to generate a folded perl hash.
+version:             0.10
+abstract:            A minimal XML parser that uses C to generate a folded perl hash.
 license:             perl
 generated_by:        ExtUtils::MakeMaker version 6.32
 distribution_type:   module
