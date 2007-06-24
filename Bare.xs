@@ -1,4 +1,5 @@
 #define PERL_NO_GET_CONTEXT
+#define MY_BLIND_PV(a,b) SV *sv;sv=newSV(0);SvUPGRADE(sv,SVt_PV);SvPV_set(sv,a);SvCUR_set(sv,b);SvLEN_set(sv, b+1);SvPOK_only_UTF8(sv);ST(0) = sv;
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
@@ -39,7 +40,7 @@ first_att()
 void
 next_att()
   CODE:
-    parserc_next_att(&parser);
+    parser.curatt = parser.curatt->next;
 
 int
 num_att()
@@ -65,25 +66,25 @@ num_nodes()
 char *
 att_name()
   CODE:
-    ST(0) = newSVpvn_share( parser.curatt->name, parser.curatt->namelen, 0 );
+    MY_BLIND_PV( parser.curatt->name, parser.curatt->namelen )
     XSRETURN(1);
 
 char *
 att_value()
   CODE:
-    ST(0) = newSVpvn_share( parser.curatt->value, parser.curatt->vallen, 0 );
+    MY_BLIND_PV( parser.curatt->value, parser.curatt->vallen )
     XSRETURN(1);
 
 char *
 node_name()
   CODE:
-    ST(0) = newSVpvn_share( parser.pcurnode->name, parser.pcurnode->namelen, 0 );
+    MY_BLIND_PV( parser.pcurnode->name, parser.pcurnode->namelen )
     XSRETURN(1);
 
 char *
 node_value()
   CODE:
-    ST(0) = newSVpvn_share( parser.pcurnode->value, parser.pcurnode->vallen, 0 );
+    MY_BLIND_PV( parser.pcurnode->value, parser.pcurnode->vallen )
     XSRETURN(1);
 
 void

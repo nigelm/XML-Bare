@@ -4,7 +4,7 @@ require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = "0.10";
+$VERSION = "0.11";
 
 bootstrap XML::Bare $VERSION;
 
@@ -13,11 +13,11 @@ bootstrap XML::Bare $VERSION;
 
 =head1 NAME
 
-XML::Bare - Minimal XML parser implemented via a C++ state engine
+XML::Bare - Minimal XML parser implemented via a C state engine
 
 =head1 VERSION
 
-0.10
+0.11
 
 =cut
 

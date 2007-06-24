@@ -7,45 +7,6 @@ struct attc *nodec_addatt  ( struct nodec *self, char *newname, int newnamelen )
   return nodec_addattr( self, newname, newnamelen, 0, 0 );
 };
 
-void  parserc_descend    ( struct parserc *self ) { self->pcurnode = self->pcurnode->firstchild;  };
-void  parserc_ascend     ( struct parserc *self ) { self->pcurnode = self->pcurnode->parent;      };
-int   parserc_num_nodes  ( struct parserc *self ) { return           self->pcurnode->numchildren; };
-int   parserc_num_att    ( struct parserc *self ) { return           self->pcurnode->numatt;      };
-void  parserc_next_node  ( struct parserc *self ) { self->pcurnode = self->pcurnode->next;        };
-void  parserc_next_att   ( struct parserc *self ) { self->curatt   = self->curatt  ->next;        };
-void  parserc_first_att  ( struct parserc *self ) { self->curatt   = self->pcurnode->firstatt;    };
-int   parserc_node_type  ( struct parserc *self ) { return           self->pcurnode->type;        };
-
-char *parserc_node_name( struct parserc *self ) {
-  if( !self->pcurnode->name ) return "";
-  int len = self->pcurnode->namelen;
-  if( !len ) return "";
-  self->pcurnode->name[ len ] = 0x00;
-  return self->pcurnode->name;
-}
-
-char *parserc_node_value( struct parserc *self ) {
-  if( !self->pcurnode->value ) return "";
-  int len = self->pcurnode->vallen;
-  if( !len ) return "";
-  self->pcurnode->value[ len ] = 0x00;
-  return self->pcurnode->value;
-}
-
-char *parserc_att_name( struct parserc *self ) {
-  int len = self->curatt->namelen;
-  if(!len) return "";
-  self->curatt->name[ self->curatt->namelen ] = 0x00;
-  return self->curatt->name;
-}
-
-char *parserc_att_value( struct parserc *self ) {
-  int len = self->curatt->vallen;
-  if(!len) return "";
-  self->curatt->value[ self->curatt->vallen ] = 0x00;
-  return self->curatt->value;
-}
-
 struct nodec *new_nodecp( struct nodec *newparent ) {
   struct nodec *self = (struct nodec *) malloc( sizeof( struct nodec ) );
   self->next        = NULL;

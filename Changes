@@ -1,5 +1,10 @@
 XML::Bare Changelog
 
+0.11 ( 6-25-07 )
+  - Changed XS code so that it is backwards compatible with older versions of Perl.
+  - Changed XS code to use 'blind' pointers, a custom created Perl Scalar. Speed
+    is increased as a result for XML with large contiguous values.
+
 0.10 ( 6-21-07 )
   - Made XS routines 30% more efficient. Speed of parsing and perl hash creation
     is now very good in comparison to all currently available alternatives in perl.

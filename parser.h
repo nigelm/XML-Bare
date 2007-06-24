@@ -68,16 +68,3 @@ struct parserc {
 };
 
 struct nodec* parserc_parse( struct parserc *self, char *newbuf );
-
-void  parserc_descend    ( struct parserc *self );
-void  parserc_ascend     ( struct parserc *self );
-int   parserc_num_nodes  ( struct parserc *self );
-int   parserc_num_att    ( struct parserc *self );
-void  parserc_next_node  ( struct parserc *self );
-void  parserc_next_att   ( struct parserc *self );
-void  parserc_first_att  ( struct parserc *self );
-int   parserc_node_type  ( struct parserc *self );
-char  *parserc_node_name ( struct parserc *self );
-char  *parserc_node_value( struct parserc *self );
-char  *parserc_att_name  ( struct parserc *self );
-char  *parserc_att_value ( struct parserc *self );
