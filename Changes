@@ -1,5 +1,52 @@
 XML::Bare Changelog
 
+0.21
+  - Comments are no longer completely ignored. One comment
+    node is recognized and stored per non immediate node.
+
+0.20 ( internal )
+  - forcearray function has been added
+  - simplify function has been added
+  - croak now used to error out of an improper call to find_node
+  - obj2xml has been corrected; previously newlines would stack
+    up at the end of the xml file
+    
+0.17 ( internal - unstable )
+  - Merge updated to handle array and overlap properly
+  - del_by_perl function has been added
+  - add_node modified to return the added node
+  - find_node modified to skip blank values
+  - Previously a set of nodes could not be printed out using
+    the 'xml' function. This can now be done. ( see perldoc )
+
+0.16 ( internal )
+  - Mixed XML is now supported.
+  - UTF8 is now parsed properly.
+
+0.15 ( internal )
+  - C Parser has been revised greatly in order to make it faster. Internal
+    state engine has been rewritten using gotos instead of a switch in order
+    make each state more independent and easily optimized by the compiler.
+
+0.14 ( internal )
+  - Code that creates Perl hash from parsed XML structure has been
+    rewritten in XS instead of Perl. As a result overall speed has been
+    increased by 40% or so.
+
+0.13 ( internal )
+  - Code that creates Perl hash from parsed XML structure has been
+    cleaned up in order to avoid use of a temporary Perl hash.
+
+0.12 ( internal )
+  - 'find_node' and 'del_node' functions are now exportable.
+  - 'find_node' function will now work properly if called on a single item
+    instead of a list of items.
+  - Added 'find_by_perl' function to select nodes from a list that match
+    a specific perl expression.
+  - A performance test script and some xml files are now included and example runs of 
+    the test script are in the documentation. XML::Bare is ~14-80 times
+    faster than the alternatives.
+
 0.11 ( 6-25-07 )
   - Changed XS code so that it is backwards compatible with older versions of Perl.
   - Changed XS code to use 'blind' pointers, a custom created Perl Scalar. Speed

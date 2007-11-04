@@ -1,15 +1,16 @@
 package XML::Bare;
 
+use Carp;
 require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = "0.11";
+$VERSION = "0.21";
 
 bootstrap XML::Bare $VERSION;
 
 @EXPORT = qw( );
-@EXPORT_OK = qw(merge clean);
+@EXPORT_OK = qw(merge clean find_node del_node);
 
 =head1 NAME
 
@@ -17,7 +18,7 @@ XML::Bare - Minimal XML parser implemented via a C state engine
 
 =head1 VERSION
 
-0.11
+0.21
 
 =cut
 
@@ -29,7 +30,33 @@ sub new {
 
   bless $self, $class;
   
+  my $text;
+  if( $self->{ 'text' } ) {
+    XML::Bare::c_parse( $self->{'text'} );
+  }
+  else {
+    my $file = $self->{ 'file' };
+    my $res = open( XML, $file );
+    if( !$res ) {
+      $self->{ 'xml' } = 0;
+      return 0;
+    }
+    {
+      local $/ = undef;
+      $text = <XML>;
+    }
+    close( XML );
+    XML::Bare::c_parse( $text );
+  }
   return $self;
+}
+
+sub forcearray {
+  my $ref = shift;
+  return $ref if( ref( $ref ) eq 'ARRAY' );
+  my @arr;
+  push( @arr, $ref );
+  return \@arr;
 }
 
 sub merge {
@@ -41,9 +68,31 @@ sub merge {
   for my $one ( @$b ) {
     next if( !$one->{ $id } );
     my $short = $hash{ $one->{ $id }->{ 'value' } };
+    next if( !$short );
     foreach my $key ( keys %$one ) {
       next if( $key eq 'pos' || $key eq 'id' );
-      $short->{ $key } = $one->{ $key };
+      my $cur = $short->{ $key };
+      my $add = $one->{ $key };
+      if( !$cur ) {
+        $short->{ $key } = $add;
+      }
+      else {
+        my $type = ref( $cur );
+        if( $cur eq 'HASH' ) {
+          my @arr;
+          $short->{ $key } = \@arr;
+          push( @arr, $cur );
+        }
+        if( ref( $add ) eq 'HASH' ) {
+          push( @{$short->{ $key }}, $add );
+        }
+        else { # we are merging an array
+          push( @{$short->{ $key }}, @$add );
+        }
+        
+      }
+      # we need to deal with the case where this node
+      # is already there, either alone or as an array
     }
   }
   return $a;  
@@ -63,26 +112,8 @@ sub clean {
 # Load a file using XML::DOM, convert it to a hash, and return the hash
 sub parse {
   my $self   = shift;
-  my $text;
-  if( $self->{ 'text' } ) {
-    $text = $self->{ 'text' };
-  }
-  else {
-    my $file = $self->{ 'file' };
-    my $res = open( XML, $file );
-    if( !$res ) {
-      $self->{ 'xml' } = 0;
-      return 0;
-    }
-    {
-      local $/ = undef;
-      $text = <XML>;
-    }
-    close( XML );
-  }
   
-  XML::Bare::c_parse( $text );
-  $self->{ 'xml' } = $self->xml2obj();
+  $self->{ 'xml' } = XML::Bare::xml2obj();#$self->xml2obj();
   XML::Bare::free_tree();
   
   return $self->{ 'xml' };
@@ -96,7 +127,20 @@ sub add_node {
   my %blank;
   $node->{ 'multi_'.$name } = \%blank if( ! $node->{ 'multi_'.$name } );
   $node->{ $name } = \@newar if( ! $node->{ $name } );
-  push( @{ $node->{ $name } }, $self->new_node( @_ ) );
+  my $newnode = $self->new_node( @_ );
+  push( @{ $node->{ $name } }, $newnode );
+  return $newnode;
+}
+
+sub find_by_perl {
+  my $arr = shift;
+  my $cond = shift;
+  $cond =~ s/-([a-z]+)/\$ob->\{'$1'\}->\{'value'\}/g;
+  my @res;
+  foreach my $ob ( @$arr ) {
+    push( @res, $ob ) if( eval( $cond ) );
+  }
+  return \@res;
 }
 
 sub find_node {
@@ -106,12 +150,24 @@ sub find_node {
   my %match = @_;
   $node = $node->{ $name };
   return 0 if( !$node );
-  for( my $i = 0; $i <= $#$node; $i++ ) {
-    my $one = $node->[ $i ];
+  if( ref( $node ) eq 'HASH' ) {
     foreach my $key ( keys %match ) {
       my $val = $match{ $key };
-      if( $one->{ $key }->{'value'} eq $val ) {
-        return $node->[ $i ];
+      next if ( !$val );
+      if( $node->{ $key }->{'value'} eq $val ) {
+        return $node;
+      }
+    }
+  }
+  if( ref( $node ) eq 'ARRAY' ) {
+    for( my $i = 0; $i <= $#$node; $i++ ) {
+      my $one = $node->[ $i ];
+      foreach my $key ( keys %match ) {
+        my $val = $match{ $key };
+        croak('undefined value in find') unless defined $val;
+        if( $one->{ $key }->{'value'} eq $val ) {
+          return $node->[ $i ];
+        }
       }
     }
   }
@@ -134,6 +190,19 @@ sub del_node {
       }
     }
   }
+}
+
+sub del_by_perl {
+  my $arr = shift;
+  my $cond = shift;
+  $cond =~ s/-value/\$ob->\{'value'\}/g;
+  $cond =~ s/-([a-z]+)/\$ob->\{'$1'\}->\{'value'\}/g;
+  my @res;
+  for( my $i = 0; $i <= $#$arr; $i++ ) {
+    my $ob = $arr->[ $i ];
+    delete $arr->[ $i ] if( eval( $cond ) );
+  }
+  return \@res;
 }
 
 # Created a node of XML hash with the passed in variables already set
@@ -159,92 +228,39 @@ sub newhash {
   return \%hash;
 }
 
+sub simplify {
+  my $self = shift;
+  my $root = shift;
+  my %ret;
+  foreach my $name ( keys %$root ) {
+    my $val = $root->{$name}{'value'} || '';
+    $ret{ $name } = $val;
+  }
+  return \%ret;
+}
+
 # Save an XML hash tree into a file
-# Note we should use XML::Twig into order to beautify this before outputting
 sub save {
   my $self = shift;
   my $file   = $self->{ 'file' };
   my $xml    = $self->{ 'xml' };
   return if( ! $xml );
   
-  #my $xmltxt = obj2xml( $xml, '' );
-  
   open  F, '>' . $file;
   print F $self->xml( $self->{'xml'} );
   close F;
 }
 
-sub xml2obj {
-  my %output;
-  my %outnodes;
-  my @outnodenames;
-  my $length = XML::Bare::num_nodes();
-  
-  if( $length == 0 ) {
-    my $nodename = XML::Bare::node_name();
-    my $nodevalue = XML::Bare::node_value();
-    $output{ 'value' } = $nodevalue;
-  }
-  else {
-    my $nodevalue = XML::Bare::node_value();
-    $output{ 'value' } = $nodevalue;
-    XML::Bare::descend();
-    for( my $i = 0; $i < $length; $i++ ) {
-      my $nodename = XML::Bare::node_name();
-      
-      if( !$outnodes{ $nodename } ) {
-        my @newarray;
-        $outnodes{ $nodename } = \@newarray;
-        push( @outnodenames, $nodename );
-      }
-      my $nodea = $outnodes{ $nodename };
-      push( @$nodea, xml2obj() );
-      
-      XML::Bare::next_node() if( $i != ( $length - 1 ) );
-    }
-    
-    for( my $i = 0; $i <= $#outnodenames; $i++ ) {
-      my $name = $outnodenames[ $i ]; # the name of this node
-      my $part = $outnodes{ $name };  # the parsed contents ( the array of these nodes )
-      my $num  = $#$part;
-      $num++;
-      if( $num > 1 || $outnodes{ 'multi_' . $name } ) {
-        my @newarray;
-        $output{ $name } = \@newarray;
-        for( my $i2 = 0; $i2 < $num; $i2++ ) {
-          push( @newarray, $part->[ $i2 ] );
-        }
-      }
-      else {
-        $output{ $name } = $part->[ 0 ];
-        if( ref( $output{$name} ) eq 'HASH' ) {
-          $output{ $name }->{'pos'} = $i;
-        }
-      }
-    }
-      
-    XML::Bare::ascend();
-  }
-  
-  my $numatts = XML::Bare::num_att();
-  if( $numatts ) {
-    XML::Bare::first_att();
-    for( my $i = 0; $i < $numatts; $i++ ) {
-      my %newhash;
-      $output{ XML::Bare::att_name() } = \%newhash;
-      $newhash{ 'value' } = XML::Bare::att_value();
-      $newhash{ 'att'   }   = 1;
-      XML::Bare::next_att() if( $i != ( $numatts - 1 ) );
-    }
-  }
-  
-  return \%output;
-}
-
 sub xml {
   my $self = shift;
   my $obj = shift;
-  return obj2xml( $obj, '', 0 );
+  my $name = shift;
+  if( !$name ) {
+    return obj2xml( $obj, '', 0 );
+  }
+  my %hash;
+  $hash{$name} = $obj;
+  return obj2xml( \%hash, '', 0 );
 }
 
 sub obj2xml {
@@ -292,9 +308,11 @@ sub obj2xml {
       }
     }
     else {
-      if( $i eq 'value' ) {
-        #$imm = 1;
-        if( $#dex < 2 ) {
+      if( $i eq 'comment' ) {
+        $xml .= $pad . '<!--' . $obj . '-->' . "\n";
+      }
+      elsif( $i eq 'value' ) {
+        if( $#dex < 2 && $level > 1 ) {
           if( $obj && $obj =~ /[<>&;]/ ) {
             $xml .= '<![CDATA[' . $obj . ']]>';
           }
@@ -395,6 +413,11 @@ examples. Each of the PERL statements evaluates to true.
   XML: <xml><multi_item/><item>1</item></xml>
   PERL: $root->{xml}->{item}->[0]->{value} eq "1";
 
+=item * One comment supported per node
+
+  XML: <xml><!--test--></xml>
+  PERL: $root->{xml}->{comment} eq 'test';
+
 =back
 
 =head2 Parsed Hash Structure
@@ -447,13 +470,20 @@ the hash itself is not ordered after parsing. Currently
 items will be out of order when looking at them in the
 hash.
 
-Note that when converted but to XML, the nodes are then
+Note that when converted back to XML, the nodes are then
 sorted and output in the correct order to XML.
 
-=item * Comments are parsed, but discarded
+=item * Comments are parsed but only one is stored per node.
 
-Comments can exist in the XML, but they are thrown
-away during parsing.
+For each node, there can be a comment within it, and that
+comment will be saved and output back when dumping to XML.
+
+=item * Comments override output of immediate value
+
+If a node contains only a comment node and a text value,
+only the comment node will be displayed. This is in line
+with treating a comment node as a node and only displaying
+immediate values when a node contains no subnodes.
 
 =item * PI sections are parsed, but discarded
 
@@ -609,6 +639,45 @@ Clean up the xml in filename1 and save the results to filename2.
         </ob>
       </xml>
 
+=item * C<< $object->find_by_perl( [nodeset], "[perl code]" ) >>
+
+find_by_perl evaluates some perl code for each node in a set of nodes, and
+returns the nodes where the perl code evaluates as true. In order to
+easily reference node values, node values can be directly referred
+to from within the perl code by the name of the node with a dash(-) in
+front of the name. See the example below.
+
+Note that this function returns an array reference as opposed to a single
+node unlike the find_node function.
+
+  Example:
+    Starting XML:
+      <xml>
+        <ob>
+          <key>1</key>
+          <val>a</val>
+        </ob>
+        <ob>
+          <key>2</key>
+          <val>b</val>
+        </ob>
+      </xml>
+      
+    Code:
+      $object->find_by_perl( $root->{xml}->{ob}, "-key eq '1'" )->[0]->{val}->{value} = 'test';
+      
+    Ending XML:
+      <xml>
+        <ob>
+          <key>1</key>
+          <val>test</val>
+        </ob>
+        <ob>
+          <key>2</key>
+          <val>b</val>
+        </ob>
+      </xml>
+
 =item * C<< XML::Bare::merge( [nodeset1], [nodeset2], [id node name] ) >>
 
 Merges the nodes from nodeset2 into nodeset1, matching the contents of
@@ -655,6 +724,76 @@ Example:
 
 
 =back
+
+=head2 Performance
+
+In comparison to other available perl xml parsers that create trees, XML::Bare
+is extremely fast. In order to measure the performance of loading and parsing
+compared to the alternatives, a test script has been created and is included
+with the distribution as 'test.pl'.
+
+The test script can compare the speed of XML::Bare against the following
+alternatives:
+
+=over 2
+
+=item * XML::Parser::EasyTree
+
+=item * XML::Handler::Trees
+
+=item * XML::Twig
+
+=item * XML::LibXML
+
+Note that basic LibXML is included in the comparison, despite the
+fact that it does not create a tree.
+
+=item * XML::Smart
+
+=item * XML::Simple
+
+=back
+
+To run the comparison, you must provide a number, 1-6, as a paramter
+to the script in order to choose which module to compare against. The
+script works this way because some of the modules have parts used by
+the other modules, which hides the loading time for the module tested
+later...
+
+The script measures the milliseconds of loading and parsing, and
+compares the time against the time of XML::Bare. So a 7 means
+it takes 7 times as long as XML::Bare.
+
+Here is a combined table of the script run against each alternative
+using the included test.xml:
+
+  -Module-              load     parse    total
+  XML::Bare             1        1        1
+  XML::Parser::EasyTree 6.4792   28.5329  9.4801
+  XML::Handler::Trees   8.9871   26.7663  11.5089
+  XML::Twig             32.9452  52.6146  35.7817
+  XML::LibXML (no tree) 14.3463  1.605    12.508
+  XML::Smart            7.4513   85.3518  17.9729
+  XML::Simple           3.6368   208.0512 31.8312
+  
+Here is a combined table of the script run against each alternative
+using the included feed2.xml:
+
+  -Module-              load     parse    total
+  XML::Bare             1        1        1
+  XML::Parser::EasyTree 6.5013   21.2369  10.68
+  XML::Handler::Trees   8.8472   28.7846  14.2967
+  XML::Twig             30.9528  43.6278  34.2255
+  XML::LibXML (no tree) 13.4096  1.4038   10.2863
+  XML::Smart            7.4631   43.9396  17.5495
+  XML::Simple           3.6073   114.6596 33.5336
+
+These results show that XML::Bare is, at least on the test machine,
+~3-30 times faster loading and ~20-150 times faster parsing than
+any of the alternative tree parsers.
+
+Also shown is that XML::Bare can parse XML and create a hash tree
+in less time than it takes LibXML just to parse.
 
 =head1 LICENSE
 

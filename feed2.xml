@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="http://feeds.computerworld.com/~d/styles/rss2full.xsl" type="text/xsl" media="screen"?><?xml-stylesheet href="http://feeds.computerworld.com/~d/styles/itemcontent.css" type="text/css" media="screen"?><rss xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" version="2.0" xml:base="http://www.computerworld.com/blogs">
+<channel>
+ <title>IT Blogwatch's blog</title>
+ <link>http://www.computerworld.com/blogs/blogwatch</link>
+ <description />
+ <language>en</language>
+<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" href="http://feeds.computerworld.com/Computerworld/ITBlogwatch" type="application/rss+xml" /><feedburner:browserFriendly>This is an XML content feed. It is intended to be viewed in a newsreader or syndicated to another site, subject to copyright and fair use.</feedburner:browserFriendly><item>
+ <title>DHS derided due to dodgy digital defenses (and not MS Surface)</title>
+
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/126979702/5726</link>
+ <description>&lt;p&gt;&lt;b &gt;Fantastic-fantastic, it's Friday's IT Blogwatch: in which the Dept. of Homeland Security gets hauled over the coals for its lousy IT security. Not to mention Microsoft Surface, as you've never seen it before (i.e. hilarious)...&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9025420&amp;amp;source=it_blogwatch"&gt;Jaikumar Vijayan reports&lt;/a&gt; &lt;/b&gt;:&lt;br /&gt;
+
+&lt;blockquote &gt;A House subcommittee investigating cybersecurity vulnerabilities at the U.S. Department of Homeland Security yesterday blasted the agency's CIO for his alleged lack of leadership on key security issues. Subcommittee members also questioned DHS CIO Scott Charbo's willingness to make needed security fixes and his ability to head the agency's IT operations. Charbo rebutted the charges, saying that much of the criticism was based on outdated data that ignored security improvements the agency has been making.&lt;/p&gt;
+&lt;p&gt;The attacks on Charbo came at a hearing held by a subcommittee of the Committee on Homeland Security ... In prepared testimony, ... Rep. James Langevin (D-R.I.), chairman of the Subcommittee on Emerging Threats, Cybersecurity, and Science and Technology, which held the hearing ... expressed &amp;quot;shock and disappointment&amp;quot; that the DHS had reported as many as 844 security incidents in fiscal years 2005 and 2006. The incidents occurred on IT networks at DHS headquarters, and those belonging to Immigration and Customs Enforcement, Customs and Border Protection (CBP) and the Federal Emergency Management Agency.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=1aNc9S"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=1aNc9S" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/126979702" height="1" width="1"/&gt;</description>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/1">IT Management</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/6">Networking</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/2">Security</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/33">Internet</category>
+ <pubDate>Fri, 22 Jun 2007 06:58:35 -0400</pubDate>
+
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5726</feedburner:origLink></item>
+<item>
+ <title>Microsoft caves to Google complaint (and future-hate)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/126673069/5718</link>
+ <description>&lt;p&gt;&lt;b &gt;That'll be Thursday's IT Blogwatch then: in which Microsoft responds to Google's antitrust complaint about Vista's desktop search features. Not to mention the seven most annoying things about the future...&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b &gt;&lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9025281"&gt;Gregg Keizer reports&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+
+&lt;blockquote &gt;Microsoft Corp. has agreed to make changes to Windows Vista's desktop search and indexing tool, but it did not concede, as Google Inc. charged, that the feature violated a 2002 antitrust settlement ... In Vista SP1, Microsoft will allow users and computer manufacturers to select a default search program by using the process already in place for choosing a default browser or media player.&lt;br /&gt;
+...&lt;br /&gt;
+Google's complaint revolved around whether Vista's search was a new feature, as Google claimed, or an extension of a feature in earlier editions of Windows, as Microsoft said. The point was important, since by the 2002 settlement agreement ... Microsoft must help rivals build software that runs smoothly on Windows.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=tI5pdk"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=tI5pdk" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/126673069" height="1" width="1"/&gt;</description>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/28">Desktop Applications</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/9">Operating Systems</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/8">Software</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/12">Windows</category>
+ <pubDate>Thu, 21 Jun 2007 06:45:36 -0400</pubDate>
+
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5718</feedburner:origLink></item>
+<item>
+ <title>EFF wins 4th Amendment email victory (and megayachts)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/126213238/5708</link>
+ <description>&lt;p&gt;&lt;b &gt;The &amp;quot;wow&amp;quot; starts with Wednesday's IT Blogwatch: in which the Electronic Frontier Foundation wins against warrentless U.S. email snooping. Not to mention Silicon Valley's weakness for floating palaces...&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;b &gt;&lt;a href="http://www.boingboing.net/2007/06/19/email_gets_fourth_am.html"&gt;EFF board chairman, Brad Templeton writes&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+&lt;blockquote &gt;In a tremendous victory for privacy rights, the US 6th district court has restored the power of 4th amendment protection to emails stored on a remote host like an ISP or Webmail, striking down sections of the Stored Communications Act which have been routinely used to grab emails without a warrant.&lt;/p&gt;
+&lt;p&gt;The court agreed with an amicus brief filed by EFF attorney Kevin Bankston that people did have a reasonable expectation of privacy on their emails even when not stored on their home systems. This decision will make life far easier for users, and for operators of hosted email services like Google's Gmail.&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=RAZwrp"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=RAZwrp" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/126213238" height="1" width="1"/&gt;</description>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/27">Outsourcing</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/2">Security</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/33">Internet</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/19">SMB</category>
+ <pubDate>Tue, 19 Jun 2007 17:58:07 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5708</feedburner:origLink></item>
+<item>
+ <title>Yahoo! loses! CEO!, Blockbuster &lt;3 Blu-Ray (and C5jet)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/125910145/5701</link>
+
+ <description>&lt;p&gt;&lt;b &gt;A double-strength IT Blogwatch for &lt;/b&gt;&lt;b &gt;Tuesday&lt;/b&gt;&lt;b &gt;: in which Yahoo! gets a &amp;quot;new&amp;quot; CEO and Blockbuster throws its weight behind Blu-Ray. Not to mention a tiny tricycle powered by a turbojet...&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b &gt;&lt;a href="http://yodel.yahoo.com/2007/06/18/my-new-job/"&gt;Jerry Yang breaks the news on his weblog&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+
+&lt;blockquote &gt;The title of Chief Yahoo takes on new meaning today. I have the great honor of stepping into the role of Yahoo!&amp;rsquo;s Chief Executive Officer. Yahoo! has an incredibly bright future and I make this move with deep conviction and enthusiasm. I&amp;rsquo;ve partnered closely with our executive teams for 12 years to steer our strategy and direction and today I&amp;rsquo;m ready for this challenge.&lt;/p&gt;
+&lt;p&gt;Today also marks the close of a great chapter in my life with Terry Semel as my partner. Since coming on board in 2001, Terry has given Yahoo! six of its best years. He delivered great value to our users, advertisers and shareholders ... I will always be grateful for the incredible achievements under his leadership &amp;mdash; and for his mentorship and friendship.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=6n3yjH"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=6n3yjH" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/125910145" height="1" width="1"/&gt;</description>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/16">Careers</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/3">Storage</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/20">Cool Stuff</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/21">Emerging Technology</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/33">Internet</category>
+ <pubDate>Mon, 18 Jun 2007 17:45:27 -0400</pubDate>
+
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5701</feedburner:origLink></item>
+<item>
+ <title>Dell rings bell for PR hell (and creator-Clippy)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/125752505/5696</link>
+ <description>&lt;p&gt;&lt;b &gt;Here's your Monday IT Blogwatch: in which Dell's rehabilitation takes two steps back and one step forward. Not to mention one of Clippy's earliest outings...&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://consumerist.com/consumer/insiders/22-confessions-of-a-former-dell-sales-manager-268831.php"&gt;Last week, The Consumerist's gun was smoking&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+
+&lt;blockquote &gt;A former Dell kiosk manager writes us to share helpful tips about doing business with Dell. He has no particular problems with Dell, he just wanted to share some helpful tips for consumers looking to get the best deal. He includes info on getting the best deal from the website, different kinds of promotions the Dell offers, insider details on how the kiosk sales reps are compensated, what coupons and deals they have to offer you to close the deal, the email format for Dell in case you're thinking of launching an EECB, where to take your Dell credit card complaints, which extended warranties to avoid, how to get a domestic tech support rep... and more. It's very comprehensive. Enjoy!&lt;/blockquote&gt;
+&lt;b &gt;&lt;a href="http://consumerist.com/consumer/backend/dell-demands-takedown-of-our-22-confessions-of-a-former-dell-sales-manager-269127.php"&gt;When Dell Legal demanded that post be removed, the reply was, &amp;quot;Hell no, Dell&amp;quot;&lt;/a&gt;&lt;/b&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=NwaLzk"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=NwaLzk" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/125752505" height="1" width="1"/&gt;</description>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/5">Hardware</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/33">Internet</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/19">SMB</category>
+ <pubDate>Mon, 18 Jun 2007 06:05:56 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5696</feedburner:origLink></item>
+
+<item>
+ <title>Linspire prefers Microsoft  (and space cam)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/125051584/5690</link>
+ <description>&lt;p&gt;&lt;b &gt;Patent, patent on the wall, who's the scaredest of them all? It's Friday at IT Blogwatch where Microsoft taps its baton and Linux distros sign.  Not to mention, a space shuttle monitor suburban-style ...&lt;br /&gt;
+&lt;/b&gt;&lt;br /&gt;
+&lt;a target="new" href="http://www.linspire.com/lindows_news_pressreleases_archives.php?id=219"&gt;&lt;b &gt;Linspire's press release says&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote &gt;&lt;p&gt;Today Microsoft Corp. and Linux desktop provider Linspire Inc. announced a broad interoperability, technical collaboration that also includes intellectual property assurances.&lt;br /&gt;
+...&lt;br /&gt;
+Through the agreement, Microsoft and Linspire have developed a framework to provide patent covenants for Linspire customers. The patent covenants provide customers with confidence that the Linspire technologies they use come with rights to relevant Microsoft patents.  &lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;a target="new" href="http://www.groklaw.net/article.php?story=20070614085735536"&gt;&lt;b &gt;Groklaw's not kidding around&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=iI0d4S"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=iI0d4S" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/125051584" height="1" width="1"/&gt;</description>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/11">Linux</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/9">Operating Systems</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/8">Software</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/12">Windows</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/33">Internet</category>
+ <pubDate>Fri, 15 Jun 2007 06:46:05 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5690</feedburner:origLink></item>
+<item>
+ <title>Linux, Linus, Sun, Schwartz (and dung)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/124763446/5681</link>
+
+ <description>&lt;p&gt;&lt;b &gt;It's Thursday's IT Blogwatch, in which everyone wants everyone (else) to be more open.   Can't we all just get along?  Not to mention, Russia's new WMD ...&lt;br /&gt;
+&lt;/b&gt;&lt;br /&gt;
+&lt;a href="http://lkml.org/lkml/2007/6/12/232" target="new"&gt;&lt;b &gt;Linus Father-O-Linux Torvalds told his friends at LKML&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote &gt;&lt;p&gt;You are making the fundamental mistake of thinking that Sun is in this to actually further some open-source agenda....  &lt;/p&gt;
+&lt;p&gt;- first off: they may be talking a lot more than they are or ever will    be doing. ...&lt;br /&gt;
+- They may like open source, but Linux _has_ hurt them in the     marketplace. A lot ....&lt;br /&gt;
+- So they want to use Linux resources (_especially_ drivers), but they do    *not* want to give anything back (especially ZFS, which seems to be one    of their very very few bright spots). ...&lt;br /&gt;
+End result:&lt;br /&gt;
+
+- they'll talk about it. &lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href="http://blogs.sun.com/jonathan/entry/one_plus_one_is_fifty" target="new"&gt;&lt;b &gt;Jonathan Chief-Sun-All-Warm-and-Fuzzy Schwartz read it closely&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=uusUFy"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=uusUFy" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/124763446" height="1" width="1"/&gt;</description>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/7">Development</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/11">Linux</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/6">Networking</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/22">Open Source</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/9">Operating Systems</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/2">Security</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/8">Software</category>
+ <pubDate>Thu, 14 Jun 2007 07:32:05 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5681</feedburner:origLink></item>
+<item>
+ <title>Leopard spots a file system (and pirate laws)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/124462112/5675</link>
+
+ <description>&lt;p&gt;&lt;b&gt;Apple will use ZFS.  Apple won't use ZFS.  Will.  Won't. Sun knows best.  Apple knows best. It's Wednesday, and already we're weary.  Not to mention, pirates do not cry ...&lt;br/&gt;&lt;br /&gt;
+&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.macuser.com/software/missing_in_action_zfs_and_reso.php?lsrc=murss" target="new"&gt;&lt;b&gt;MacUser was disappointed&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote&gt;&lt;p&gt; Yesterday&amp;rsquo;s Jobsnote certainly lacked plenty of announcements that we &lt;i&gt;wanted&lt;/i&gt; to hear, but notably absent&amp;mdash;to my ears, anyway&amp;mdash;were a couple of things that I very much expected to hear, especially in a discussion Leopard&amp;rsquo;s new features: ZFS and resolution independence. &lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href="http://www.engadget.com/2007/06/13/leopard-does-does-not-use-zfs-part-iii-it-does-kinda/" target="new"&gt;&lt;b&gt;Engadget: breathe in, breathe out&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=Meb26U"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=Meb26U" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/124462112" height="1" width="1"/&gt;</description>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/7">Development</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/10">Macintosh</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/6">Networking</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/9">Operating Systems</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/8">Software</category>
+ <pubDate>Wed, 13 Jun 2007 06:29:39 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5675</feedburner:origLink></item>
+<item>
+ <title>Apple ports Safari to Windows (and inflatable camouflage rocks)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/124169019/5667</link>
+
+ <description>&lt;p&gt;&lt;b &gt;It's IT Blogwatch in which we ask: Why? Why would anyone think Windows users need another browser? Not to mention an unusual Cold War missile defense strategy...&lt;/b&gt;&lt;br /&gt;
+&lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9024298" target="new"&gt;&lt;b &gt;Gregg Keizer saw it happen&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote &gt;&lt;p&gt;For his traditional last-minute surprise near the end of the Worldwide Developers Conference keynote today, Apple Inc. CEO Steve Jobs announced that the company is releasing a beta of its Safari browser that runs on the rival Windows operating system.&lt;br /&gt;
+
+...&lt;br /&gt;
+In a brief pitch, Jobs claimed that the beta of Safari 3 is more than twice as fast as Internet Explorer on Windows XP, and 1.6 times faster than Firefox. &amp;quot;What we've got here is the most innovative browser in the world, and the fastest browser on Windows,&amp;quot; said Jobs, according to a &lt;b &gt;&lt;a href="http://www.engadget.com/2007/06/11/steve-jobs-live-from-wwdc-2007/" target="new"&gt;transcript&lt;/a&gt;&lt;/b&gt; posted to the Engadget Web site as the keynote unfolded. &lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href="http://www.applegazette.com/safari/first-impressions-safari-beta-3-windows-mac/" target="new"&gt;&lt;b &gt;Apple Gazette's first impressions were quick, but Safari wasn't&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=YDh9CO"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=YDh9CO" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/124169019" height="1" width="1"/&gt;</description>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/28">Desktop Applications</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/7">Development</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/2">Security</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/8">Software</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/12">Windows</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/33">Internet</category>
+ <pubDate>Tue, 12 Jun 2007 06:09:28 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5667</feedburner:origLink></item>
+<item>
+ <title>Microsoft and Google search for Justice (and things that don't change)</title>
+
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/123880368/5659</link>
+ <description>&lt;p&gt;&lt;b &gt;'Twas a busy weekend of finger pointing with the DoJ pointing to Google, which pointed to Microsoft, which beckoned its former attorney -- at the DoJ! Not to mention effective procrastination ...&lt;br /&gt;
+&lt;/b&gt;&lt;br /&gt;
+&lt;a href="http://www.microsoft-watch.com/content/corporate/google_complaint_targets_vista_search.html" target="new"&gt;&lt;b &gt;Joe Wilcox blows the whistle&lt;/b&gt;&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote &gt;&lt;p&gt;Back in November, a mystery company filed a legal complaint about Windows Vista. The company has been revealed to be Google, in a breach of legal protocol.&lt;br /&gt;
+...&lt;br /&gt;
+Suddenly there is chatter about the Google complaint, as seen in a &lt;em &gt;New York Times&lt;/em&gt; &lt;a href="http://www.nytimes.com/2007/06/10/business/10microsoft.html" target="new"&gt;&lt;b &gt;story&lt;/b&gt;&lt;/a&gt; posted [Saturday], with a Sunday dateline. The public disclosure, which fingers Google as the November complainant, violates the court's protocol for protecting the privacy of companies filing complaints. Apparently, there is division among some states and the Justice Department about the Google complaint.&lt;br /&gt;
+
+...&lt;br /&gt;
+As for the complaint: Apparently, Google contends that Windows Vista's built-in search feature is anticompetitive because the search indexer can't be turned off. So, for people choosing Google Desktop Search, there would be two indexers running, which allegedly would degrade performance and the overall end user experience. &lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=SQ8fKc"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=SQ8fKc" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/123880368" height="1" width="1"/&gt;</description>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/28">Desktop Applications</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/7">Development</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/9">Operating Systems</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/8">Software</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/30">Software as a Service</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/12">Windows</category>
+
+ <pubDate>Mon, 11 Jun 2007 06:43:06 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5659</feedburner:origLink></item>
+<item>
+ <title>Microsoft/LG Linux patent deal (and catcam)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/123185434/5647</link>
+ <description>&lt;p&gt;&lt;b &gt;It's Friday's IT Blogwatch: in which Microsoft crows about another Linux patent licensee. Not to mention the cat with a webcam on his collar...&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;b &gt;&lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9023898&amp;amp;intsrc=it_blogwatch"&gt;Eric Lai reports&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+&lt;blockquote &gt;Microsoft Corp. on Wednesday announced a cross-licensing deal with Korean consumer electronics maker LG Electronics Inc. It is the fifth such deal in recent months that involves Microsoft's controversial granting of Linux patent &amp;quot;protection&amp;quot; -- in this case, to LG-made cell phones and other devices. Microsoft will pay LG an undisclosed amount of money for patents related to operating systems and computer systems, it said in a press release, while LG will make ongoing payments to Microsoft &amp;quot;for the value of Microsoft patents as they relate to Linux-based embedded devices that LGE produces.&amp;quot;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=gihC0I"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=gihC0I" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/123185434" height="1" width="1"/&gt;</description>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/5">Hardware</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/11">Linux</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/22">Open Source</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/12">Windows</category>
+ <pubDate>Fri, 08 Jun 2007 07:07:41 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5647</feedburner:origLink></item>
+<item>
+ <title>Porn pop-up teacher: prosecution prevented? (and twitterku)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/122890394/5640</link>
+
+ <description>&lt;p&gt;&lt;b &gt;It's Thursday's IT Blogwatch: in which the wheels of justice grind slow for the spyware victim substitute teacher. Not to mention haikus composed from &amp;quot;found&amp;quot; Twitter texts...&lt;/b&gt;&lt;br /&gt;
+&lt;b &gt;&lt;/b&gt;&lt;br /&gt;
+&lt;b &gt;&lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9023860&amp;amp;intsrc=it_blogwatch"&gt;Robert McMillan reports&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+
+&lt;blockquote &gt;A middle school teacher facing jail time after spyware programs exposed her students to pornographic images has been given a reprieve. Julie Amero had been convicted of four felony counts of &amp;quot;risk of injury to a minor,&amp;quot; but on Friday, the Connecticut Superior Sourt judge in charge of her sentencing set aside a guilty verdict in the case.&lt;br /&gt;
+...&lt;br /&gt;
+Amero, formerly a substitute teacher at Kelly Middle School in Norwich, Conn., was charged after an Oct. 19, 2004, incident during which a classroom computer exposed Amero's seventh graders to pornographic images. She was facing up to 40 years in prison after her Jan. 5 conviction. The prosecution had charged that Amero had endangered her students by accessing pornographic images, and the case had become a cause celebre in the antispyware community, which has portrayed her as an innocent victim of a malicious spyware program.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=31x4lX"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=31x4lX" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/122890394" height="1" width="1"/&gt;</description>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/1">IT Management</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/2">Security</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/12">Windows</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/33">Internet</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/19">SMB</category>
+
+ <pubDate>Thu, 07 Jun 2007 07:08:27 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5640</feedburner:origLink></item>
+<item>
+ <title>Microsoft and Xandros in new patent spat (and BttF)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/122606342/5631</link>
+ <description>&lt;p&gt;&lt;b &gt;Wow, already it's Wednesday's IT Blogwatch: in which Microsoft lies down with Xandros. Not to mention Back to the future of Microsoft's big visions...&lt;/b&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;b &gt;&lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9023058&amp;amp;intsrc=it_blogwatch"&gt;Elizabeth Montalbano is in Orlando, too&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+&lt;blockquote &gt;Microsoft Corp. has signed another Linux distributor to a patent licensing and collaboration deal similar to the one it struck with Novell Inc. last year. Xandros Inc., which offers desktop and server versions of Linux, has agreed to license Microsoft intellectual property (IP), said Bob Muglia, senior vice president of the server and tools business at Microsoft. He dropped the news in the middle of a keynote speech today at the company's TechEd 2007 conference in Orlando.&lt;/p&gt;
+&lt;p&gt;Muglia shed little light on specific details of the agreement, saying only that it follows the same model as the Linux and Windows interoperability and licensing deal Microsoft struck with Novell last year ...&lt;/p&gt;
+
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=Aj4rts"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=Aj4rts" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/122606342" height="1" width="1"/&gt;</description>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/17">Government/Regulations</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/11">Linux</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/22">Open Source</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/12">Windows</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/19">SMB</category>
+ <pubDate>Wed, 06 Jun 2007 07:50:42 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5631</feedburner:origLink></item>
+<item>
+ <title>Your iPhone is imminent (and geekknit)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/122311925/5624</link>
+
+ <description>&lt;p&gt;&lt;b &gt;It's Tuesday's IT Blogwatch: in which Apple is set to hit the streets on June 29th. Not to mention The top ten geekiest yarn creations on the Web...&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;&lt;b &gt;&lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9022900&amp;amp;intsrc=it_blogwatch"&gt;Gregg Keizer reports&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+
+&lt;blockquote &gt;Apple Inc.'s iPhone will debut June 29, the company announced in new television commercials that aired Sunday night on the CBS news show 60 Minutes.&lt;/p&gt;
+&lt;p&gt;The Friday release date gets the iPhone under Apple's self-imposed wire by just a day. Apple has repeatedly said it would unveil its first-ever cell phone this month, and last week at a conference sponsored by The Wall Street Journal, company CEO Steve Jobs agreed when asked if the roll-out date would be &amp;quot;the last day of June.&amp;quot; ... Presumably, the iPhone will be available in Apple and AT&amp;amp;T Inc. retail and online stores that day, and not simply ready for preorder.&lt;br /&gt;
+...&lt;br /&gt;
+While the ads are the first look the public has gotten of the iPhone in action, they also disclosed one additional fact: Buyers will be required to sign a two-year (or longer) contract with the phone's only wireless carrier, AT&amp;amp;T.&lt;/p&gt;&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=JIriVa"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=JIriVa" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/122311925" height="1" width="1"/&gt;</description>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/10">Macintosh</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/4">Mobile/Wireless</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/20">Cool Stuff</category>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/21">Emerging Technology</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/19">SMB</category>
+ <pubDate>Tue, 05 Jun 2007 07:16:20 -0400</pubDate>
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5624</feedburner:origLink></item>
+<item>
+ <title>Google security suspicions surface (and LOLCODE)</title>
+ <link>http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~3/122015692/5619</link>
+
+ <description>&lt;p&gt;&lt;b &gt;It's Monday's IT Blogwatch: in which we worry about Google's security. Not to mention I HAS 1337 CODE LOL!!1...&lt;/b&gt;&lt;br /&gt;
+&lt;b &gt;&lt;/b&gt;&lt;br /&gt;
+&lt;b &gt;&lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9022561&amp;amp;intsrc=it_blogwatch"&gt;Robert McMillan reports&lt;/a&gt;&lt;/b&gt;:&lt;br /&gt;
+
+&lt;blockquote &gt;Just one day after a security researcher &lt;a href="http://www.computerworld.com/action/article.do?command=viewArticleBasic&amp;amp;articleId=9022058"&gt;&lt;b &gt;showed&lt;/b&gt;&lt;/a&gt; how Google Inc.'s Firefox toolbar could be exploited in an online attack, a similar flaw has been discovered in the Google Desktop. On Thursday, ... Robert Hansen ... CEO of Web security consultancy Sectheory.com, and a contributor to the Ha.ckers.org site ... posted proof of concept details showing how attackers could use Google Desktop to launch software that had already been installed on the victim's computer. The attack ... does illustrate the kind of security issues that arise with Web-based applications&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?a=xLIcO7"&gt;&lt;img src="http://feeds.computerworld.com/~a/Computerworld/ITBlogwatch?i=xLIcO7" border="0"&gt;&lt;/img&gt;&lt;/a&gt;&lt;/p&gt;&lt;img src="http://feeds.computerworld.com/~r/Computerworld/ITBlogwatch/~4/122015692" height="1" width="1"/&gt;</description>
+
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/28">Desktop Applications</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/4">Mobile/Wireless</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/2">Security</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/30">Software as a Service</category>
+ <category domain="http://www.computerworld.com/blogs/taxonomy/term/33">Internet</category>
+ <pubDate>Mon, 04 Jun 2007 06:53:02 -0400</pubDate>
+
+<feedburner:origLink>http://www.computerworld.com/blogs/node/5619</feedburner:origLink></item>
+</channel>
+</rss>

@@ -1,10 +1,13 @@
 Bare.pm
 Bare.xs
 Changes
+feed2.xml
 Makefile.PL
 MANIFEST
 META.yml
 parser.c
 parser.h
 README
+test.pl
+test.xml
 t/Basic.t
