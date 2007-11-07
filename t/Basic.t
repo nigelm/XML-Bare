@@ -46,3 +46,17 @@ is( $root->{xml}->{node}->{value}, 'val' );
 $xml = new XML::Bare( text => "<xml><node><a/>val</node></xml>" );
 $root = $xml->parse();
 is( $root->{xml}->{node}->{value}, 'val' );
+
+# test loading a comment
+$xml = new XML::Bare( text => "<xml><!--test--></xml>" );
+$root = $xml->parse();
+is( $root->{xml}->{comment}, 'test' );
+
+# test cyclic equality
+$xml = new XML::Bare( text => "<xml><a>test</a><b><!--test--></b><c/><c/></xml>" );
+$root = $xml->parse();
+my $a = $xml->xml( $root );
+$xml = new XML::Bare( text => $a );
+$root = $xml->parse();
+my $b = $xml->xml( $root );
+is( $a, $b );

@@ -1,11 +1,13 @@
 package XML::Bare;
 
 use Carp;
+use strict;
+use vars qw( @ISA @EXPORT @EXPORT_OK $VERSION );
 require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = "0.21";
+$VERSION = "0.22";
 
 bootstrap XML::Bare $VERSION;
 
@@ -18,7 +20,7 @@ XML::Bare - Minimal XML parser implemented via a C state engine
 
 =head1 VERSION
 
-0.21
+0.22
 
 =cut
 
@@ -309,7 +311,7 @@ sub obj2xml {
     }
     else {
       if( $i eq 'comment' ) {
-        $xml .= $pad . '<!--' . $obj . '-->' . "\n";
+        $xml .= '<!--' . $obj . '-->' . "\n";
       }
       elsif( $i eq 'value' ) {
         if( $#dex < 2 && $level > 1 ) {
@@ -754,7 +756,7 @@ fact that it does not create a tree.
 
 =back
 
-To run the comparison, you must provide a number, 1-6, as a paramter
+To run the comparison, you must provide a number, 1-12, as a paramter
 to the script in order to choose which module to compare against. The
 script works this way because some of the modules have parts used by
 the other modules, which hides the loading time for the module tested
@@ -769,31 +771,50 @@ using the included test.xml:
 
   -Module-              load     parse    total
   XML::Bare             1        1        1
-  XML::Parser::EasyTree 6.4792   28.5329  9.4801
-  XML::Handler::Trees   8.9871   26.7663  11.5089
-  XML::Twig             32.9452  52.6146  35.7817
-  XML::LibXML (no tree) 14.3463  1.605    12.508
-  XML::Smart            7.4513   85.3518  17.9729
-  XML::Simple           3.6368   208.0512 31.8312
-  
+  XML::Parser::EasyTree 5.6811   29.2881  8.5366
+  XML::Handler::Trees   7.8083   30.1434  10.503
+  XML::Twig             31.0709  60.7735  34.5892
+  XML::LibXML (no tree) 13.1591  1.8211   11.7857
+  XML::Smart            6.9198   93.2242  17.1124
+  XML::Simple           3.4242   207.0007 29.5704
+  XML::SAX::Simple      9.82     191.0584 31.1326
+  XML::Trivial          5.8321   7.009    6.3731
+  XML::TreePP           2.5766   35.0588  6.4429
+  XML::XPath::XMLParser 12.4321  41.0182  16.651
+  XML::DOM::Lite        16.3544  14.8667  16.1905
+  TinyXML                                 4.2033
+
 Here is a combined table of the script run against each alternative
 using the included feed2.xml:
 
   -Module-              load     parse    total
   XML::Bare             1        1        1
-  XML::Parser::EasyTree 6.5013   21.2369  10.68
-  XML::Handler::Trees   8.8472   28.7846  14.2967
-  XML::Twig             30.9528  43.6278  34.2255
-  XML::LibXML (no tree) 13.4096  1.4038   10.2863
-  XML::Smart            7.4631   43.9396  17.5495
-  XML::Simple           3.6073   114.6596 33.5336
+  XML::Parser::EasyTree 5.442    23.234   10.0313
+  XML::Handler::Trees   5.9811   20.5755  9.6939
+  XML::Twig             32.0006  44.811   35.3799
+  XML::LibXML (no tree) 13.5665  1.2518   10.0492
+  XML::Smart            6.8234   42.8422  16.2711
+  XML::Simple           3.9487   111.1732 31.6937
+  XML::SAX::Simple      10.1525  90.7282  32.7888
+  XML::Trivial          5.7941   28.5549  11.7381
+  XML::TreePP           2.8155   4.5963   3.9556
+  XML::XPath::XMLParser 11.9291  63.184   26.5266
+  XML::DOM::Lite        17.1702  13.8642  16.286
+  TinyXML                                 6.5016
 
 These results show that XML::Bare is, at least on the test machine,
-~3-30 times faster loading and ~20-150 times faster parsing than
+~3-30 times faster loading and ~10-150 times faster parsing than
 any of the alternative tree parsers.
 
-Also shown is that XML::Bare can parse XML and create a hash tree
-in less time than it takes LibXML just to parse.
+The following are shown as well:
+  - XML::Bare can parse XML and create a hash tree
+  in less time than it takes LibXML just to parse.
+  - XML::Bare can parse XML and create a hash tree
+  in 1/4 the time it takes TinyXML just to parse
+
+Note that TinyXML is not a perl module and is timed
+by a dummy program that just uses the library to
+load and parse the example files.
 
 =head1 LICENSE
 

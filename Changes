@@ -1,6 +1,19 @@
 XML::Bare Changelog
 
-0.21
+0.22
+  - Altered makefile.pl to be compatible with more platforms.
+  - Removed dependency upon string.h for msvc because it
+    was breaking activestate builds.
+  - Perl 5.005 now supported
+  - Comment parsing had an issue when the node containing
+    the comment had no direct value. This has now been resolved.
+  - Using comments caused ever increasing blank spaces to be added.
+    This has now been resolved.
+  - A test for comment reading has been added.
+  - A test for cyclic equality ( repeated loading and saving ) has
+    now been added.
+
+0.21 ( 11-04-07 )
   - Comments are no longer completely ignored. One comment
     node is recognized and stored per non immediate node.
 

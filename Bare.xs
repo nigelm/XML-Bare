@@ -7,6 +7,10 @@
 #include "stdio.h"
 #include "string.h"
 
+#ifndef newSVpvn			/* 5.005_62 or so */
+  #define newSVpvn newSVpv
+#endif
+
 struct parserc parser;
 struct nodec *root;
 

@@ -3,9 +3,8 @@
 use strict;
 use Time::HiRes qw(gettimeofday);
 
-exit if( !$ARGV[0] );
-
-my $file = 'feed2.xml';
+#my $file = 'feed2.xml';
+my $file = $ARGV[1] || 'test.xml';
 my $root;
 my $s;
 my $s2;
@@ -22,6 +21,8 @@ my $base2;
 my $base3;
 
 print "-Module-              load     parse    total\n";
+
+exit if( !$ARGV[0] );
 
 {
   ($s, $usec) = gettimeofday();
@@ -142,6 +143,101 @@ if( $ARGV[0] eq '6' ) {
     
     $sa = fixed( $sa ); $sb = fixed( $sb ); $sc = fixed( $sc );
     print 'XML::Simple           '.$sa." ".$sb." ".$sc."\n";
+  }
+}
+
+if( $ARGV[0] eq '7' ) {
+  ($s, $usec) = gettimeofday();
+  if( eval( "require XML::SAX::Simple;" ) ) {
+    ($s2, $usec2) = gettimeofday();
+    my $ref = XML::SAX::Simple::XMLin($file);
+    ($s3, $usec3) = gettimeofday();
+    $sa = $s2-$s + (($usec2-$usec)/1000000);
+    $sb = $s3-$s2 + (($usec3-$usec2)/1000000);
+    $sc = $s3-$s + (($usec3-$usec)/1000000);
+    $sa /= $base1; $sb /= $base2; $sc /= $base3;
+    
+    $sa = fixed( $sa ); $sb = fixed( $sb ); $sc = fixed( $sc );
+    print 'XML::SAX::Simple      '.$sa." ".$sb." ".$sc."\n";
+  }
+}
+
+if( $ARGV[0] eq '8' ) {
+  ($s, $usec) = gettimeofday();
+  if( eval( "require XML::Trivial;" ) ) {
+    ($s2, $usec2) = gettimeofday();
+    my $xml = XML::Trivial::parseFile($file);
+    ($s3, $usec3) = gettimeofday();
+    $sa = $s2-$s + (($usec2-$usec)/1000000);
+    $sb = $s3-$s2 + (($usec3-$usec2)/1000000);
+    $sc = $s3-$s + (($usec3-$usec)/1000000);
+    $sa /= $base1; $sb /= $base2; $sc /= $base3;
+    
+    $sa = fixed( $sa ); $sb = fixed( $sb ); $sc = fixed( $sc );
+    print 'XML::Trivial          '.$sa." ".$sb." ".$sc."\n";
+  }
+}
+
+if( $ARGV[0] eq '9' ) {
+  ($s, $usec) = gettimeofday();
+  if( eval( "require XML::TreePP;" ) ) {
+    ($s2, $usec2) = gettimeofday();
+    my $tpp = XML::TreePP->new();
+    my $tree = $tpp->parsefile( $file );
+    ($s3, $usec3) = gettimeofday();
+    $sa = $s2-$s + (($usec2-$usec)/1000000);
+    $sb = $s3-$s2 + (($usec3-$usec2)/1000000);
+    $sc = $s3-$s + (($usec3-$usec)/1000000);
+    $sa /= $base1; $sb /= $base2; $sc /= $base3;
+    
+    $sa = fixed( $sa ); $sb = fixed( $sb ); $sc = fixed( $sc );
+    print 'XML::TreePP           '.$sa." ".$sb." ".$sc."\n";
+  }
+}
+
+if( $ARGV[0] eq '10' ) {
+  ($s, $usec) = gettimeofday();
+  if( eval( "require XML::XPath::XMLParser;" ) ) {
+    ($s2, $usec2) = gettimeofday();
+    my $parser = XML::XPath::XMLParser->new;
+    my $tree = $parser->parsefile( $file );
+    ($s3, $usec3) = gettimeofday();
+    $sa = $s2-$s + (($usec2-$usec)/1000000);
+    $sb = $s3-$s2 + (($usec3-$usec2)/1000000);
+    $sc = $s3-$s + (($usec3-$usec)/1000000);
+    $sa /= $base1; $sb /= $base2; $sc /= $base3;
+    
+    $sa = fixed( $sa ); $sb = fixed( $sb ); $sc = fixed( $sc );
+    print 'XML::XPath::XMLParser '.$sa." ".$sb." ".$sc."\n";
+  }
+}
+
+if( $ARGV[0] eq '11' ) {
+  ($s, $usec) = gettimeofday();
+  if( eval( "require XML::DOM::Lite;" ) ) {
+    ($s2, $usec2) = gettimeofday();
+    my $doc = XML::DOM::Lite::Parser->parseFile( $file );
+    ($s3, $usec3) = gettimeofday();
+    $sa = $s2-$s + (($usec2-$usec)/1000000);
+    $sb = $s3-$s2 + (($usec3-$usec2)/1000000);
+    $sc = $s3-$s + (($usec3-$usec)/1000000);
+    $sa /= $base1; $sb /= $base2; $sc /= $base3;
+    
+    $sa = fixed( $sa ); $sb = fixed( $sb ); $sc = fixed( $sc );
+    print 'XML::DOM::Lite        '.$sa." ".$sb." ".$sc."\n";
+  }
+}
+
+if( $ARGV[0] eq '12' ) {
+  ($s, $usec) = gettimeofday();
+  if( -e "xmltest.exe" ) {
+    `xmltest $file`; # modified exe from tinyxml dist
+    ($s3, $usec3) = gettimeofday();
+    $sc = $s3-$s + (($usec3-$usec)/1000000);
+    $sa /= $base1; $sb /= $base2; $sc /= $base3;
+    
+    $sa = '        '; $sb = '        '; $sc = fixed( $sc );
+    print 'TinyXML               '.$sa." ".$sb." ".$sc."\n";
   }
 }
 

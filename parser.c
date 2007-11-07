@@ -1,5 +1,12 @@
 #include "parser.h" 
-#include<string.h>
+#ifdef NOSTRING
+  void memset(char *s, int c, int n) {
+    char *se = s + n;
+    while(s < se)	*s++ = c;
+	}
+#else
+  #include <string.h>
+#endif
 
 //struct nodec *nodec_addchild( struct nodec *self, char *newname, int newnamelen ) {
 //  return nodec_addchildr( self, newname,newnamelen,0,0,0);
@@ -11,7 +18,7 @@
 struct nodec *new_nodecp( struct nodec *newparent ) {
   int size = sizeof( struct nodec );
   struct nodec *self = (struct nodec *) malloc( size );
-  memset( self, 0, size );
+  memset( (char *) self, 0, size );
   self->parent      = newparent;
   return self;
 }
@@ -19,7 +26,7 @@ struct nodec *new_nodecp( struct nodec *newparent ) {
 struct nodec *new_nodec() {
   int size = sizeof( struct nodec );
   struct nodec *self = (struct nodec *) malloc( size );
-  memset( self, 0, size );
+  memset( (char *) self, 0, size );
   return self;
 }
 
@@ -47,7 +54,7 @@ void del_nodec( struct nodec *node ) {
 struct attc* new_attc( struct nodec *newparent ) {
   int size = sizeof( struct attc );
   struct attc *self = (struct attc *) malloc( size );
-  memset( self, 0, size );
+  memset( (char *) self, 0, size );
   self->parent  = newparent;
   return self;
 }
@@ -86,7 +93,12 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin, int len ) {
           switch( *(cpos+1) ) {
             case '!':
               if( *(cpos+2) == '[' ) { // <![
-                if( !strncmp( cpos+3, "CDATA", 5 ) ) {
+                //if( !strncmp( cpos+3, "CDATA", 5 ) ) {
+                if( *(cpos+3) == 'C' &&
+                    *(cpos+4) == 'D' &&
+                    *(cpos+5) == 'A' &&
+                    *(cpos+6) == 'T' &&
+                    *(cpos+7) == 'A'    ) {
                   cpos += 9;
                   goto cdata;
                 }
@@ -134,7 +146,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin, int len ) {
     comment_2dash:
       cpos++;
       let = *cpos;
-      if( let == '>' ) goto val_1;
+      if( let == '>' ) goto outside;
       goto comment_x;
       
     comment:

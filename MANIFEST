@@ -10,4 +10,5 @@ parser.h
 README
 test.pl
 test.xml
+bench.sh
 t/Basic.t
