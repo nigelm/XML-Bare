@@ -1,5 +1,9 @@
 XML::Bare Changelog
 
+0.23
+  - Minor change to XS code because there were still problems with
+    Perl 5.005.
+
 0.22
   - Altered makefile.pl to be compatible with more platforms.
   - Removed dependency upon string.h for msvc because it

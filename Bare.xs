@@ -10,6 +10,9 @@
 #ifndef newSVpvn			/* 5.005_62 or so */
   #define newSVpvn newSVpv
 #endif
+#ifndef aTHX_         /* 5.005 */
+#  define aTHX_
+#endif
 
 struct parserc parser;
 struct nodec *root;
