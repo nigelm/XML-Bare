@@ -37,6 +37,10 @@ sub gen_cc {
 sub has_cc {
   my $div = (substr($ENV{'PATH'},0,1) eq '/') ? ':' : ';';
   my @path = split($div,$ENV{'PATH'});
-  foreach my $dir ( @path ) { return 1 if( -e "$dir/cc" || -e "$dir/gcc" ); }
+  foreach my $dir ( @path ) {
+    return 1 if( -e "$dir/cc" ||
+                 -e "$dir/gcc" ||
+                 -e "$dir/cc.exe" ||
+                 -e "$dir/gcc.exe" ); }
   return 0;
 }

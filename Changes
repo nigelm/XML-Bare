@@ -1,5 +1,15 @@
 XML::Bare Changelog
 
+0.24
+  - Continued makefile.pl changes to recognize some platforms
+    use executable extensions for gcc.
+  - Continued XS changed to attempt Perl 5.5.5 compatibility.
+    ( will setup a test platform and do more testing before the
+      next release, so I wouldn't consider these changes ensuring
+      5.5.5 compatibility quite yet )
+  - Remove blank require line from meta.yml. It seemed to break
+    the kwalitee rating.
+
 0.23
   - Minor change to XS code because there were still problems with
     Perl 5.005.

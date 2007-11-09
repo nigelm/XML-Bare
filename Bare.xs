@@ -13,6 +13,9 @@
 #ifndef aTHX_         /* 5.005 */
 #  define aTHX_
 #endif
+#ifndef pTHX_         /* 5.005 */
+#  define pTHX_
+#endif
 
 struct parserc parser;
 struct nodec *root;
