@@ -1,5 +1,10 @@
 XML::Bare Changelog
 
+0.25
+  - makefile.pl modified to pass -shared option correctly
+    to gcc and not the linker. This caused compilation failure
+    on certain Solaris systems.
+
 0.24
   - Continued makefile.pl changes to recognize some platforms
     use executable extensions for gcc.

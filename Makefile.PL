@@ -30,7 +30,8 @@ sub gen_cc {
     VERSION_FROM => 'Bare.pm',
     LIBS      => ['-lm'],
     OBJECT    => 'Bare.o parser.o',
-    LDDLFLAGS => '-shared -L/usr/local/lib',
+    CCFLAGS   => '-shared',
+    LDDLFLAGS => '-L/usr/local/lib',
     LICENSE   => 'perl'
   );
 }
