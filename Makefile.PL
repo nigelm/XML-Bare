@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use ExtUtils::MakeMaker;
-require 5.005;
+require 5.006;
 if( $^O eq 'MSWin32' && !has_cc() ) {
   gen_msvc(); # special case for msvc
 }
@@ -30,8 +30,7 @@ sub gen_cc {
     VERSION_FROM => 'Bare.pm',
     LIBS      => ['-lm'],
     OBJECT    => 'Bare.o parser.o',
-    CCFLAGS   => '-shared',
-    LDDLFLAGS => '-L/usr/local/lib',
+    LDDLFLAGS => '-shared -L/usr/local/lib',
     LICENSE   => 'perl'
   );
 }

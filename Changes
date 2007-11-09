@@ -1,5 +1,10 @@
 XML::Bare Changelog
 
+0.26
+  - Compatibility with versions before Perl 5.6 is not fruitful.
+    Perl 5.6 now required and will likely remain as a requirement.
+    It broke too many things.
+
 0.25
   - makefile.pl modified to pass -shared option correctly
     to gcc and not the linker. This caused compilation failure

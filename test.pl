@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 #use Data::Dumper;
 use strict;
-use Time::HiRes qw(gettimeofday);
+
 
 #my $file = 'feed2.xml';
 my $file = $ARGV[1] || 'test.xml';
@@ -23,6 +23,8 @@ my $base3;
 print "-Module-              load     parse    total\n";
 
 exit if( !$ARGV[0] );
+
+eval( "use Time::HiRes qw(gettimeofday);" );
 
 {
   ($s, $usec) = gettimeofday();

@@ -7,16 +7,6 @@
 #include "stdio.h"
 #include "string.h"
 
-#ifndef newSVpvn			/* 5.005_62 or so */
-  #define newSVpvn newSVpv
-#endif
-#ifndef aTHX_         /* 5.005 */
-#  define aTHX_
-#endif
-#ifndef pTHX_         /* 5.005 */
-#  define pTHX_
-#endif
-
 struct parserc parser;
 struct nodec *root;
 
@@ -25,11 +15,15 @@ U32 chash;
 
 struct nodec *curnode;
   
-
 SV *cxml2obj(pTHX_ int a) {
   HV *output = newHV();
   SV *outputref = newRV( (SV *) output );
-  
+  int i;
+  struct attc *curatt;
+  int numatts = curnode->numatt;
+  SV *attval;
+  SV *attatt;
+    
   int length = curnode->numchildren;
   if( !length ) {
     if( curnode->vallen ) {
@@ -52,7 +46,6 @@ SV *cxml2obj(pTHX_ int a) {
     }
     
     curnode = curnode->firstchild;
-    int i;
     for( i = 0; i < length; i++ ) {
       SV *namesv = newSVpvn( curnode->name, curnode->namelen );
       
@@ -104,19 +97,16 @@ SV *cxml2obj(pTHX_ int a) {
     curnode = curnode->parent;
   }
   
-  struct attc *curatt;
-  int numatts = curnode->numatt;
   if( numatts ) {
     curatt = curnode->firstatt;
-    int i;
     for( i = 0; i < numatts; i++ ) {
       HV *atth = newHV();
       SV *atthref = newRV( (SV *) atth );
       hv_store( output, curatt->name, curatt->namelen, atthref, 0 );
       
-      SV *attval = newSVpvn( curatt->value, curatt->vallen );
+      attval = newSVpvn( curatt->value, curatt->vallen );
       hv_store( atth, "value", 5, attval, vhash );
-      SV *attatt = newSViv( 1 );
+      attatt = newSViv( 1 );
       hv_store( atth, "att", 3, attatt, 0 );
       if( i != ( numatts - 1 ) ) curatt = curatt->next;
     }
@@ -138,9 +128,10 @@ void
 c_parse(text)
   char * text
   CODE:
+    int len;
     PERL_HASH(vhash, "value", 5);
     PERL_HASH(chash, "comment", 7);
-    int len = strlen( text );
+    len = strlen( text );
     parserc_parse( &parser, text, len );
     root = parser.pcurnode;
     
