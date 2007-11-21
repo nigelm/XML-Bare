@@ -1,8 +1,17 @@
 #!/usr/bin/perl
 use ExtUtils::MakeMaker;
 require 5.006;
+my @basics = ( AUTHOR       => 'David Helkowski <cpan@codechild.com>',
+               ABSTRACT     => 'A minimal XML parser that uses C to generate a folded perl hash.',
+               NAME         => 'XML::Bare',
+               VERSION_FROM => 'Bare.pm',
+               LICENSE      => 'perl',
+             );
 if( $^O eq 'MSWin32' && !has_cc() ) {
   gen_msvc(); # special case for msvc
+}
+elsif( $^O eq 'darwin' ) {
+  gen_darwin(); # darwin
 }
 else {
   gen_cc(); # all others
@@ -10,28 +19,33 @@ else {
 sub gen_msvc {
   require Config;
   my $libpath = Config->{'archlibexp'};
-  WriteMakefile(
-    AUTHOR   => 'David Helkowski <cpan@codechild.com>',
-    ABSTRACT => 'A minimal XML parser that uses C to generate a folded perl hash.',
+  my $ver = $]*1000; # correct for possibile division problems
+  my ($major,$minor,$sub) = unpack("AA3xA3","$ver");
+  $major *= 1; $minor *= 1; $sub *= 1;
+  WriteMakefile( @basics,
     CCFLAGS   => "/MT /DWIN32 /TP /DNOSTRING",
-    NAME      => 'XML::Bare',
-    VERSION_FROM => 'Bare.pm',
-    LIBS      => ["$libpath\\core\\perl58.lib"],
+    LIBS      => ["$libpath\\core\\perl$major$minor.lib"],
     OBJECT    => 'Bare.o parser.o',
     LDDLFLAGS => '/DLL',
-    LICENSE   => 'perl'
   );
 }
 sub gen_cc {
-  WriteMakefile(
-    AUTHOR   => 'David Helkowski <cpan@codechild.com>',
-    ABSTRACT => 'A minimal XML parser that uses C to generate a folded perl hash.',
-    NAME      => 'XML::Bare',
-    VERSION_FROM => 'Bare.pm',
+  WriteMakefile( @basics,
     LIBS      => ['-lm'],
     OBJECT    => 'Bare.o parser.o',
     LDDLFLAGS => '-shared -L/usr/local/lib',
-    LICENSE   => 'perl'
+  );
+}
+sub gen_darwin {
+  if( substr(`which gcc`,0,2) eq 'no' ) {
+    print "XCode must be installed.\n";
+    exit 1;
+  }
+  WriteMakefile( @basics,
+    LIBS      => ['-lm'],
+    OBJECT    => 'Bare.o parser.o',
+    CCFLAGS   => "-dynamiclib -DDARWIN -fno-common",
+    LDDLFLAGS => '',
   );
 }
 sub has_cc {

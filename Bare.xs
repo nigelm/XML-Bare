@@ -4,8 +4,6 @@
 #include "perl.h"
 #include "XSUB.h"
 #include "parser.h"
-#include "stdio.h"
-#include "string.h"
 
 struct parserc parser;
 struct nodec *root;
@@ -131,8 +129,7 @@ c_parse(text)
     int len;
     PERL_HASH(vhash, "value", 5);
     PERL_HASH(chash, "comment", 7);
-    len = strlen( text );
-    parserc_parse( &parser, text, len );
+    parserc_parse( &parser, text );
     root = parser.pcurnode;
     
 void
@@ -152,7 +149,7 @@ c_parsefile(filename)
     data = (char *) malloc( len );
     fread( data, 1, len, handle );
     fclose( handle );
-    parserc_parse( &parser, data, len );
+    parserc_parse( &parser, data );
     root = parser.pcurnode;
 
 void

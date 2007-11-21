@@ -1,5 +1,14 @@
 XML::Bare Changelog
 
+0.27
+  - makefile.pl modified to be compatible with Darwin and
+    to error out if XCode ( gcc specifically ) is not installed
+  - makefile.pl modified to support Perl 5.6+ on Win32 MSVC
+    ( previously only Perl 5.8 was supported )
+  - parser.c modified to include stdlib.h for malloc in Darwin.
+  - Cyclic equality test weakened to allow for differences in
+    default sorting of hash keys per perl version.
+
 0.26
   - Compatibility with versions before Perl 5.6 is not fruitful.
     Perl 5.6 now required and will likely remain as a requirement.
@@ -13,22 +22,17 @@ XML::Bare Changelog
 0.24
   - Continued makefile.pl changes to recognize some platforms
     use executable extensions for gcc.
-  - Continued XS changed to attempt Perl 5.5.5 compatibility.
-    ( will setup a test platform and do more testing before the
-      next release, so I wouldn't consider these changes ensuring
-      5.5.5 compatibility quite yet )
   - Remove blank require line from meta.yml. It seemed to break
     the kwalitee rating.
 
 0.23
-  - Minor change to XS code because there were still problems with
-    Perl 5.005.
+  - Minor change to XS code for potential future Perl 5.005 support
 
 0.22
   - Altered makefile.pl to be compatible with more platforms.
   - Removed dependency upon string.h for msvc because it
     was breaking activestate builds.
-  - Perl 5.005 now supported
+  - Perl 5.005 allowed, but it fails
   - Comment parsing had an issue when the node containing
     the comment had no direct value. This has now been resolved.
   - Using comments caused ever increasing blank spaces to be added.

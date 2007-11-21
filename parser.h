@@ -52,4 +52,4 @@ struct parserc {
   struct attc  *curatt;
 };
 
-struct nodec* parserc_parse( struct parserc *self, char *newbuf, int len );
+struct nodec* parserc_parse( struct parserc *self, char *newbuf );

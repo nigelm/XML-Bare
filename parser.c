@@ -1,4 +1,7 @@
-#include "parser.h" 
+#include "parser.h"
+#ifdef DARWIN
+  #include "stdlib.h"
+#endif
 #ifdef NOSTRING
   void memset(char *s, int c, int n) {
     char *se = s + n;
@@ -7,13 +10,6 @@
 #else
   #include <string.h>
 #endif
-
-//struct nodec *nodec_addchild( struct nodec *self, char *newname, int newnamelen ) {
-//  return nodec_addchildr( self, newname,newnamelen,0,0,0);
-//};
-//struct attc *nodec_addatt  ( struct nodec *self, char *newname, int newnamelen ) {
-//  return nodec_addattr( self, newname, newnamelen, 0, 0 );
-//};
 
 struct nodec *new_nodecp( struct nodec *newparent ) {
   int size = sizeof( struct nodec );
@@ -53,13 +49,13 @@ void del_nodec( struct nodec *node ) {
 
 struct attc* new_attc( struct nodec *newparent ) {
   int size = sizeof( struct attc );
-  struct attc *self = (struct attc *) malloc( size );
+  struct attc *self = (struct nodec *) malloc( size );
   memset( (char *) self, 0, size );
   self->parent  = newparent;
   return self;
 }
 
-struct nodec* parserc_parse( struct parserc *self, char *xmlin, int len ) {
+struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
     char  *tagname, *attname, *attval, *val;
     struct nodec *root    = new_nodec();
     int    tagname_len    = 0;
@@ -68,7 +64,6 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin, int len ) {
     struct nodec *curnode = root;
     struct attc  *curatt  = NULL;
     char   *cpos          = &xmlin[0];
-    char   *end           = cpos + len;
     register int let;
     
     val_1:

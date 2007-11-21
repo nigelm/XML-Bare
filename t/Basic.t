@@ -53,7 +53,7 @@ $root = $xml->parse();
 is( $root->{xml}->{comment}, 'test' );
 
 # test cyclic equality
-$xml = new XML::Bare( text => "<xml><a>test</a><b><!--test--></b><c/><c/></xml>" );
+$xml = new XML::Bare( text => "<xml><b><!--test--></b><c/><c/></xml>" );
 $root = $xml->parse();
 my $a = $xml->xml( $root );
 $xml = new XML::Bare( text => $a );
