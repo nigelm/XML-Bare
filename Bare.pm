@@ -7,7 +7,7 @@ require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = "0.27";
+$VERSION = "0.271";
 
 bootstrap XML::Bare $VERSION;
 
@@ -20,7 +20,7 @@ XML::Bare - Minimal XML parser implemented via a C state engine
 
 =head1 VERSION
 
-0.27
+0.271 including simple-like tree building
 
 =cut
 
@@ -29,6 +29,8 @@ sub new {
   $class    = ref($class) || $class;
   my $self  = {};
   %$self    = @_;
+
+  $self->{forcearray} = +{ map { $_ => 1 } @{$self->{forcearray} || []} } if(ref $self->{forcearray} ne 'HASH');
 
   bless $self, $class;
   
@@ -116,6 +118,16 @@ sub parse {
   my $self   = shift;
   
   $self->{ 'xml' } = XML::Bare::xml2obj();#$self->xml2obj();
+  XML::Bare::free_tree();
+  
+  return $self->{ 'xml' };
+}
+
+# Load a file using XML::DOM, convert it to a hash, and return the hash
+sub simple {
+  my $self   = shift;
+  
+  $self->{ 'xml' } = XML::Bare::xml2obj_simple($self->{forcearray});#$self->xml2obj();
   XML::Bare::free_tree();
   
   return $self->{ 'xml' };
@@ -347,13 +359,17 @@ __END__
 
   use XML::Bare;
   
-  my $xml = new XML::Bare( text => '<xml><name>Bob</name></xml>' );
+  my $xml = new XML::Bare( text => '<xml><name>Bob</name></xml>', forcearray => [qw/tag1 tag2/] );
   
   # Parse the xml into a hash tree
   my $root = $xml->parse();
   
+  # Parse the xml into a L<XML::Simple>-like hash tree using forcearray option from C<new> method.
+  my $simple_root = $xml->simple();
+  
   # Print the content of the name node
   print $root->{xml}->{name}->{value};
+  print $simple_root->{xml}->{name};
   
   # Load xml from a file ( assume same contents as first example )
   my $xml2 = new XML::Bare( file => 'test.xml' );
@@ -384,41 +400,51 @@ examples. Each of the PERL statements evaluates to true.
 
   XML: <xml>blah</xml>
   PERL: $root->{xml}->{value} eq "blah";
+  PERL: $simple_root->{xml} eq "blah";
 
 =item * Subset nodes
 
   XML: <xml><name>Bob</name></xml>
   PERL: $root->{xml}->{name}->{value} eq "Bob";
+  PERL: $simple_root->{xml}->{name} eq "Bob";
 
 =item * Attributes unquoted
 
   XML: <xml><a href=index.htm>Link</a></xml>
   PERL: $root->{xml}->{a}->{href}->{value} eq "index.htm";
+  PERL: $simple_root->{xml}->{a}->{href} eq "index.htm";
 
 =item * Attributes quoted
 
   XML: <xml><a href="index.htm">Link</a></xml>
   PERL: $root->{xml}->{a}->{href}->{value} eq "index.htm";
+  PERL: $simple_root->{xml}->{a}->{href} eq "index.htm";
 
 =item * CDATA nodes
 
   XML: <xml><raw><![CDATA[some raw $~<!bad xml<>]]></raw></xml>
   PERL: $root->{xml}->{raw}->{value} eq "some raw \$~<!bad xml<>";
+  PERL: $simple_root->{xml}->{raw} eq "some raw \$~<!bad xml<>";
 
 =item * Multiple nodes; form array
 
   XML: <xml><item>1</item><item>2</item></xml>
   PERL: $root->{xml}->{item}->[0]->{value} eq "1";
+  PERL: $simple_root->{xml}->{item}->[0] eq "1";
 
 =item * Forcing array creation
 
-  XML: <xml><multi_item/><item>1</item></xml>
-  PERL: $root->{xml}->{item}->[0]->{value} eq "1";
+  XML: <xml><multi_item/><item>i1</item><tag1>t1</tag1><tag2>t2</tag2></xml>
+  PERL: $root->{xml}->{item}->[0]->{value} eq "i1";
+  PERL: $simple_root->{xml}->{item} eq "i1";
+  PERL: $simple_root->{xml}->{tag1}->[0] eq "t1";
+  PERL: $simple_root->{xml}->{tag2}->[0] eq "t2";
 
 =item * One comment supported per node
 
   XML: <xml><!--test--></xml>
   PERL: $root->{xml}->{comment} eq 'test';
+  PERL: $simple_root has no comments
 
 =back
 
@@ -429,7 +455,7 @@ Besides as described above, the structure contains some additional nodes in
 order to preserve information that will allow that structure to be correctly
 converted back to XML.
   
-Nodes may contain the following 2 additional subnodes:
+Nodes may contain the following 2 additional subnodes (not $simple_root):
 
 =over 2
 
@@ -529,7 +555,7 @@ equal to the first continuous string of text besides a subnode.
 
 =over 2
 
-=item * C<< $ob = new XML::Bare( text => "[some xml]" ) >>
+=item * C<< $ob = new XML::Bare( text => "[some xml]", forcearray => [qw/tag1 tag2/] ) >>
 
 Create a new XML object, with the given text as the xml source.
 
@@ -545,6 +571,11 @@ filename/path as the potential output ( used by save() )
 =item * C<< $tree = $object->parse() >>
 
 Parse the xml of the object and return a tree reference
+
+=item * C<< $tree = $object->simple() >>
+
+Parse the xml of the object and return a L<XML::Simple>-like tree reference.
+No L<XML::Simple> features available, excepting I<forcearray>
 
 =item * C<< $text = $object->xml( [root] ) >>
 

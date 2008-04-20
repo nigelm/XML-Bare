@@ -5,6 +5,8 @@
 #include "XSUB.h"
 #include "parser.h"
 
+#include "stdio.h"
+
 struct parserc parser;
 struct nodec *root;
 
@@ -43,7 +45,7 @@ SV *cxml2obj(pTHX_ int a) {
       hv_store( output, "comment", 7, sv, chash );
     }
     
-    curnode = curnode->firstchild;
+  curnode = curnode->firstchild;
     for( i = 0; i < length; i++ ) {
       SV *namesv = newSVpvn( curnode->name, curnode->namelen );
       
@@ -112,15 +114,95 @@ SV *cxml2obj(pTHX_ int a) {
   return outputref;
 }
 
+SV *cxml2obj_simple(pTHX_ int a, HV *forcearray) {
+  int i;
+  struct attc *curatt;
+  SV *attval;
+  SV *attatt;
+
+    
+  int length = curnode->numchildren;
+  int numatts = curnode->numatt;
+
+/*
+char _name[128];
+strncpy(_name,curnode->name, curnode->namelen);
+_name[curnode->namelen] = 0;
+printf("%s:%d-%d;\n", _name,length, numatts);
+*/
+
+  if( !length && !numatts) {
+      return newSVpvn( curnode->value, curnode->vallen );
+  }
+
+  HV *output    = newHV();
+  SV *outputref = newRV( (SV *) output );
+
+  if( numatts ) {
+    curatt = curnode->firstatt;
+    for( i = 0; i < numatts; i++, curatt = curatt->next ) {
+      attval = newSVpvn( curatt->value, curatt->vallen );
+      hv_store( output, curatt->name, curatt->namelen, attval, 0 );
+    }
+  }
+
+  if ( !length ) {
+    hv_store( output, "value", 5, newSVpvn( curnode->value, curnode->vallen ), 0 );
+    return outputref;
+  }
+
+  struct nodec *oldnode = curnode;  
+  curnode = curnode->firstchild;
+  for( i = 0; i < length; i++,curnode = curnode->next ) {
+      SV **arr = hv_fetch( forcearray, curnode->name, curnode->namelen, 0 );
+      SV **cur = hv_fetch( output, curnode->name, curnode->namelen, 0 );
+      
+      if( !cur ) {
+	if(arr) {
+          AV *newarray = newAV();
+          hv_store( output, curnode->name, curnode->namelen, newRV( (SV *) newarray ), 0 );
+          av_push( newarray, cxml2obj_simple( aTHX_ 0, forcearray ) );
+        } else {
+          hv_store( output, curnode->name, curnode->namelen, cxml2obj_simple( aTHX_ 0, forcearray ), 0 );
+        }
+      }
+      else {
+        if( SvTYPE( SvRV(*cur) ) == SVt_PVHV ) {
+          AV *newarray = newAV();
+          av_push( newarray, newRV( (SV *) SvRV( *cur ) ) );
+          av_push( newarray, cxml2obj_simple( aTHX_ 0, forcearray ) );
+          hv_store( output, curnode->name, curnode->namelen, newRV( (SV *) newarray ), 0 );
+        }
+        else {
+          av_push( (AV *) SvRV( *cur ), cxml2obj_simple( aTHX_ 0, forcearray ) );
+        }
+      }
+  }
+    
+  curnode = oldnode;
+  return outputref;
+}
+
+
 MODULE = XML::Bare         PACKAGE = XML::Bare
 
 SV *
 xml2obj()
   CODE:
     curnode = parser.pcurnode;
-    RETVAL = cxml2obj(aTHX_ 0);
+    RETVAL  = cxml2obj(aTHX_ 0);
   OUTPUT:
     RETVAL
+
+SV *
+xml2obj_simple(fa)
+  HV * fa
+  CODE:
+    curnode = parser.pcurnode;
+    RETVAL  = cxml2obj_simple(aTHX_ 0, fa);
+  OUTPUT:
+    RETVAL
+
     
 void
 c_parse(text)
