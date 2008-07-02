@@ -5,8 +5,13 @@ my @basics = ( AUTHOR       => 'David Helkowski <cpan@codechild.com>',
                ABSTRACT     => 'A minimal XML parser that uses C to generate a folded perl hash.',
                NAME         => 'XML::Bare',
                VERSION_FROM => 'Bare.pm',
-               LICENSE      => 'perl',
+               PREREQ_PM    => { Carp => 0, Exporter => 0, DynaLoader => 0 },
+               #OPTIMIZE     => '-O3 -msse2 -march=pentium4 --omit-frame-pointer',
              );
+if( $ExtUtils::MakeMaker::VERSION >= 6.31 ) {
+  push( @basics, LICENSE => 'perl' );
+}
+
 if( $^O eq 'MSWin32' && !has_cc() ) {
   gen_msvc(); # special case for msvc
 }

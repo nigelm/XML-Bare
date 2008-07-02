@@ -25,6 +25,7 @@ struct nodec {
   int   type;// cdata or normal
   int   numvals;
   int   numcoms;
+  int   pos;
 };
 
 struct nodec *nodec_addchildr( struct nodec *self, char *newname, int newnamelen );//, char *newval, int newvallen, int newtype );

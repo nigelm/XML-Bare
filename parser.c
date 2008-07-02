@@ -12,10 +12,12 @@
 #endif
 
 struct nodec *new_nodecp( struct nodec *newparent ) {
+  static int pos = 0;
   int size = sizeof( struct nodec );
   struct nodec *self = (struct nodec *) malloc( size );
   memset( (char *) self, 0, size );
   self->parent      = newparent;
+  self->pos = ++pos;
   return self;
 }
 
@@ -49,7 +51,7 @@ void del_nodec( struct nodec *node ) {
 
 struct attc* new_attc( struct nodec *newparent ) {
   int size = sizeof( struct attc );
-  struct attc *self = (struct nodec *) malloc( size );
+  struct attc *self = (struct attc *) malloc( size );
   memset( (char *) self, 0, size );
   self->parent  = newparent;
   return self;
@@ -64,6 +66,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
     struct nodec *curnode = root;
     struct attc  *curatt  = NULL;
     char   *cpos          = &xmlin[0];
+    int    pos            = 0;
     register int let;
     
     val_1:
@@ -349,6 +352,9 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
         case '"':
           cpos++;
           goto att_quot;
+        case 0x27: // '
+          cpos++;
+          goto att_quots;
         case '>':
           cpos++;
           goto val_1;
@@ -413,6 +419,25 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
         attval_len++;
         cpos++;
         goto att_quot;
+      }
+      
+    att_quots:
+      let = *cpos;
+      if( !let ) goto done;
+      if( let == 0x27 ) {
+        if( attval_len ) {
+          curatt->value = attval;
+          curatt->vallen = attval_len;
+          attval_len = 0;
+        }
+        cpos++;
+        goto name_gap;
+      }
+      else {
+        if( !attval_len ) attval = cpos;
+        attval_len++;
+        cpos++;
+        goto att_quots;
       }
           
     ename_x:

@@ -1,3 +1,4 @@
+// JEdit mode Line -> :folding=indent:mode=c++:indentSize=2:noTabs=true:tabSize=2:
 #include "EXTERN.h"
 #define PERL_IN_HV_C
 #define PERL_HASH_INTERNAL_ACCESS
@@ -5,13 +6,12 @@
 #include "XSUB.h"
 #include "parser.h"
 
-#include "stdio.h"
-
 struct parserc parser;
 struct nodec *root;
 
 U32 vhash;
 U32 chash;
+U32 phash;
 
 struct nodec *curnode;
   
@@ -25,6 +25,8 @@ SV *cxml2obj(pTHX_ int a) {
   SV *attatt;
     
   int length = curnode->numchildren;
+  SV *svi = newSViv( curnode->pos );
+  hv_store( output, "_pos", 4, svi, phash );
   if( !length ) {
     if( curnode->vallen ) {
       SV * sv = newSVpvn( curnode->value, curnode->vallen );
@@ -45,7 +47,7 @@ SV *cxml2obj(pTHX_ int a) {
       hv_store( output, "comment", 7, sv, chash );
     }
     
-  curnode = curnode->firstchild;
+    curnode = curnode->firstchild;
     for( i = 0; i < length; i++ ) {
       SV *namesv = newSVpvn( curnode->name, curnode->namelen );
       
@@ -114,75 +116,105 @@ SV *cxml2obj(pTHX_ int a) {
   return outputref;
 }
 
-SV *cxml2obj_simple(pTHX_ int a, HV *forcearray) {
+SV *cxml2obj_simple(pTHX_ int a) {
+  SV *outputref;
   int i;
   struct attc *curatt;
+  int numatts = curnode->numatt;
   SV *attval;
   SV *attatt;
-
     
   int length = curnode->numchildren;
-  int numatts = curnode->numatt;
-
-/*
-char _name[128];
-strncpy(_name,curnode->name, curnode->namelen);
-_name[curnode->namelen] = 0;
-printf("%s:%d-%d;\n", _name,length, numatts);
-*/
-
-  if( !length && !numatts) {
-      return newSVpvn( curnode->value, curnode->vallen );
-  }
-
-  HV *output    = newHV();
-  SV *outputref = newRV( (SV *) output );
-
-  if( numatts ) {
-    curatt = curnode->firstatt;
-    for( i = 0; i < numatts; i++, curatt = curatt->next ) {
-      attval = newSVpvn( curatt->value, curatt->vallen );
-      hv_store( output, curatt->name, curatt->namelen, attval, 0 );
+  if( ( length + numatts ) == 0 ) {
+    if( curnode->vallen ) {
+      SV * sv = newSVpvn( curnode->value, curnode->vallen );
+      return sv;
     }
+    return 0;
   }
-
-  if ( !length ) {
-    hv_store( output, "value", 5, newSVpvn( curnode->value, curnode->vallen ), 0 );
-    return outputref;
-  }
-
-  struct nodec *oldnode = curnode;  
-  curnode = curnode->firstchild;
-  for( i = 0; i < length; i++,curnode = curnode->next ) {
-      SV **arr = hv_fetch( forcearray, curnode->name, curnode->namelen, 0 );
-      SV **cur = hv_fetch( output, curnode->name, curnode->namelen, 0 );
-      
-      if( !cur ) {
-	if(arr) {
-          AV *newarray = newAV();
-          hv_store( output, curnode->name, curnode->namelen, newRV( (SV *) newarray ), 0 );
-          av_push( newarray, cxml2obj_simple( aTHX_ 0, forcearray ) );
-        } else {
-          hv_store( output, curnode->name, curnode->namelen, cxml2obj_simple( aTHX_ 0, forcearray ), 0 );
+  {
+    HV *output = newHV();
+    SV *outputref = newRV( (SV *) output );
+    
+    if( length ) {
+      curnode = curnode->firstchild;
+      for( i = 0; i < length; i++ ) {
+        SV *namesv = newSVpvn( curnode->name, curnode->namelen );
+        
+        SV **cur = hv_fetch( output, curnode->name, curnode->namelen, 0 );
+        
+        if( curnode->namelen > 6 ) {
+          if( !strncmp( curnode->name, "multi_", 6 ) ) {
+            char *subname = &curnode->name[6];
+            int subnamelen = curnode->namelen-6;
+            SV **old = hv_fetch( output, subname, subnamelen, 0 );
+            AV *newarray = newAV();
+            SV *newarrayref = newRV( (SV *) newarray );
+            if( !old ) {
+              hv_store( output, subname, subnamelen, newarrayref, 0 );
+            }
+            else {
+              if( SvTYPE( SvRV(*old) ) == SVt_PVHV ) { // check for hash ref
+                SV *newref = newRV( (SV *) SvRV(*old) );
+                hv_delete( output, subname, subnamelen, 0 );
+                hv_store( output, subname, subnamelen, newarrayref, 0 );
+                av_push( newarray, newref );
+              }
+            }
+          }
         }
-      }
-      else {
-        if( SvTYPE( SvRV(*cur) ) == SVt_PVHV ) {
-          AV *newarray = newAV();
-          av_push( newarray, newRV( (SV *) SvRV( *cur ) ) );
-          av_push( newarray, cxml2obj_simple( aTHX_ 0, forcearray ) );
-          hv_store( output, curnode->name, curnode->namelen, newRV( (SV *) newarray ), 0 );
+          
+        if( !cur ) {
+          SV *ob = cxml2obj_simple( aTHX_ 0 );
+          hv_store( output, curnode->name, curnode->namelen, ob, 0 );
         }
         else {
-          av_push( (AV *) SvRV( *cur ), cxml2obj_simple( aTHX_ 0, forcearray ) );
+          if( SvROK( *cur ) ) {
+            if( SvTYPE( SvRV(*cur) ) == SVt_PVHV ) {
+              AV *newarray = newAV();
+              SV *newarrayref = newRV( (SV *) newarray );
+              SV *newref = newRV( (SV *) SvRV( *cur ) );
+              hv_delete( output, curnode->name, curnode->namelen, 0 );
+              hv_store( output, curnode->name, curnode->namelen, newarrayref, 0 );
+              av_push( newarray, newref );
+              av_push( newarray, cxml2obj_simple( aTHX_ 0 ) );
+            }
+            else {
+              AV *av = (AV *) SvRV( *cur );
+              av_push( av, cxml2obj_simple( aTHX_ 0) );
+            }
+          }
+          else {
+            AV *newarray = newAV();
+            SV *newarrayref = newRV( (SV *) newarray );
+            
+            STRLEN len;
+            char *ptr = SvPV(*cur, len);
+            SV *newsv = newSVpvn( ptr, len );
+            
+            av_push( newarray, newsv );
+            hv_delete( output, curnode->name, curnode->namelen, 0 );
+            hv_store( output, curnode->name, curnode->namelen, newarrayref, 0 );
+            av_push( newarray, cxml2obj_simple( aTHX_ 0 ) );
+          }
         }
+        if( i != ( length - 1 ) ) curnode = curnode->next;
       }
-  }
+      curnode = curnode->parent;
+    }
     
-  curnode = oldnode;
-  return outputref;
+    if( numatts ) {
+      curatt = curnode->firstatt;
+      for( i = 0; i < numatts; i++ ) {
+        attval = newSVpvn( curatt->value, curatt->vallen );
+        hv_store( output, curatt->name, curatt->namelen, attval, 0 );
+        if( i != ( numatts - 1 ) ) curatt = curatt->next;
+      }
+    }
+    
+    return outputref;
+  }
 }
-
 
 MODULE = XML::Bare         PACKAGE = XML::Bare
 
@@ -190,19 +222,17 @@ SV *
 xml2obj()
   CODE:
     curnode = parser.pcurnode;
-    RETVAL  = cxml2obj(aTHX_ 0);
+    RETVAL = cxml2obj(aTHX_ 0);
   OUTPUT:
     RETVAL
-
+    
 SV *
-xml2obj_simple(fa)
-  HV * fa
+xml2obj_simple()
   CODE:
     curnode = parser.pcurnode;
-    RETVAL  = cxml2obj_simple(aTHX_ 0, fa);
+    RETVAL = cxml2obj_simple(aTHX_ 0);
   OUTPUT:
     RETVAL
-
     
 void
 c_parse(text)
@@ -211,6 +241,7 @@ c_parse(text)
     int len;
     PERL_HASH(vhash, "value", 5);
     PERL_HASH(chash, "comment", 7);
+    PERL_HASH(phash, "_pos", 4);
     parserc_parse( &parser, text );
     root = parser.pcurnode;
     

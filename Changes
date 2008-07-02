@@ -1,6 +1,21 @@
 XML::Bare Changelog
 
-0.27
+0.30
+  - Add new parsing mode, simple, which simulates XML::Simple.
+
+0.29 ( internal )
+  - New function add_node_after
+  - Fixed node ordering such that node order is preserved
+
+0.28 ( internal )
+  - Altered xml output so that it cleans extraneous input spacing
+    and indents mixed values properly.
+  - Added prereqs to Makefile.pl
+  - Added Test::POD and Test::POD::Coverage tests
+  - Fixed incorrect pointer type cast in parser.c
+  - Rewrote benchmark system to use templated benchmarking
+
+0.27 ( 11-21-07 )
   - makefile.pl modified to be compatible with Darwin and
     to error out if XCode ( gcc specifically ) is not installed
   - makefile.pl modified to support Perl 5.6+ on Win32 MSVC
@@ -9,26 +24,26 @@ XML::Bare Changelog
   - Cyclic equality test weakened to allow for differences in
     default sorting of hash keys per perl version.
 
-0.26
+0.26 ( 11-09-07 )
   - Compatibility with versions before Perl 5.6 is not fruitful.
     Perl 5.6 now required and will likely remain as a requirement.
     It broke too many things.
 
-0.25
+0.25 ( 11-09-07 )
   - makefile.pl modified to pass -shared option correctly
     to gcc and not the linker. This caused compilation failure
     on certain Solaris systems.
 
-0.24
+0.24 ( 11-09-07 )
   - Continued makefile.pl changes to recognize some platforms
     use executable extensions for gcc.
   - Remove blank require line from meta.yml. It seemed to break
     the kwalitee rating.
 
-0.23
+0.23 ( 11-08-07 )
   - Minor change to XS code for potential future Perl 5.005 support
 
-0.22
+0.22 ( 11-07-07 )
   - Altered makefile.pl to be compatible with more platforms.
   - Removed dependency upon string.h for msvc because it
     was breaking activestate builds.
