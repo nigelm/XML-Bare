@@ -2,18 +2,22 @@
 #include "EXTERN.h"
 #define PERL_IN_HV_C
 #define PERL_HASH_INTERNAL_ACCESS
+#define BLIND_PV(a,b) SV *sv;sv=newSV(0);SvUPGRADE(sv,SVt_PV);SvPV_set(sv,a);SvCUR_set(sv,b);SvPOK_only_UTF8(sv);
+
 #include "perl.h"
 #include "XSUB.h"
 #include "parser.h"
 
-struct parserc parser;
+
 struct nodec *root;
 
 U32 vhash;
 U32 chash;
 U32 phash;
+U32 ihash;
 
 struct nodec *curnode;
+char *rootpos;
   
 SV *cxml2obj(pTHX_ int a) {
   HV *output = newHV();
@@ -23,13 +27,19 @@ SV *cxml2obj(pTHX_ int a) {
   int numatts = curnode->numatt;
   SV *attval;
   SV *attatt;
-    
+      
   int length = curnode->numchildren;
   SV *svi = newSViv( curnode->pos );
+  
+  #ifdef DEBUG
+  printf("[");
+  #endif
   hv_store( output, "_pos", 4, svi, phash );
+  hv_store( output, "_i", 2, newSViv( curnode->name - rootpos ), ihash );
   if( !length ) {
     if( curnode->vallen ) {
       SV * sv = newSVpvn( curnode->value, curnode->vallen );
+      //BLIND_PV( curnode->value, curnode->vallen );
       hv_store( output, "value", 5, sv, vhash );
     }
     if( curnode->comlen ) {
@@ -40,6 +50,7 @@ SV *cxml2obj(pTHX_ int a) {
   else {
     if( curnode->vallen ) {
       SV *sv = newSVpvn( curnode->value, curnode->vallen );
+      //BLIND_PV( curnode->value, curnode->vallen );
       hv_store( output, "value", 5, sv, vhash );
     }
     if( curnode->comlen ) {
@@ -73,7 +84,7 @@ SV *cxml2obj(pTHX_ int a) {
           }
         }
       }
-        
+      
       if( !cur ) {
         SV *ob = cxml2obj( aTHX_ 0 );
         hv_store( output, curnode->name, curnode->namelen, ob, 0 );
@@ -216,39 +227,67 @@ SV *cxml2obj_simple(pTHX_ int a) {
   }
 }
 
+struct parserc *parser = 0;
+
 MODULE = XML::Bare         PACKAGE = XML::Bare
+
+
 
 SV *
 xml2obj()
   CODE:
-    curnode = parser.pcurnode;
-    RETVAL = cxml2obj(aTHX_ 0);
+    curnode = parser->pcurnode;
+    //curnode = root;
+    if( curnode->err ) RETVAL = newSViv( curnode->err );
+    else RETVAL = cxml2obj(aTHX_ 0);
   OUTPUT:
     RETVAL
     
 SV *
 xml2obj_simple()
   CODE:
-    curnode = parser.pcurnode;
+    curnode = parser->pcurnode;
+    //curnode = root;
+    //if( curnode->err ) RETVAL = 0;
+    //else
     RETVAL = cxml2obj_simple(aTHX_ 0);
   OUTPUT:
     RETVAL
-    
+
 void
 c_parse(text)
   char * text
   CODE:
-    int len;
+    
+    rootpos = text;
+    #ifdef DEBUG
+    //printf("About to parse\n");
+    #endif
     PERL_HASH(vhash, "value", 5);
     PERL_HASH(chash, "comment", 7);
     PERL_HASH(phash, "_pos", 4);
-    parserc_parse( &parser, text );
-    root = parser.pcurnode;
+    PERL_HASH(ihash, "_i", 2 );
+    parser = (struct parserc *) malloc( sizeof( struct parserc ) );
+    root = parserc_parse( parser, text );
+    #ifdef DEBUG
+    //printf("Returned from parser\n");
+    #endif
+    
+    //root = parser->pcurnode;
+    //this is wrong because parsing may halt in the middle; root= above is correct
+    
+    #ifdef DEBUG
+    //printf("C Parsing done\b");
+    #endif
     
 void
 c_parsefile(filename)
   char * filename
   CODE:
+    PERL_HASH(vhash, "value", 5);
+    PERL_HASH(chash, "comment", 7);
+    PERL_HASH(phash, "_pos", 4);
+    PERL_HASH(ihash, "_i", 2 );
     char *data;
     unsigned long len;
     FILE *handle;
@@ -260,12 +299,24 @@ c_parsefile(filename)
     
     fseek( handle, 0, SEEK_SET );
     data = (char *) malloc( len );
+    rootpos = data;
     fread( data, 1, len, handle );
     fclose( handle );
-    parserc_parse( &parser, data );
-    root = parser.pcurnode;
+    parser = (struct parserc *) malloc( sizeof( struct parserc ) );
+    root = parserc_parse( parser, data );
+    //root = parser->pcurnode;
+
+SV *
+get_root()
+  CODE:
+    RETVAL = newSVuv( PTR2UV( root ) );
+  OUTPUT:
+    RETVAL
 
 void
-free_tree()
+free_tree_c( rootsv )
+  SV *rootsv
   CODE:
-    del_nodec( root );
+    struct nodec *rootnode;
+    rootnode = INT2PTR( struct nodec *, SvUV( rootsv ) );
+    del_nodec( rootnode );

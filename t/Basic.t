@@ -53,10 +53,13 @@ $root = $xml->parse();
 is( $root->{xml}->{comment}, 'test' );
 
 # test cyclic equality
-$xml = new XML::Bare( text => "<xml><b><!--test--></b><c>bob</c><c/></xml>" );
+$xml = new XML::Bare( text => "<xml><b><!--test--></b><c/><c/></xml>" );
 $root = $xml->parse();
 my $a = $xml->xml( $root );
 $xml = new XML::Bare( text => $a );
 $root = $xml->parse();
 my $b = $xml->xml( $root );
 is( $a, $b );
+
+# test bad closing tags
+# we need to a way to ensure that something dies... ?

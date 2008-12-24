@@ -137,6 +137,7 @@ foreach my $part ( @parts ) {
 $part
 
         (\$s3, \$usec3) = gettimeofday();
+        unload('$module');
         timeit('$module',1);
       }
     }
@@ -172,6 +173,7 @@ $part
 $part
 
         (\$s3, \$usec3) = gettimeofday();
+        unload('$module');
         timeit('$module');
       }
     }
@@ -205,6 +207,15 @@ $part
 }
 
 print OUT <<END;
+
+sub unload {
+  my \$module = shift;
+  my \@parts = split(' ',\$module);
+  \$module = \$parts[0];
+  \$module =~ s/::/\\//g;
+  \$module.='.pm';
+  delete \$INC{\$module};
+}
 
 sub timeit {
   my \$name = shift;

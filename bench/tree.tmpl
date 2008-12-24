@@ -58,6 +58,10 @@ $XML::Simple::PREFERRED_PARSER = 'XML::Bare::SAX::Parser';
 my $ref = XML::Simple::XMLin($file);
 
 #-
+require XML::Bare::Simple;
+my $ref = XML::Bare::Simple::XMLin($file);
+
+#-
 require XML::SAX::Simple;
 my $ref = XML::SAX::Simple::XMLin($file);
 

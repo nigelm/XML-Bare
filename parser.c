@@ -1,4 +1,5 @@
 #include "parser.h"
+#include<stdio.h>
 #ifdef DARWIN
   #include "stdlib.h"
 #endif
@@ -10,6 +11,15 @@
 #else
   #include <string.h>
 #endif
+
+int dh_memcmp(char *a,char *b,int n) {
+  int c = 0;
+  while( c < n ) {
+    if( *a != *b ) return c+1;
+    a++; b++; c++;
+  }
+  return 0;
+}
 
 struct nodec *new_nodecp( struct nodec *newparent ) {
   static int pos = 0;
@@ -57,6 +67,8 @@ struct attc* new_attc( struct nodec *newparent ) {
   return self;
 }
 
+//#define DEBUG
+
 struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
     char  *tagname, *attname, *attval, *val;
     struct nodec *root    = new_nodec();
@@ -67,9 +79,17 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
     struct attc  *curatt  = NULL;
     char   *cpos          = &xmlin[0];
     int    pos            = 0;
+    int    res            = 0;
     register int let;
     
+    #ifdef DEBUG
+    printf("Entry to C Parser\n");
+    #endif
+    
     val_1:
+      #ifdef DEBUG
+      printf("val_1: %c\n", *cpos);
+      #endif
       let = *cpos;
       switch( let ) {
         case 0:   goto done;
@@ -83,6 +103,9 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       cpos++;
       
     val_x:
+      #ifdef DEBUG
+      printf("val_x: %c\n", *cpos);
+      #endif
       let = *cpos;
       switch( let ) {
         case 0:
@@ -109,7 +132,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
                 *(cpos+3) == '-' ) {
                   cpos += 4;
                   goto comment;
-                }
+              }
               else {
                 cpos++;
                 goto bang;
@@ -127,6 +150,9 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       goto val_x;
       
     outside:
+      #ifdef DEBUG
+      printf("outside: %c\n", *cpos);
+      #endif
       if( *cpos == '<' ) {
         tagname_len = 0; // for safety
         cpos++;
@@ -144,7 +170,10 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
     comment_2dash:
       cpos++;
       let = *cpos;
-      if( let == '>' ) goto outside;
+      if( let == '>' ) {
+        cpos++;
+        goto val_1;
+      }
       goto comment_x;
       
     comment:
@@ -207,6 +236,9 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       goto cdata;
       
     name_1:
+      #ifdef DEBUG
+      printf("name_1: %c\n", *cpos);
+      #endif
       let = *cpos;
       if( !let ) goto done;
       switch( let ) {
@@ -217,10 +249,10 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
         case 0x0a:
           cpos++;
           goto name_1;
-        case '/':
+        case '/': // regular closing tag
           tagname_len = 0; // needed to reset
           cpos++;
-          goto ename_x;
+          goto ename_1;
       }
       tagname       = cpos;
       tagname_len   = 1;
@@ -228,6 +260,9 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       goto name_x;
       
     name_x:
+      #ifdef DEBUG
+      printf("name_x: %c\n", *cpos);
+      #endif
       let = *cpos;
       switch( let ) {
         case 0:
@@ -243,7 +278,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
           curnode     = nodec_addchildr( curnode, tagname, tagname_len );
           cpos++;
           goto val_1;
-        case '/':
+        case '/': // self closing
           nodec_addchildr( curnode, tagname, tagname_len );
           tagname_len            = 0;
           cpos+=2;
@@ -267,7 +302,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
         case '>':
           cpos++;
           goto val_1;
-        case '/':
+        case '/': // self closing
           curnode = curnode->parent;
           if( !curnode ) goto done;
           cpos+=2; // am assuming next char is >
@@ -297,17 +332,18 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       }
       // we have another attribute name, so continue
         
-      att_name:
+    att_name:
       
       let = *cpos;
       switch( let ) {
         case 0: goto done;
-        case '/':
+        case '/': // self closing
+          curatt = nodec_addattr( curnode, attname, attname_len );
+          attname_len            = 0;
+          
           curnode = curnode->parent;
           if( !curnode ) goto done;
           cpos += 2;
-          curatt = nodec_addattr( curnode, attname, attname_len );
-          attname_len            = 0;
           goto val_1;
         case ' ':
           if( *(cpos+1) == '=' ) {
@@ -341,7 +377,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       switch( let ) {
         case 0:
           goto done;
-        case '/':
+        case '/': // self closing
           if( *(cpos+1) == '>' ) {
             curnode = curnode->parent;
             if( !curnode ) goto done;
@@ -372,7 +408,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       switch( let ) {
         case 0:
           goto done;
-        case '/':
+        case '/': // self closing
           if( *(cpos+1) == '>' ) {
             curnode = curnode->parent;
             if( !curnode ) goto done;
@@ -439,26 +475,65 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
         cpos++;
         goto att_quots;
       }
-          
-    ename_x:
+    
+    ename_1:
       let = *cpos;
       if( !let ) goto done;
+      
       if( let == '>' ) {
         curnode->namelen = tagname_len;
-        curnode = curnode->parent;
+        curnode = curnode->parent; // jump up
         if( !curnode ) goto done;
         tagname_len++;
         cpos++;
+        root->err = -1;
+        goto error;
+      }
+      tagname       = cpos;
+      tagname_len   = 1;
+      cpos++;
+      // continue
+      
+    ename_x: // ending name
+      let = *cpos;
+      if( !let ) goto done;
+      if( let == '>' ) {
+        //curnode->namelen = tagname_len;
+        
+        if( curnode->namelen != tagname_len ) {
+          goto error;
+        }
+        if( res = dh_memcmp( curnode->name, tagname, tagname_len ) ) {
+          cpos -= tagname_len;
+          cpos += res - 1;
+          goto error;
+        }
+        
+        curnode = curnode->parent; // jump up
+        if( !curnode ) goto done;
+        tagname_len++;
+        cpos++;
+        
         goto val_1;
       }
       tagname_len++;
       cpos++;
       goto ename_x;
-            
+    error:
+      root->err = - ( int ) ( cpos - &xmlin[0] );
+      self->pcurnode = root;
+      //root->err = 1;
+      return root;
     done:
-    self->pcurnode = root;
-    self->pcurnode->curchild = self->pcurnode->firstchild;
-    return root;
+      #ifdef DEBUG
+      printf("done\n", *cpos);
+      #endif
+      self->pcurnode = root;
+      self->pcurnode->curchild = self->pcurnode->firstchild;
+      #ifdef DEBUG
+      printf("returning\n", *cpos);
+      #endif
+      return root;
 }
 
 struct nodec *nodec_addchildr(  struct nodec *self, char *newname, int newnamelen ) {//, char *newval, int newvallen, int newtype ) {

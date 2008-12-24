@@ -26,6 +26,7 @@ struct nodec {
   int   numvals;
   int   numcoms;
   int   pos;
+  int   err;
 };
 
 struct nodec *nodec_addchildr( struct nodec *self, char *newname, int newnamelen );//, char *newval, int newvallen, int newtype );

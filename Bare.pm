@@ -7,12 +7,12 @@ require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = "0.30";
+$VERSION = "0.40";
 
 bootstrap XML::Bare $VERSION;
 
 @EXPORT = qw( );
-@EXPORT_OK = qw(merge clean find_node del_node);
+@EXPORT_OK = qw(merge clean find_node del_node forcearray del_by_perl);
 
 =head1 NAME
 
@@ -20,7 +20,7 @@ XML::Bare - Minimal XML parser implemented via a C state engine
 
 =head1 VERSION
 
-0.30
+0.40
 
 =cut
 
@@ -45,11 +45,12 @@ sub new {
     }
     {
       local $/ = undef;
-      $text = <XML>;
+      $self->{'text'} = <XML>;
     }
     close( XML );
-    XML::Bare::c_parse( $text );
+    XML::Bare::c_parse( $self->{'text'} );
   }
+  
   return $self;
 }
 
@@ -115,17 +116,237 @@ sub clean {
 sub parse {
   my $self   = shift;
   
-  $self->{ 'xml' } = XML::Bare::xml2obj();#$self->xml2obj();
-  XML::Bare::free_tree();
+  my $res = XML::Bare::xml2obj();#$self->xml2obj();
+  $self->{'structroot'} = XML::Bare::get_root();
+  $self->free_tree();
+  
+  if( defined( $self->{'scheme'} ) ) {
+    $self->{'xbs'} = new XML::Bare( %{ $self->{'scheme'} } );
+  }
+  if( defined( $self->{'xbs'} ) ) {
+    my $xbs = $self->{'xbs'};
+    my $ob = $xbs->parse();
+    $self->{'xbso'} = $ob;
+    readxbs( $ob );
+  }
+  
+  if( $res < 0 ) { croak "Error at ".$self->lineinfo( -$res ); }
+  $self->{ 'xml' } = $res;
+  
+  if( defined( $self->{'xbso'} ) ) {
+    my $ob = $self->{'xbso'};
+    my $cres = $self->check( $res, $ob );
+    if( $cres ) {
+      croak( $cres );
+    }
+  }
   
   return $self->{ 'xml' };
+}
+
+sub lineinfo {
+  my $self = shift;
+  my $res = shift;
+  my $line = 1;
+  my $j = 0;
+  for( my $i=0;$i<$res;$i++ ) {
+    my $let = substr( $self->{'text'}, $i, 1 );
+    if( ord($let) == 10 ) {
+      $line++;
+      $j = $i;
+    }
+  }
+  my $part = substr( $self->{'text'}, $res, 10 );
+  $part =~ s/\n//g;
+  $res -= $j;
+  return "line $line char $res \"$part\"";
+}
+
+# xml bare schema
+sub check {
+  my $self = shift;
+  my $node = shift;
+  my $scheme = shift;
+  my $parent = shift;
+  
+  my $fail = '';
+  if( ref( $scheme ) eq 'ARRAY' ) {
+    for my $one ( @$scheme ) {
+      my $res = $self->checkone( $node, $one, $parent );
+      return 0 if( !$res );
+      $fail .= "$res\n";
+    }
+  }
+  else {
+    return $self->checkone( $node, $scheme, $parent );
+  }
+  return $fail;
+}
+
+sub checkone {
+  my $self = shift;
+  my $node = shift;
+  my $scheme = shift;
+  my $parent = shift;
+  
+  for my $key ( keys %$node ) {
+    next if( substr( $key, 0, 1 ) eq '_' || $key eq 'att' || $key eq 'comment' );
+    if( $key eq 'value' ) {
+      my $val = $node->{ 'value' };
+      my $regexp = $scheme->{'value'};
+      if( $regexp ) {
+        #$regexp = "^($regexp)\$";
+        if( $val !~ m/^($regexp)$/ ) {   
+          my $linfo = $self->lineinfo( $node->{'_i'} );
+          return "Value of '$parent' node ($val) does not match /$regexp/ [$linfo]";
+        }
+      }
+      next;
+    }
+    my $sub = $node->{ $key };
+    my $ssub = $scheme->{ $key };
+    if( !$ssub ) { #&& ref( $schemesub ) ne 'HASH'
+      my $linfo = $self->lineinfo( $sub->{'_i'} );
+      return "Invalid node '$key' in xml [$linfo]";
+    }
+    if( ref( $sub ) eq 'HASH' ) {
+      my $res = $self->check( $sub, $ssub, $key );
+      return $res if( $res );
+    }
+    if( ref( $sub ) eq 'ARRAY' ) {
+      my $asub = $ssub;
+      if( ref( $asub ) eq 'ARRAY' ) {
+        $asub = $asub->[0];
+      }
+      if( $asub->{'_t'} ) {
+        my $max = $asub->{'_max'} || 0;
+        if( $#$sub >= $max ) {
+          my $linfo = $self->lineinfo( $sub->[0]->{'_i'} );
+          return "Too many nodes of type '$key'; max $max; [$linfo]"
+        }
+        my $min = $asub->{'_min'} || 0;
+        if( ($#$sub+1)<$min ) {
+          my $linfo = $self->lineinfo( $sub->[0]->{'_i'} );
+          return "Not enough nodes of type '$key'; min $min [$linfo]"
+        }
+      }
+      for my $item ( @$sub ) {
+        my $res = $self->check( $item, $ssub, $key );
+        return $res if( $res );
+      }
+    }
+  }
+  if( my $dem = $scheme->{'_demand'} ) {
+    for my $req ( @{$scheme->{'_demand'}} ) {
+      my $ck = $node->{ $req };
+      if( !$ck ) {
+        my $linfo = $self->lineinfo( $node->{'_i'} );
+        return "Required node '$req' does not exist [$linfo]"
+      }
+      if( ref( $ck ) eq 'ARRAY' ) {
+        my $linfo = $self->lineinfo( $node->{'_i'} );
+        return "Required node '$req' is empty array [$linfo]" if( $#$ck == -1 );
+      }
+    }
+  }
+  return 0;
+}
+
+
+sub readxbs { # xbs = xml bare schema
+  my $node = shift;
+  my @demand;
+  for my $key ( keys %$node ) {
+    next if( substr( $key, 0, 1 ) eq '_' || $key eq 'att' || $key eq 'comment' );
+    if( $key eq 'value' ) {
+      my $val = $node->{'value'};
+      delete $node->{'value'} if( $val =~ m/^\W*$/ );
+      next;
+    }
+    my $sub = $node->{ $key };
+    
+    if( $key =~ m/([a-z_]+)([^a-z_]+)/ ) {
+      my $name = $1;
+      my $t = $2;
+      my $min;
+      my $max;
+      if( $t eq '+' ) {
+        $min = 1;
+        $max = 1000;
+      }
+      elsif( $t eq '*' ) {
+        $min = 0;
+        $max = 1000;
+      }
+      elsif( $t eq '?' ) {
+        $min = 0;
+        $max = 1;
+      }
+      elsif( $t eq '@' ) {
+        $name = 'multi_'.$name;
+        $min = 1;
+        $max = 1;
+      }
+      elsif( $t =~ m/\{([0-9]+),([0-9]+)\}/ ) {
+        $min = $1;
+        $max = $2;
+        $t = 'r'; # range
+      }
+      
+      if( ref( $sub ) eq 'HASH' ) {
+        my $res = readxbs( $sub );
+        $sub->{'_t'} = $t;
+        $sub->{'_min'} = $min;
+        $sub->{'_max'} = $max;
+      }
+      if( ref( $sub ) eq 'ARRAY' ) {
+        for my $item ( @$sub ) {
+          my $res = readxbs( $item );
+          $item->{'_t'} = $t;
+          $item->{'_min'} = $min;
+          $item->{'_max'} = $max;
+        }
+      }
+      
+      push( @demand, $name ) if( $min );
+      $node->{$name} = $node->{$key};
+      delete $node->{$key};
+    }
+    else {
+      if( ref( $sub ) eq 'HASH' ) {
+        readxbs( $sub );
+        $sub->{'_t'} = 'r';
+        $sub->{'_min'} = 1;
+        $sub->{'_max'} = 1;
+      }
+      if( ref( $sub ) eq 'ARRAY' ) {
+        for my $item ( @$sub ) {
+          readxbs( $item );
+          $item->{'_t'} = 'r';
+          $item->{'_min'} = 1;
+          $item->{'_max'} = 1;
+        }
+      }
+      
+      push( @demand, $key );
+    }
+  }
+  if( @demand ) {
+    $node->{'_demand'} = \@demand;
+  }
 }
 
 sub simple {
   my $self   = shift;
   
-  $self->{ 'xml' } = XML::Bare::xml2obj_simple();#$self->xml2obj();
-  XML::Bare::free_tree();
+  my $res = XML::Bare::xml2obj();#$self->xml2obj();
+  $self->{'structroot'} = XML::Bare::get_root();
+  $self->free_tree();
+  
+  if( $res < 0 ) {
+    die "Error at character ".(-$res); 
+  }
+  $self->{ 'xml' } = $res;
   
   return $self->{ 'xml' };
 }
@@ -354,9 +575,7 @@ sub obj2xml {
           return 0;
         } @$obj;
       
-      #for( my $j = 0; $j <= $#$obj; $j++ ) {
       for my $j ( @dex2 ) {
-        #$xml .= obj2xml( $obj->[ $j ], $i, $pad.'  ', $level+1, $#dex );
         $xml .= obj2xml( $j, $i, $pad.'  ', $level+1, $#dex );
       }
     }
@@ -366,7 +585,7 @@ sub obj2xml {
         $att .= ' ' . $i . '="' . $obj->{ 'value' } . '"';
       }
       else {
-        $xml .= obj2xml( $obj , $i, ( $level > 1 ) ? ( $pad.'  ' ) : '', $level+1, $#dex );
+        $xml .= obj2xml( $obj , $i, $pad.'  ', $level+1, $#dex );
       }
     }
     else {
@@ -374,7 +593,7 @@ sub obj2xml {
         $xml .= '<!--' . $obj . '-->' . "\n";
       }
       elsif( $i eq 'value' ) {
-        if( $#dex < 2 && $level > 1 ) {
+        if( $#dex < 3 && $level > 1 ) {
           if( $obj && $obj =~ /[<>&;]/ ) {
             $xml .= '<![CDATA[' . $obj . ']]>';
           }
@@ -397,16 +616,19 @@ sub obj2xml {
       }
     }
   }
-  #$imm = 0 if( $#dex < 1 );
-  #$imm = 1 if( $#dex );
   my $pad2 = $imm ? '' : $pad;
   my $cr = $imm ? '' : "\n";
-  if( $name ) {
-    $xml = $pad . '<' . $name . $att . '>' . $cr . $xml . $pad2 . '</' . $name . '>';
+  if( substr( $name, 0, 1 ) ne '_' ) {
+    if( $name ) {
+      $xml = $pad . '<' . $name . $att . '>' . $cr . $xml . $pad2 . '</' . $name . '>';
+    }
+    return $xml."\n" if( $level );
+    return $xml;
   }
-  return $xml."\n" if( $level );
-  return $xml;
+  return '';
 }
+
+sub free_tree { my $self = shift; XML::Bare::free_tree_c( $self->{'structroot'} ); }
 
 1;
 
@@ -416,31 +638,50 @@ __END__
 
   use XML::Bare;
   
-  my $xml = new XML::Bare( text => '<xml><name>Bob</name></xml>' );
+  my $ob = new XML::Bare( text => '<xml><name>Bob</name></xml>' );
   
   # Parse the xml into a hash tree
-  my $root = $xml->parse();
+  my $root = $ob->parse();
   
   # Print the content of the name node
   print $root->{xml}->{name}->{value};
   
-  # Load xml from a file ( assume same contents as first example )
-  my $xml2 = new XML::Bare( file => 'test.xml' );
+  ---
   
-  my $root2 = $xml2->parse();
+  # Load xml from a file ( assume same contents as first example )
+  my $ob2 = new XML::Bare( file => 'test.xml' );
+  
+  my $root2 = $ob2->parse();
   
   $root2->{xml}->{name}->{value} = 'Tim';
   
   # Save the changes back to the file
-  $xml2->save();  
+  $ob2->save();
+  
+  ---
+  
+  # Load xml and verify against XBS ( XML Bare Schema )
+  my $xml_text = '<xml><item name=bob/></xml>''
+  my $schema_text = '<xml><item* name=[a-z]+></item*></xml>'
+  my $ob = new XML::Bare( text => $xml_text, schema => { text => $schema_text } );
+  $ob->parse(); # this will error out if schema is invalid
 
 =head1 DESCRIPTION
 
-This module is a 'Bare' XML parser. It is implemented in C++. The parser
-itself is a simple state engine that is less than 500 lines of C++. The
-parser builds a C++ class tree from input text. That C++ class tree is
+This module is a 'Bare' XML parser. It is implemented in C. The parser
+itself is a simple state engine that is less than 500 lines of C. The
+parser builds a C struct tree from input text. That C struct tree is
 converted to a Perl hash by a Perl function that makes basic calls back
-to the C++ to go through the nodes sequentially.
+to the C to go through the nodes sequentially.
+
+The parser itself will only cease parsing if it encounters tags that
+are not closed properly. All other inputs will parse, even invalid
+inputs. To allowing checking for validity, a schema checker is included
+in the module as well.
+
+The schema format is custom and is meant to be as simple as possible.
+It is based loosely around the way multiplicity is handled in Perl
+regular expressions.
 
 =head2 Supported XML
 
@@ -491,6 +732,74 @@ examples. Each of the PERL statements evaluates to true.
 
 =back
 
+=head2 Schema Checking
+
+Schema checking is done by providing the module with an XBS (XML::Bare Schema) to check
+the XML against. If the XML checks as valid against the schema, parsing will continue as
+normal. If the XML is invalid, the parse function will die, providing information about
+the failure.
+
+The following information is provided in the error message:
+
+=over 2
+
+=item * The type of error
+
+=item * Where the error occured ( line and char )
+
+=item * A short snippet of the XML at the point of failure
+
+=back
+
+=head2 XBS ( XML::Bare Schema ) Format
+
+=over 2
+
+=item * Required nodes
+
+  XML: <xml></xml>
+  XBS: <xml/>
+
+=item * Optional nodes - allow one
+
+  XML: <xml></xml>
+  XBS: <xml item?/>
+  or XBS: <xml><item?/></xml>
+
+=item * Optional nodes - allow 0 or more
+
+  XML: <xml><item/></xml>
+  XBS: <xml item*/>
+
+=item * Required nodes - allow 1 or more
+
+  XML: <xml><item/><item/></xml>
+  XBS: <xml item+/>
+
+=item * Nodes - specified minimum and maximum number
+
+  XML: <xml><item/><item/></xml>
+  XBS: <xml item{1,2}/>
+  or XBS: <xml><item{1,2}/></xml>
+  or XBS: <xml><item{1,2}></item{1,2}></xml>
+
+=item * Multiple acceptable node formats
+
+  XML: <xml><item type=box volume=20/><item type=line length=10/></xml>
+  XBS: <xml><item type=box volume/><item type=line length/></xml>
+
+=item * Regular expressions checking for values
+
+  XML: <xml name=Bob dir=up num=10/>
+  XBS: <xml name=[A-Za-z]+ dir=up|down num=[0-9]+/>
+
+=item * Require multi_ tags
+
+  XML: <xml><multi_item/></xml>
+  XBS: <xml item@/>
+
+=back
+
 =head2 Parsed Hash Structure
 
 The hash structure returned from XML parsing is created in a specific format.
@@ -498,9 +807,15 @@ Besides as described above, the structure contains some additional nodes in
 order to preserve information that will allow that structure to be correctly
 converted back to XML.
   
-Nodes may contain the following 2 additional subnodes:
+Nodes may contain the following 3 additional subnodes:
 
 =over 2
+
+=item * _i
+
+The character offset within the original parsed XML of where the node
+begins. This is used to provide line information for errors when XML
+fails a schema check.
 
 =item * _pos
 
@@ -511,6 +826,7 @@ are doing is reading and you do not care about the order.
 
 In future versions of this module an option will be added to allow
 you to sort your nodes so that you can read them in order.
+( note that multiple nodes of the same name are stored in order )
 
 =item * att
 
@@ -529,7 +845,7 @@ Currently the contents of a node that are CDATA are read and
 put into the value hash, but the hash structure does not have
 a value indicating the node contains CDATA.
 
-When converting back to XML, the contents are the value hash
+When converting back to XML, the contents of the value hash
 are parsed to check for xml incompatible data using a regular
 expression. If 'CDATA like' stuff is encountered, the node
 is output as CDATA.
@@ -670,10 +986,10 @@ Clean up the xml in filename1 and save the results to filename2.
         <name>Bob</name>
       </item>
     </xml>
-    
-=item * C<< $oject->add_node_after( [node], [prev node], [nodeset name], name => value, name2 => value2, ... ) >>
 
-Similar to add_node above, but adds the node immediately after the passed [prev node].
+=item * C<< $object->add_node_after( [node], [node to insert after], [nodeset name], name => value, ... ) >>
+
+Same as add_node, but the new node is added immediately after the specificed node.
 
 =item * C<< $object->del_node( [node], [nodeset name], name => value ) >>
 
@@ -840,17 +1156,18 @@ each child.
 
 =over 2
 
+=item * C<< XML::Bare::check() >>
+=item * C<< XML::Bare::checkone() >>
+=item * C<< XML::Bare::readxbs() >>
+=item * C<< XML::Bare::lineinfo() >>
 =item * C<< XML::Bare::c_parse() >>
-
 =item * C<< XML::Bare::c_parsefile() >>
-
 =item * C<< XML::Bare::free_tree() >>
-
+=item * C<< XML::Bare::free_tree_c() >>
 =item * C<< XML::Bare::xml2obj() >>
-
-=item * C<< XML::Bare::xml2obj_simple() >>
-
+=itme * C<< XML::Bare::xml2obj_simple() >>
 =item * C<< XML::Bare::obj2xml() >>
+=item * C<< XML::Bare::get_root() >>
 
 =back
 
@@ -894,7 +1211,13 @@ A full list of modules currently tested against is as follows:
 
 =item * XML::Smart
 
-=item * XML::Simple
+=item * XML::Simple using XML::Parser
+
+=item * XML::Simple using XML::SAX::PurePerl
+
+=item * XML::Simple using XML::LibXML::SAX::Parser
+
+=item * XML::Simple using XML::Bare::SAX::Parser
 
 =item * XML::TreePP
 
@@ -905,6 +1228,8 @@ A full list of modules currently tested against is as follows:
 =item * XML::Grove::Builder
 
 =item * XML::XPath::XMLParser
+
+=item * XML::DOM
 
 =back
 
@@ -925,7 +1250,10 @@ using the included test.xml:
   XML::Handler::Trees        7.2303   26.5688  9.6447
   XML::Trivial               5.0636   12.4715  7.3046
   XML::Smart                 6.8138   78.7939  15.8296
-  XML::Simple                2.7115   195.9411 26.5704
+  XML::Simple (XML::Parser)  2.3346   50.4772  10.7455
+  XML::Simple (PurePerl)     2.361    261.4571 33.6524
+  XML::Simple (LibXML)       2.3187   163.7501 23.1816
+  XML::Simple (XML::Bare)    2.3252   59.1254  10.9163
   XML::SAX::Simple           8.7792   170.7313 28.3634
   XML::Twig                  27.8266  56.4476  31.3594
   XML::Grove::Builder        7.1267   26.1672  9.4064
@@ -947,7 +1275,10 @@ using the included feed2.xml:
   XML::Parser::EasyTree      4.8799   25.3691  9.6257
   XML::Handler::Trees        6.8545   33.1007  13.0575
   XML::Trivial               5.0105   32.0043  11.4113
-  XML::Smart                 6.8489   45.4236  16.2809
+  XML::Simple (XML::Parser)  2.3498   41.9007  12.3062
+  XML::Simple (PurePerl)     2.3551   224.3027 51.7832
+  XML::Simple (LibXML)       2.3617   88.8741  23.215
+  XML::Simple (XML::Bare)    2.4319   37.7355  10.2343
   XML::Simple                2.7168   90.7203  26.7525
   XML::SAX::Simple           8.7386   94.8276  29.2166
   XML::Twig                  28.3206  48.1014  33.1222
@@ -969,18 +1300,21 @@ against.
 The following things are shown as well:
   - XML::Bare can parse XML and create a hash tree
   in less time than it takes LibXML just to parse.
-  - XML::Bare can parse XML and create a hash tree
+  - XML::Bare can parse XML and create a tree
   in less time than all three binary parsers take
   just to parse.
 
 Note that the executable parsers are not perl modules
 and are timed using dummy programs that just uses the
-library to load and parse the example files. The files
-created to do such testing are available upon request.
+library to load and parse the example files. The
+executables are not included with this program. Any
+source modifications used to generate the shown test
+results can be found in the bench/src directory of
+the distribution
 
 =head1 LICENSE
 
-  Copyright (C) 2007 David Helkowski
+  Copyright (C) 2008 David Helkowski
   
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License as
@@ -993,5 +1327,11 @@ created to do such testing are available upon request.
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
+   ____ ________  ________ _________ 
+  /_   |\_____  \ \_____  \\______  \
+   |   |  _(__  <   _(__  <    /    /
+   |   | /       \ /       \  /    / 
+   |___|/______  //______  / /____/  
+               \/        \/          
 
 =cut

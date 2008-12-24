@@ -1,5 +1,11 @@
 XML::Bare Changelog
 
+0.40
+  - Added schema checking functionality
+  - Fixed parsing of nodes with more than one comment block
+  - Added error checking to ensure properly closed tags
+  - Fixed parsing of attributes without values
+
 0.30
   - Add new parsing mode, simple, which simulates XML::Simple.
 
