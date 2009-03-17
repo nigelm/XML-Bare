@@ -76,6 +76,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
     int    attname_len    = 0;
     int    attval_len     = 0;
     struct nodec *curnode = root;
+    struct nodec *temp;
     struct attc  *curatt  = NULL;
     char   *cpos          = &xmlin[0];
     int    pos            = 0;
@@ -121,6 +122,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
                     *(cpos+6) == 'T' &&
                     *(cpos+7) == 'A'    ) {
                   cpos += 9;
+                  curnode->type = 1;
                   goto cdata;
                 }
                 else {
@@ -279,7 +281,8 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
           cpos++;
           goto val_1;
         case '/': // self closing
-          nodec_addchildr( curnode, tagname, tagname_len );
+          temp = nodec_addchildr( curnode, tagname, tagname_len );
+          temp->z = cpos +1 - xmlin;
           tagname_len            = 0;
           cpos+=2;
           goto val_1;
@@ -303,6 +306,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
           cpos++;
           goto val_1;
         case '/': // self closing
+          curnode->z = cpos+1-xmlin;
           curnode = curnode->parent;
           if( !curnode ) goto done;
           cpos+=2; // am assuming next char is >
@@ -337,10 +341,11 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       let = *cpos;
       switch( let ) {
         case 0: goto done;
-        case '/': // self closing
+        case '/': // self closing     !! /> is assumed !!
           curatt = nodec_addattr( curnode, attname, attname_len );
           attname_len            = 0;
           
+          curnode->z = cpos+1-xmlin;
           curnode = curnode->parent;
           if( !curnode ) goto done;
           cpos += 2;
@@ -379,6 +384,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
           goto done;
         case '/': // self closing
           if( *(cpos+1) == '>' ) {
+            curnode->z = cpos+1-xmlin;
             curnode = curnode->parent;
             if( !curnode ) goto done;
             cpos+=2;
@@ -410,6 +416,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
           goto done;
         case '/': // self closing
           if( *(cpos+1) == '>' ) {
+            curnode->z = cpos+1-xmlin;
             curnode = curnode->parent;
             if( !curnode ) goto done;
             curatt->value = attval;
@@ -482,6 +489,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       
       if( let == '>' ) {
         curnode->namelen = tagname_len;
+        curnode->z = cpos-xmlin;
         curnode = curnode->parent; // jump up
         if( !curnode ) goto done;
         tagname_len++;
@@ -508,7 +516,7 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
           cpos += res - 1;
           goto error;
         }
-        
+        curnode->z = cpos-xmlin;
         curnode = curnode->parent; // jump up
         if( !curnode ) goto done;
         tagname_len++;

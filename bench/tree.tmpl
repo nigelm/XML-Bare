@@ -85,3 +85,18 @@ my $tree = $parser->parsefile( $file );
 #-
 require XML::DOM::Lite;
 my $doc = XML::DOM::Lite::Parser->parseFile( $file );
+
+#-
+require XML::Tiny;
+my $xmlfile;
+open( $xmlfile, $file );
+my $doc = XML::Tiny::parsefile( $xmlfile );
+
+#-
+require XML::MyXML;
+my $ob = XML::MyXML::xml_to_object( $file, { file => 1 } );
+
+#-
+require XML::TinyXML;
+my $ob = XML::TinyXML->new();
+$ob->loadFile( $file );

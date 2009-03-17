@@ -17,6 +17,8 @@ bench/tree.tmpl
 bench/notree.tmpl
 bench/feed2.xml
 bench/test.xml
+bench/large.xml
+bench/license.txt
 t/Basic.t
 t/Pod_Coverage.t
 t/Pod.t

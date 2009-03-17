@@ -1,12 +1,27 @@
 XML::Bare Changelog
 
-0.40
+0.43 ( 3-17-09 )
+  - Fixed newly broken add_node problem from 0.42
+  - Added a new test to detect fixed problem
+
+0.42 ( 3-16-09 )
+  - A number of memory leaks have been fixed
+  - XML files included for benchmarking have been replaced with dummy test
+    data to avoid licensing problems.
+
+0.41 ( internal )
+  - Perl code has been optimized
+  - Fixed problem with merge function
+  - Added tohtml output
+  - Added flag to indicate node read in as CDATA
+
+0.40 ( 12-14-08 )
   - Added schema checking functionality
   - Fixed parsing of nodes with more than one comment block
   - Added error checking to ensure properly closed tags
   - Fixed parsing of attributes without values
 
-0.30
+0.30 ( 7-02-08 )
   - Add new parsing mode, simple, which simulates XML::Simple.
 
 0.29 ( internal )

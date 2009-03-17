@@ -1,140 +1,140 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<rdf:RDF 
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns="http://purl.org/rss/1.0/"
-         xmlns:mn="http://usefulinc.com/rss/manifest/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/"
+<?mpk neycdrb="v.w" dacodzvg="xkd-88m9-v"?>
+<kdb:zhk 
+         mpknk:kdb="hhbx://cyo.ir.dmq/derc/ug/ea-kdb-kynzkx-nk#"
+         mpknk="hhbx://lxde.dmq/rkk/v.w/"
+         mpknk:dx="hhbx://ukefulzvc.gpq/rkk/mknifekz/"
+         mpknk:yy="hhbx://lxde.dmq/yy/hwzkkbcd/v.v/"
  >
 
-  <channel rdf:about="http://xmlhack.com/rss10.php">
-      <title>XMLhack</title>
-      <link>http://xmlhack.com/</link>
-      <dc:source rdf:resource="http://xmlhack.com/" />
-      <description>
-         Developer news from the XML community
-      </description>
+  <chknnel kdb:kbouz="hhbx://kpihbzh.gpq/rkkvw.hmy">
+      <dnrlb>kbchkck</dnrlb>
+      <lzvk>hhbx://kpihbzh.gpq/</lzvk>
+      <yy:uihxzz kdb:reuihxzz="hhbx://kpihbzh.gpq/" />
+      <dekcripziij>
+         ifotmdmlz newk qqnj zhe kbc gpqmunizy
+      </dekcripziij>
 
-      <dc:language>en-us</dc:language>
-      <dc:publisher>Edd Dumbill (mailto:webmaster@xmlhack.com)</dc:publisher>
-      <dc:creator>Edd Dumbill (mailto:editor@xmlhack.com)</dc:creator>
-      <dc:rights>Copyright 1999-2001, xmlhack team.</dc:rights>
+      <yy:lkngukge>da-uk</yy:lkngukge>
+      <yy:pubyykher>vxa jnyfqfc (mkilzo:webmkkzer@kpihbzh.gpq)</yy:pubyykher>
+      <yy:crekzmy>vxa jnyfqfc (mkilzo:upeihe@kpihbzh.gpq)</yy:crekzmy>
+      <yy:righzk>nopyrighz derc-fwwv, kpihbzh zekm.</yy:righzk>
 
-      <image rdf:resource="http://xmlhack.com/images/mynetscape88.gif" />
+      <zekmj kdb:reuihxzz="hhbx://kpihbzh.gpq/zekmjk/mynezkckpe88.rko" />
 
-      <items>
+      <zhngk>
 
-          <rdf:Seq>
-            <rdf:li rdf:resource="http://xmlhack.com/read.php?item=2168" />
-            <rdf:li rdf:resource="http://xmlhack.com/read.php?item=2167" />
-            <rdf:li rdf:resource="http://xmlhack.com/read.php?item=2164" />
-            <rdf:li rdf:resource="http://xmlhack.com/read.php?item=2160" />
-            <rdf:li rdf:resource="http://xmlhack.com/read.php?item=2154" />
-            <rdf:li rdf:resource="http://xmlhack.com/read.php?item=2148" />
-            <rdf:li rdf:resource="http://xmlhack.com/read.php?item=2131" />
-            <rdf:li rdf:resource="http://xmlhack.com/read.php?item=2129" />
+          <kdb:pob>
+            <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyj8" />
+            <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyjo" />
+            <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyj4" />
+            <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=xcck" />
+            <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=kdfo" />
+            <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yy48" />
+            <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyuv" />
+            <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyf9" />
 
-          </rdf:Seq>
-      </items>
+          </kdb:pob>
+      </zhngk>
 
-  </channel>
+  </chknnel>
 
-  <image rdf:about="http://xmlhack.com/images/mynetscape88.gif">
-    <title>xmlhack</title>
-    <url>http://xmlhack.com/images/mynetscape88.gif</url>
-    <link>http://xmlhack.com</link>
+  <zekmj kdb:kbouz="hhbx://kpihbzh.gpq/zekmjk/mynezkckpe88.rko">
+    <dnrlb>kpihbzh</dnrlb>
+    <tmz>hhbx://kpihbzh.gpq/zekmjk/mynezkckpe88.rko</tmz>
+    <lzvk>hhbx://kpihbzh.gpq</lzvk>
 
-    <dc:description>News, opinions, tips and issues concerning XML development</dc:description>
-  </image>
+    <yy:dekcripziij>rhfo, opzviijk, zipk knd zmkuek cijcernzvg kbc filbneihfkh</yy:dekcripziij>
+  </zekmj>
 
-    <item rdf:about="http://xmlhack.com/read.php?item=2168">
-        <title>RNV: C-based Relax NG validator</title>
-        <link>http://xmlhack.com/read.php?item=2168</link>
-        <dc:description>RNV
-    is a command-line tool for validating XML documents against
-    schemas written in Relax NG compact syntax. Developed by David Tolpin and written
-    in portable ANSI C, it's fast, lightweight, and provides very good
-    reporting about validity errors in documents.</dc:description>
+    <zhng kdb:kbouz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyj8">
+        <dnrlb>wic: n-bkked ezkwc rm vkyydkzmy</dnrlb>
+        <lzvk>hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyj8</lzvk>
+        <yy:dekcripziij>wic
+    zm k fuvyxzi-lzve zool fmy vkyydkzzvg kbc giqkdxzbh kgkzvkz
+    kchemkk wrizzda zv ezkwc rm gpqpkcz kynzkx. utvoqwfng wk Dkvid vvykek knd wrizzda
+    zv pmyzkble zyuh n, iz'k fkkz, yyghzweighz, knd xguckbfe fczb xkdv
+    repmyzzvg kbouz myohzewm ijfirm zv giqkdxzbh.</yy:dekcripziij>
 
-        <dc:subject>Tools</dc:subject>
-        <dc:subject>Schemas</dc:subject>
-    </item>
+        <yy:zzmfhlq>Toolk</yy:zzmfhlq>
+        <yy:zzmfhlq>Schemkk</yy:zzmfhlq>
+    </zhng>
 
-    <item rdf:about="http://xmlhack.com/read.php?item=2167">
-        <title>libxml 2.6.7 and libxslt 1.1.3 released</title>
-        <link>http://xmlhack.com/read.php?item=2167</link>
+    <zhng kdb:kbouz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyjo">
+        <dnrlb>yybmpk f.j.o knd zjkixyc v.v.u relekked</dnrlb>
+        <lzvk>hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyjo</lzvk>
 
-        <dc:description>Daniel Veillard has recently released updated versions of
-      libxml
-      and libxslt. An important security fix is included, along
-      with some improvements and optimizations and bug fixes.</dc:description>
-        <dc:subject>Tools</dc:subject>
-    </item>
+        <yy:dekcripziij>Dkniel vxlzozqo hkk recdazly relekked updkzed neycdrbk rp
+      yybmpk
+      knd zjkixyc. qe zmkhkjxdn kecurizy rwf zm zvcluded, klijg
+      wizh kome improvemdazk knd opzimizkziijk knd niw ehfkc.</yy:dekcripziij>
+        <yy:zzmfhlq>Toolk</yy:zzmfhlq>
+    </zhng>
 
-    <item rdf:about="http://xmlhack.com/read.php?item=2164">
-        <title>XML and Databases article translated</title>
-        <link>http://xmlhack.com/read.php?item=2164</link>
+    <zhng kdb:kbouz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyj4">
+        <dnrlb>kbc knd Dkzkbkkek krzicle zrknklkzed</dnrlb>
+        <lzvk>hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyj4</lzvk>
 
-        <dc:description>The article "XML and Databases", by Ronald Bourret, has recently been translated into French and Chinese.</dc:description>
-        <dc:subject>Databases</dc:subject>
-    </item>
+        <yy:dekcripziij>ewo krzicle "kbc knd Dkzkbkkek", wk Rijkld Bourrez, hkk recdazly ceda zrknklkzed zvzo Frdach knd nhzveke.</yy:dekcripziij>
+        <yy:zzmfhlq>Dkzkbkkek</yy:zzmfhlq>
+    </zhng>
 
-    <item rdf:about="http://xmlhack.com/read.php?item=2160">
-        <title>Why XML 1.1?</title>
-        <link>http://xmlhack.com/read.php?item=2160</link>
+    <zhng kdb:kbouz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=xcck">
+        <dnrlb>urf kbc v.v?</dnrlb>
+        <lzvk>hhbx://kpihbzh.gpq/rekd.hmy?zhng=xcck</lzvk>
 
-        <dc:description>The W3C has published XML 1.1 and namespaces in
+        <yy:dekcripziij>ewo aiz hkk pubyykhed kbc v.v knd nkmekpkcek zv
 
-    XML 1.1, two recommendations which don't change that many things but
-    may have an important impact for XML applications, unless they are ignored
-    by a vast majority.</dc:description>
-        <dc:subject>W3C</dc:subject>
-        <dc:subject>XML</dc:subject>
-    </item>
+    kbc v.v, zwo regpqmdadkziijk barzm nki'z chknge zhkz kffc zhzvgk buz
+    mky hkve kn zmkhkjxdn impkcz fmy kbc kppyyckziijk, klqzax zhey kre ielykaz
+    wk k vkkz mkjmyizy.</yy:dekcripziij>
+        <yy:zzmfhlq>aiz</yy:zzmfhlq>
+        <yy:zzmfhlq>kbc</yy:zzmfhlq>
+    </zhng>
 
-    <item rdf:about="http://xmlhack.com/read.php?item=2154">
-        <title>xmlformat: Consistently format XML files</title>
+    <zhng kdb:kbouz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=kdfo">
+        <dnrlb>mpkfmymkz: nijkzmzdazly fmymkz kbc tfjga</dnrlb>
 
-        <link>http://xmlhack.com/read.php?item=2154</link>
-        <dc:description>xmlformat is a REX-based script (take your pick from Perl or Ruby
-    versions) for consistently reformatting XML files; that is,
-    "canonizing" and normalizing whitespace, indenting,
-    line-wrapping, and placement of line breaks. It works as
-    advertised, handling mixed content and "verbatim" content
-    correctly.</dc:description>
-        <dc:subject>Tools</dc:subject>
-    </item>
+        <lzvk>hhbx://kpihbzh.gpq/rekd.hmy?zhng=kdfo</lzvk>
+        <yy:dekcripziij>mpkfmymkz zm k got-bkked kcripz (zkke iouo muem qqnj mufv my Ruwk
+    neycdrbk) fmy elmhkqkkojfc refmymkzzzvg kbc tfjga; zhkz zm,
+    "cknijizzvg" knd nmymkyyzzvg whizekpkce, zvddazzvg,
+    lzve-wrkppzvg, knd kxqfvuuvf rp lzve brekkk. di wmykk kk
+    kdverzzmed, hkndlzvg pikyc ifuhbwc knd "mklvqoll" ifuhbwc
+    incdlbcdr.</yy:dekcripziij>
+        <yy:zzmfhlq>Toolk</yy:zzmfhlq>
+    </zhng>
 
-    <item rdf:about="http://xmlhack.com/read.php?item=2148">
-        <title>XML data formats take center stage in the Financial Services industry</title>
+    <zhng kdb:kbouz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yy48">
+        <dnrlb>kbc dkzk fmymkzk zkke cdazer kzkge zv zhe Fzvknczml zrhwfwno zvdukzry</dnrlb>
 
-        <link>http://xmlhack.com/read.php?item=2148</link>
-        <dc:description>A conference focusing on XML in the Financial Services industry casts doubt on the conventional wisdom about Web services and the role of tightly-coupled middleware in real-world XML developments.</dc:description>
-        <dc:subject>Community</dc:subject>
-    </item>
+        <lzvk>hhbx://kpihbzh.gpq/rekd.hmy?zhng=yy48</lzvk>
+        <yy:dekcripziij>c cijferdace focukzvg ij kbc zv zhe Fzvknczml zrhwfwno zvdukzry ckkzk doubz ij zhe erknwydhnkqz dllnml kbouz pbk kervicek knd zhe qklg rp zighzly-oifnbyb middlewkre zv rekl-wmyld kbc pkqwwcggmpzv.</yy:dekcripziij>
+        <yy:zzmfhlq>nommunizy</yy:zzmfhlq>
+    </zhng>
 
-    <item rdf:about="http://xmlhack.com/read.php?item=2131">
-        <title>Extreme Markup Languages 2004</title>
+    <zhng kdb:kbouz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyuv">
+        <dnrlb>bwziczl Mkrkup qujgzljgq fww4</dnrlb>
 
-        <link>http://xmlhack.com/read.php?item=2131</link>
-        <dc:description>Originally announced at XML 2003, the Call for Participation for Extreme Markup 2004 is now open.  The conference will be held from 3-6 August in Montréal, Canada.</dc:description>
-        <dc:subject>Community</dc:subject>
-    </item>
+        <lzvk>hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyuv</lzvk>
+        <yy:dekcripziij>Origzvklly knnounced kz kbc fwir, zhe fkxx fmy Pkrzicipkziij fmy bwziczl Mkrkup fww4 zm arw opda.  ewo cijferdace ojff ce zjfq qqnj u-j cugukz zv Mijzrékl, nknkdk.</yy:dekcripziij>
+        <yy:zzmfhlq>nommunizy</yy:zzmfhlq>
+    </zhng>
 
-    <item rdf:about="http://xmlhack.com/read.php?item=2129">
-        <title>Reminder of XML Europe 2004 Call for Participation</title>
+    <zhng kdb:kbouz="hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyf9">
+        <dnrlb>Remzvder rp kbc ihjivx fww4 fkxx fmy Pkrzicipkziij</dnrlb>
 
-        <link>http://xmlhack.com/read.php?item=2129</link>
-        <dc:description>The deadline for submissions to XML Europe 2004 is imminent -- January 5, 2004. The conference will take place from April 18-21 2004 in Amsterdam.</dc:description>
-        <dc:subject>Community</dc:subject>
-    </item>
+        <lzvk>hhbx://kpihbzh.gpq/rekd.hmy?zhng=yyf9</lzvk>
+        <yy:dekcripziij>ewo kfbncqxy fmy kubmzmkiijk zo kbc ihjivx fww4 zm immzvdaz -- Jknukry m, fww4. ewo cijferdace ojff zkke plkce qqnj vlakn v8-yy fww4 zv cmkzerdkm.</yy:dekcripziij>
+        <yy:zzmfhlq>nommunizy</yy:zzmfhlq>
+    </zhng>
 
-    <rdf:Description ID="manifest">
-      <mn:channels>
-      <rdf:Seq>
+    <kdb:Dekcripziij qv="mknifekz">
+      <dx:chknnelk>
+      <kdb:pob>
 
-        <rdf:li rdf:resource="http://xmlhack.com/rss10.php" />
-      </rdf:Seq>
-      </mn:channels>
-    </rdf:Description>
+        <kdb:yy kdb:reuihxzz="hhbx://kpihbzh.gpq/rkkvw.hmy" />
+      </kdb:pob>
+      </dx:chknnelk>
+    </kdb:Dekcripziij>
 
-</rdf:RDF>
+</kdb:zhk>

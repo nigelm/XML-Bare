@@ -2,7 +2,7 @@
 use ExtUtils::MakeMaker;
 require 5.006;
 my @basics = ( AUTHOR       => 'David Helkowski <cpan@codechild.com>',
-               ABSTRACT     => 'A minimal XML parser that uses C to generate a folded perl hash.',
+               ABSTRACT     => 'A minimal XML parser / schema checker / pretty-printer using C internally.',
                NAME         => 'XML::Bare',
                VERSION_FROM => 'Bare.pm',
                PREREQ_PM    => { Carp => 0, Exporter => 0, DynaLoader => 0 },

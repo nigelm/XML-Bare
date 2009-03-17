@@ -7,12 +7,19 @@ require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = "0.40";
 
+$VERSION = "0.43";
+
+
+use vars qw($VERSION *AUTOLOAD);
+
+*AUTOLOAD = \&XML::Bare::AUTOLOAD;
 bootstrap XML::Bare $VERSION;
 
+
+
 @EXPORT = qw( );
-@EXPORT_OK = qw(merge clean find_node del_node forcearray del_by_perl);
+@EXPORT_OK = qw( xget merge clean add_node del_node find_node del_node forcearray del_by_perl xmlin xval );
 
 =head1 NAME
 
@@ -20,25 +27,19 @@ XML::Bare - Minimal XML parser implemented via a C state engine
 
 =head1 VERSION
 
-0.40
+0.42
 
 =cut
 
 sub new {
   my $class = shift; 
-  $class    = ref($class) || $class;
-  my $self  = {};
-  %$self    = @_;
-
-  bless $self, $class;
+  my $self  = { @_ };
   
-  my $text;
   if( $self->{ 'text' } ) {
     XML::Bare::c_parse( $self->{'text'} );
   }
   else {
-    my $file = $self->{ 'file' };
-    my $res = open( XML, $file );
+    my $res = open( XML, $self->{ 'file' } );
     if( !$res ) {
       $self->{ 'xml' } = 0;
       return 0;
@@ -50,23 +51,31 @@ sub new {
     close( XML );
     XML::Bare::c_parse( $self->{'text'} );
   }
-  
-  return $self;
+  bless $self, $class;
+  return $self if( !wantarray );
+  return ( $self, $self->parse() );
+}
+
+sub DESTROY {
+  my $self = shift;
+  undef $self->{'xml'};
+}
+
+sub xget {
+  my $hash = shift;
+  return map $_->{'value'}, @{%$hash}{@_};
 }
 
 sub forcearray {
   my $ref = shift;
+  return [] if( !$ref );
   return $ref if( ref( $ref ) eq 'ARRAY' );
-  my @arr;
-  push( @arr, $ref );
-  return \@arr;
+  return [ $ref ];
 }
 
 sub merge {
   # shift in the two array references as well as the field to merge on
-  my $a = shift;
-  my $b = shift;
-  my $id = shift;
+  my ( $a, $b, $id ) = @_;
   my %hash = map { $_->{ $id } ? ( $_->{ $id }->{ 'value' } => $_ ) : ( 0 => 0 ) } @$a;
   for my $one ( @$b ) {
     next if( !$one->{ $id } );
@@ -76,12 +85,10 @@ sub merge {
       next if( $key eq '_pos' || $key eq 'id' );
       my $cur = $short->{ $key };
       my $add = $one->{ $key };
-      if( !$cur ) {
-        $short->{ $key } = $add;
-      }
+      if( !$cur ) { $short->{ $key } = $add; }
       else {
         my $type = ref( $cur );
-        if( $cur eq 'HASH' ) {
+        if( $type eq 'HASH' ) {
           my @arr;
           $short->{ $key } = \@arr;
           push( @arr, $cur );
@@ -92,7 +99,6 @@ sub merge {
         else { # we are merging an array
           push( @{$short->{ $key }}, @$add );
         }
-        
       }
       # we need to deal with the case where this node
       # is already there, either alone or as an array
@@ -104,19 +110,38 @@ sub merge {
 sub clean {
   my $ob = new XML::Bare( @_ );
   my $root = $ob->parse();
-  $ob->{'file'} = $ob->{'save'} if( $ob->{'save'} && "$ob->{'save'}" ne "1" );
   if( $ob->{'save'} ) {
+    $ob->{'file'} = $ob->{'save'} if( "$ob->{'save'}" ne "1" );
     $ob->save();
     return;
   }
   return $ob->xml( $root );
 }
 
+sub xmlin {
+  my $text = shift;
+  my %ops = ( @_ );
+  my $ob = new XML::Bare( text => $text );
+  my $simple = $ob->simple();
+  if( !$ops{'keeproot'} ) {
+    my @keys = keys %$simple;
+    my $first = $keys[0];
+    $simple = $simple->{ $first } if( $first );
+  }
+  return $simple;
+}
+
+sub tohtml {
+  my %ops = ( @_ );
+  my $ob = new XML::Bare( %ops );
+  return $ob->html( $ob->parse(), $ops{'root'} || 'xml' );
+}
+
 # Load a file using XML::DOM, convert it to a hash, and return the hash
 sub parse {
-  my $self   = shift;
+  my $self = shift;
   
-  my $res = XML::Bare::xml2obj();#$self->xml2obj();
+  my $res = XML::Bare::xml2obj();
   $self->{'structroot'} = XML::Bare::get_root();
   $self->free_tree();
   
@@ -136,9 +161,7 @@ sub parse {
   if( defined( $self->{'xbso'} ) ) {
     my $ob = $self->{'xbso'};
     my $cres = $self->check( $res, $ob );
-    if( $cres ) {
-      croak( $cres );
-    }
+    croak( $cres ) if( $cres );
   }
   
   return $self->{ 'xml' };
@@ -146,7 +169,7 @@ sub parse {
 
 sub lineinfo {
   my $self = shift;
-  my $res = shift;
+  my $res  = shift;
   my $line = 1;
   my $j = 0;
   for( my $i=0;$i<$res;$i++ ) {
@@ -159,15 +182,17 @@ sub lineinfo {
   my $part = substr( $self->{'text'}, $res, 10 );
   $part =~ s/\n//g;
   $res -= $j;
+  if( $self->{'offset'} ) {
+    my $off = $self->{'offset'};
+    $line += $off;
+    return "$off line $line char $res \"$part\"";
+  }
   return "line $line char $res \"$part\"";
 }
 
 # xml bare schema
 sub check {
-  my $self = shift;
-  my $node = shift;
-  my $scheme = shift;
-  my $parent = shift;
+  my ( $self, $node, $scheme, $parent ) = @_;
   
   my $fail = '';
   if( ref( $scheme ) eq 'ARRAY' ) {
@@ -177,25 +202,19 @@ sub check {
       $fail .= "$res\n";
     }
   }
-  else {
-    return $self->checkone( $node, $scheme, $parent );
-  }
+  else { return $self->checkone( $node, $scheme, $parent ); }
   return $fail;
 }
 
 sub checkone {
-  my $self = shift;
-  my $node = shift;
-  my $scheme = shift;
-  my $parent = shift;
+  my ( $self, $node, $scheme, $parent ) = @_;
   
   for my $key ( keys %$node ) {
-    next if( substr( $key, 0, 1 ) eq '_' || $key eq 'att' || $key eq 'comment' );
+    next if( substr( $key, 0, 1 ) eq '_' || $key eq '_att' || $key eq 'comment' );
     if( $key eq 'value' ) {
       my $val = $node->{ 'value' };
       my $regexp = $scheme->{'value'};
       if( $regexp ) {
-        #$regexp = "^($regexp)\$";
         if( $val !~ m/^($regexp)$/ ) {   
           my $linfo = $self->lineinfo( $node->{'_i'} );
           return "Value of '$parent' node ($val) does not match /$regexp/ [$linfo]";
@@ -230,8 +249,8 @@ sub checkone {
           return "Not enough nodes of type '$key'; min $min [$linfo]"
         }
       }
-      for my $item ( @$sub ) {
-        my $res = $self->check( $item, $ssub, $key );
+      for( @$sub ) {
+        my $res = $self->check( $_, $ssub, $key );
         return $res if( $res );
       }
     }
@@ -257,7 +276,7 @@ sub readxbs { # xbs = xml bare schema
   my $node = shift;
   my @demand;
   for my $key ( keys %$node ) {
-    next if( substr( $key, 0, 1 ) eq '_' || $key eq 'att' || $key eq 'comment' );
+    next if( substr( $key, 0, 1 ) eq '_' || $key eq '_att' || $key eq 'comment' );
     if( $key eq 'value' ) {
       my $val = $node->{'value'};
       delete $node->{'value'} if( $val =~ m/^\W*$/ );
@@ -331,49 +350,40 @@ sub readxbs { # xbs = xml bare schema
       push( @demand, $key );
     }
   }
-  if( @demand ) {
-    $node->{'_demand'} = \@demand;
-  }
+  if( @demand ) { $node->{'_demand'} = \@demand; }
 }
 
 sub simple {
-  my $self   = shift;
+  my $self = shift;
   
-  my $res = XML::Bare::xml2obj();#$self->xml2obj();
+  my $res = XML::Bare::xml2obj_simple();#$self->xml2obj();
   $self->{'structroot'} = XML::Bare::get_root();
   $self->free_tree();
   
-  if( $res < 0 ) {
-    die "Error at character ".(-$res); 
-  }
+  if( $res < 0 ) { croak "Error at ".$self->lineinfo( -$res ); }
   $self->{ 'xml' } = $res;
   
   return $self->{ 'xml' };
 }
 
 sub add_node {
-  my $self = shift;
-  my $node = shift;
-  my $name = shift;
+  my ( $self, $node, $name ) = @_;
   my @newar;
   my %blank;
   $node->{ 'multi_'.$name } = \%blank if( ! $node->{ 'multi_'.$name } );
   $node->{ $name } = \@newar if( ! $node->{ $name } );
-  my $newnode = $self->new_node( @_ );
+  my $newnode = new_node( 0, splice( @_, 3 ) );
   push( @{ $node->{ $name } }, $newnode );
   return $newnode;
 }
 
 sub add_node_after {
-  my $self = shift;
-  my $node = shift;
-  my $prev = shift;
-  my $name = shift;
+  my ( $self, $node, $prev, $name ) = @_;
   my @newar;
   my %blank;
   $node->{ 'multi_'.$name } = \%blank if( ! $node->{ 'multi_'.$name } );
   $node->{ $name } = \@newar if( ! $node->{ $name } );
-  my $newnode = $self->new_node( @_ );
+  my $newnode = $self->new_node( splice( @_, 4 ) );
   
   my $cur = 0;
   for my $anode ( @{ $node->{ $name } } ) {
@@ -396,9 +406,7 @@ sub find_by_perl {
   my $cond = shift;
   $cond =~ s/-([a-z]+)/\$ob->\{'$1'\}->\{'value'\}/g;
   my @res;
-  foreach my $ob ( @$arr ) {
-    push( @res, $ob ) if( eval( $cond ) );
-  }
+  foreach my $ob ( @$arr ) { push( @res, $ob ) if( eval( $cond ) ); }
   return \@res;
 }
 
@@ -407,7 +415,9 @@ sub find_node {
   my $node = shift;
   my $name = shift;
   my %match = @_;
-  $node = $node->{ $name };
+  #croak "Cannot search empty node for $name" if( !$node );
+  #$node = $node->{ $name } or croak "Cannot find $name";
+  $node = $node->{ $name } or return 0;
   return 0 if( !$node );
   if( ref( $node ) eq 'HASH' ) {
     foreach my $key ( keys %match ) {
@@ -470,22 +480,20 @@ sub new_node {
   my %parts = @_;
   
   my %newnode;
-  foreach $a ( keys %parts ) {
-    $newnode{ $a } = $self->newhash( $parts{$a} );
+  foreach( keys %parts ) {
+    my $val = $parts{$_};
+    if( m/^_/ || ref( $val ) eq 'HASH' ) {
+      $newnode{ $_ } = $val;
+    }
+    else {
+      $newnode{ $_ } = { value => $val };
+    }
   }
   
   return \%newnode;
 }
 
-sub newhash {
-  my $self = shift;
-  my $val = shift;
-  my %hash;
-  
-  $hash{ 'value' } = $val;
-  
-  return \%hash;
-}
+sub newhash { shift; return { value => shift }; }
 
 sub simplify {
   my $self = shift;
@@ -498,22 +506,22 @@ sub simplify {
   return \%ret;
 }
 
+sub xval {
+  return $_[0] ? $_[0]->{'value'} : ( $_[1] || '' );
+}
+
 # Save an XML hash tree into a file
 sub save {
   my $self = shift;
-  my $file   = $self->{ 'file' };
-  my $xml    = $self->{ 'xml' };
-  return if( ! $xml );
+  return if( ! $self->{ 'xml' } );
   
-  open  F, '>' . $file;
+  open  F, '>' . $self->{ 'file' };
   print F $self->xml( $self->{'xml'} );
   close F;
 }
 
 sub xml {
-  my $self = shift;
-  my $obj = shift;
-  my $name = shift;
+  my ( $self, $obj, $name ) = @_;
   if( !$name ) {
     my %hash;
     $hash{0} = $obj;
@@ -524,105 +532,229 @@ sub xml {
   return obj2xml( \%hash, '', 0 );
 }
 
+sub html {
+  my ( $self, $obj, $name ) = @_;
+  my $pre = '';
+  if( $self->{'style'} ) {
+    $pre = "<style type='text/css'>\@import '$self->{'style'}';</style>";
+  }
+  if( !$name ) {
+    my %hash;
+    $hash{0} = $obj;
+    return $pre.obj2html( \%hash, '', 0 );
+  }
+  my %hash;
+  $hash{$name} = $obj;
+  return $pre.obj2html( \%hash, '', 0 );
+}
+
 sub obj2xml {
-  my $objs = shift;
-  my $name = shift;
-  my $pad = shift;
-  my $level = shift;
-  my $pdex = shift;
-  $level = 0 if( !$level );
-  $pad = '' if( $level == 1 );
-  my $xml  = '';
-  my $att  = '';
-  my $imm  = 1;
+  my ( $objs, $name, $pad, $level, $pdex ) = @_;
+  
+  $level  = 0  if( !$level );
+  $pad    = '' if(  $level == 1 );
+  my $xml = '';
+  my $att = '';
+  my $imm = 1;
   return '' if( !$objs );
-  my @dex = sort
-    { 
-      my $oba = $objs->{ $a };
-      my $obb = $objs->{ $b };
-      if( !$oba ) { return 0; }
-      if( !$obb ) { return 0; }
-      $oba = $oba->[0] if( ref( $oba ) eq 'ARRAY' );
-      $obb = $obb->[0] if( ref( $obb ) eq 'ARRAY' );
-      if( ref( $oba ) eq 'HASH' && ref( $obb ) eq 'HASH' ) {
-        my $posa = $oba->{'_pos'}*1;
-        my $posb = $obb->{'_pos'}*1;
-        if( !$posa ) { $posa = 0; }
-        if( !$posb ) { $posb = 0; }
-        return $posa <=> $posb;
-      }
-      return 0;
-    } keys %$objs;
+  #return $objs->{'_raw'} if( $objs->{'_raw'} );
+  my @dex = sort { 
+    my $oba = $objs->{ $a };
+    my $obb = $objs->{ $b };
+    if( !$oba ) { return 0; }
+    if( !$obb ) { return 0; }
+    $oba = $oba->[0] if( ref( $oba ) eq 'ARRAY' );
+    $obb = $obb->[0] if( ref( $obb ) eq 'ARRAY' );
+    if( ref( $oba ) eq 'HASH' && ref( $obb ) eq 'HASH' ) {
+      my $posa = $oba->{'_pos'}*1;
+      my $posb = $obb->{'_pos'}*1;
+      if( !$posa ) { $posa = 0; }
+      if( !$posb ) { $posb = 0; }
+      return $posa <=> $posb;
+    }
+    return 0;
+  } keys %$objs;
   for my $i ( @dex ) {
     my $obj  = $objs->{ $i } || '';
     my $type = ref( $obj );
     if( $type eq 'ARRAY' ) {
       $imm = 0;
       
-      my @dex2 = sort
-        { 
-          my $oba = $a;#$obj->[ $a ];
-          my $obb = $b;#$obj->[ $b ];
-          if( !$oba ) { return 0; }
-          if( !$obb ) { return 0; }
-          if( ref( $oba ) eq 'HASH' && ref( $obb ) eq 'HASH' ) {
-            my $posa = $oba->{'_pos'};
-            my $posb = $obb->{'_pos'};
-            if( !$posa ) { $posa = 0; }
-            if( !$posb ) { $posb = 0; }
-            return $posa <=> $posb;
-          }
-          return 0;
-        } @$obj;
+      my @dex2 = sort { 
+        if( !$a ) { return 0; }
+        if( !$b ) { return 0; }
+        if( ref( $a ) eq 'HASH' && ref( $b ) eq 'HASH' ) {
+          my $posa = $a->{'_pos'};
+          my $posb = $b->{'_pos'};
+          if( !$posa ) { $posa = 0; }
+          if( !$posb ) { $posb = 0; }
+          return $posa <=> $posb;
+        }
+        return 0;
+      } @$obj;
       
       for my $j ( @dex2 ) {
         $xml .= obj2xml( $j, $i, $pad.'  ', $level+1, $#dex );
       }
     }
-    elsif( $type eq 'HASH' ) {
-      $imm = 0;
-      if( $obj->{ 'att' } ) {
-        $att .= ' ' . $i . '="' . $obj->{ 'value' } . '"';
+    elsif( $type eq 'HASH' && $i !~ /^_/ ) {
+      if( $obj->{ '_att' } ) {
+        $att .= ' ' . $i . '="' . $obj->{ 'value' } . '"' if( $i !~ /^_/ );;
       }
       else {
+        $imm = 0;
         $xml .= obj2xml( $obj , $i, $pad.'  ', $level+1, $#dex );
       }
     }
     else {
-      if( $i eq 'comment' ) {
-        $xml .= '<!--' . $obj . '-->' . "\n";
-      }
+      if( $i eq 'comment' ) { $xml .= '<!--' . $obj . '-->' . "\n"; }
       elsif( $i eq 'value' ) {
-        if( $#dex < 3 && $level > 1 ) {
-          if( $obj && $obj =~ /[<>&;]/ ) {
-            $xml .= '<![CDATA[' . $obj . ']]>';
-          }
-          else {
-            if( $obj =~ /\S/ ) {
-              #if( $#dex == 1 ) {
-              #  $obj =~ s/^\s+//;
-              #  $obj =~ s/\s+$//;
-              #  $obj = "$pad  $obj\n";
-              #}
-              $xml .= $obj;
-            }
-          }
+        if( $level > 1 ) { # $#dex < 4 && 
+          if( $obj && $obj =~ /[<>&;]/ ) { $xml .= '<![CDATA[' . $obj . ']]>'; }
+          else { $xml .= $obj if( $obj =~ /\S/ ); }
         }
       }
-      elsif( substr( $i, 0, 1 ) eq '_' ) {
-      }
-      else {
-        $xml .= '<' . $i . '>' . $obj . '</' . $i . '>';
-      }
+      elsif( $i =~ /^_/ ) {}
+      else { $xml .= '<' . $i . '>' . $obj . '</' . $i . '>'; }
     }
   }
   my $pad2 = $imm ? '' : $pad;
   my $cr = $imm ? '' : "\n";
   if( substr( $name, 0, 1 ) ne '_' ) {
-    if( $name ) {
-      $xml = $pad . '<' . $name . $att . '>' . $cr . $xml . $pad2 . '</' . $name . '>';
-    }
+    if( $name ) { $xml = $pad . '<' . $name . $att . '>' . $cr . $xml . $pad2 . '</' . $name . '>'; }
     return $xml."\n" if( $level );
+    return $xml;
+  }
+  return '';
+}
+
+sub obj2html {
+  my ( $objs, $name, $pad, $level, $pdex ) = @_;
+    
+  my $less = "<span class='ang'>&lt;</span>";
+  my $more = "<span class='ang'>></span>";
+  my $tn0 = "<span class='tname'>";
+  my $tn1 = "</span>";
+  my $eq0 = "<span class='eq'>";
+  my $eq1 = "</span>";
+  my $qo0 = "<span class='qo'>";
+  my $qo1 = "</span>";
+  my $sp0 = "<span class='sp'>";
+  my $sp1 = "</span>";
+  my $cd0 = "";
+  my $cd1 = "";
+  
+  $level = 0 if( !$level );
+  $pad = '' if( $level == 1 );
+  my $xml  = '';
+  my $att  = '';
+  my $imm  = 1;
+  return '' if( !$objs );
+  my @dex = sort { 
+    my $oba = $objs->{ $a };
+    my $obb = $objs->{ $b };
+    if( !$oba ) { return 0; }
+    if( !$obb ) { return 0; }
+    $oba = $oba->[0] if( ref( $oba ) eq 'ARRAY' );
+    $obb = $obb->[0] if( ref( $obb ) eq 'ARRAY' );
+    if( ref( $oba ) eq 'HASH' && ref( $obb ) eq 'HASH' ) {
+      my $posa = $oba->{'_pos'}*1;
+      my $posb = $obb->{'_pos'}*1;
+      if( !$posa ) { $posa = 0; }
+      if( !$posb ) { $posb = 0; }
+      return $posa <=> $posb;
+    }
+    return 0;
+  } keys %$objs;
+  
+  if( $objs->{'_cdata'} ) {
+    my $val = $objs->{'value'};
+    $val =~ s/^(\s*\n)+//;
+    $val =~ s/\s+$//;
+    $val =~ s/&/&amp;/g;
+    $val =~ s/</&lt;/g;
+    $objs->{'value'} = $val;
+    #$xml = "$less![CDATA[<div class='node'><div class='cdata'>$val</div></div>]]$more";
+    $cd0 = "$less![CDATA[<div class='node'><div class='cdata'>";
+    $cd1 = "</div></div>]]$more";
+  }
+  for my $i ( @dex ) {
+    my $obj  = $objs->{ $i } || '';
+    my $type = ref( $obj );
+    if( $type eq 'ARRAY' ) {
+      $imm = 0;
+      
+      my @dex2 = sort { 
+        if( !$a ) { return 0; }
+        if( !$b ) { return 0; }
+        if( ref( $a ) eq 'HASH' && ref( $b ) eq 'HASH' ) {
+          my $posa = $a->{'_pos'};
+          my $posb = $b->{'_pos'};
+          if( !$posa ) { $posa = 0; }
+          if( !$posb ) { $posb = 0; }
+          return $posa <=> $posb;
+        }
+        return 0;
+      } @$obj;
+      
+      for my $j ( @dex2 ) { $xml .= obj2html( $j, $i, $pad.'&nbsp;&nbsp;', $level+1, $#dex ); }
+    }
+    elsif( $type eq 'HASH' && $i !~ /^_/ ) {
+      if( $obj->{ '_att' } ) {
+        my $val = $obj->{ 'value' };
+        $val =~ s/</&lt;/g;
+        if( $val eq '' ) {
+          $att .= " <span class='aname'>$i</span>" if( $i !~ /^_/ );
+        }
+        else {
+          $att .= " <span class='aname'>$i</span>$eq0=$eq1$qo0\"$qo1$val$qo0\"$qo1" if( $i !~ /^_/ );
+        }
+      }
+      else {
+        $imm = 0;
+        $xml .= obj2html( $obj , $i, $pad.'&nbsp;&nbsp;', $level+1, $#dex );
+      }
+    }
+    else {
+      if( $i eq 'comment' ) { $xml .= "$less!--" . $obj . "--$more" . "<br>\n"; }
+      elsif( $i eq 'value' ) {
+        if( $level > 1 ) {
+          if( $obj && $obj =~ /[<>&;]/ && ! $objs->{'_cdata'} ) { $xml .= "$less![CDATA[$obj]]$more"; }
+          else { $xml .= $obj if( $obj =~ /\S/ ); }
+        }
+      }
+      elsif( $i =~ /^_/ ) {}
+      else { $xml .= "$less$tn0$i$tn1$more$obj$less/$tn0$i$tn1$more"; }
+    }
+  }
+  my $pad2 = $imm ? '' : $pad;
+  if( substr( $name, 0, 1 ) ne '_' ) {
+    if( $name ) {
+      if( $imm ) {
+        if( $xml =~ /\S/ ) {
+          $xml = "$sp0$pad$sp1$less$tn0$name$tn1$att$more$cd0$xml$cd1$less/$tn0$name$tn1$more";
+        }
+        else {
+          $xml = "$sp0$pad$sp1$less$tn0$name$tn1$att/$more";
+        }
+      }
+      else {
+        if( $xml =~ /\S/ ) {
+          $xml = "$sp0$pad$sp1$less$tn0$name$tn1$att$more<div class='node'>$xml</div>$sp0$pad$sp1$less/$tn0$name$tn1$more";
+        }
+        else { $xml = "$sp0$pad$sp1$less$tn0$name$tn1$att/$more"; }
+      }
+    }
+    $xml .= "<br>" if( $objs->{'_br'} );
+    if( $objs->{'_note'} ) {
+      $xml .= "<br>";
+      my $note = $objs->{'_note'}{'value'};
+      my @notes = split( /\|/, $note );
+      for( @notes ) {
+        $xml .= "<div class='note'>$sp0$pad$sp1<span class='com'>&lt;!--</span> $_ <span class='com'>--></span></div>";
+      }
+    }
+    return $xml."<br>\n" if( $level );
     return $xml;
   }
   return '';
@@ -828,7 +960,7 @@ In future versions of this module an option will be added to allow
 you to sort your nodes so that you can read them in order.
 ( note that multiple nodes of the same name are stored in order )
 
-=item * att
+=item * _att
 
 This is a boolean value that exists and is 1 iff the node is an
 attribute.
@@ -926,6 +1058,10 @@ Create a new XML object, with the given filename/path as the xml source
 Create a new XML object, with the given text as the xml input, and the given
 filename/path as the potential output ( used by save() )
 
+=item * C<< $object = new XML::Bare( file => "data.xml", scheme => { file => "scheme.xbs" } ) >>
+
+Create a new XML object and check to ensure it is valid xml by way of the XBS scheme.
+
 =item * C<< $tree = $object->parse() >>
 
 Parse the xml of the object and return a tree reference
@@ -941,19 +1077,40 @@ Note that currently the generated tree cannot be used with any of the
 functions in this module that operate upon trees. The function is provided
 purely as a quick and dirty way to read simple XML files.
 
-Also note that you cannot rely upon this function being contained in
-future versions of XML::Bare; the function will likely be split off into
-an optimized version meant purely to operate in this fashion.
+=item * C<< $tree = xmlin( $xmlext, keeproot => 1 ) >>
+
+The xmlin function is a shortcut to creating an XML::Bare object and
+parsing it using the simple function. It behaves similarly to the
+XML::Simple function by the same name. The keeproot option is optional
+and if left out the root node will be discarded, same as the function
+in XML::Simple.
 
 =item * C<< $text = $object->xml( [root] ) >>
 
 Take the hash tree in [root] and turn it into cleanly indented ( 2 spaces )
 XML text.
 
+=item * C<< $text = $object->html( [root], [root node name] ) >>
+
+Take the hash tree in [root] and turn it into nicely colorized and styled
+html. [root node name] is optional.
+
 =item * C<< $object->save() >>
 
 The the current tree in the object, cleanly indent it, and save it
 to the file paramter specified when creating the object.
+
+=item * C<< $value = xval $node, $default >>
+
+Returns the value of $node or $default if the node does not exist.
+If default is not passed to the function, then '' is returned as
+a default value when the node does not exist.
+
+=item * C<< ( $name, $age ) = xget( $personnode, qw/name age/ ) >>
+
+Shortcut function to grab a number of values from a node all at the
+same time. Note that this function assumes that all of the subnodes
+exist; it will fail if they do not.
 
 =item * C<< $text = XML::Bare::clean( text => "[some xml]" ) >>
 
@@ -975,6 +1132,12 @@ Clean up the xml provided, and save it into the specified file.
 
 Clean up the xml in filename1 and save the results to filename2.
 
+=item * C<< $html = XML::Bare::tohtml( text => "[some xml]", root => 'xml' ) >>
+
+Shortcut to creating an xml object and immediately turning it into html.
+Root is optional, and specifies the name of the root node for the xml
+( which defaults to 'xml' )
+
 =item * C<< $object->add_node( [node], [nodeset name], name => value, name2 => value2, ... ) >>
 
   Example:
@@ -987,9 +1150,7 @@ Clean up the xml in filename1 and save the results to filename2.
       </item>
     </xml>
 
-=item * C<< $object->add_node_after( [node], [node to insert after], [nodeset name], name => value, ... ) >>
-
-Same as add_node, but the new node is added immediately after the specificed node.
+=item * C<< $object->add_node_after( [node], [subnode within node to add after], [nodeset name], ... ) >>
 
 =item * C<< $object->del_node( [node], [nodeset name], name => value ) >>
 
@@ -1156,18 +1317,11 @@ each child.
 
 =over 2
 
-=item * C<< XML::Bare::check() >>
-=item * C<< XML::Bare::checkone() >>
-=item * C<< XML::Bare::readxbs() >>
-=item * C<< XML::Bare::lineinfo() >>
-=item * C<< XML::Bare::c_parse() >>
-=item * C<< XML::Bare::c_parsefile() >>
-=item * C<< XML::Bare::free_tree() >>
-=item * C<< XML::Bare::free_tree_c() >>
-=item * C<< XML::Bare::xml2obj() >>
-=itme * C<< XML::Bare::xml2obj_simple() >>
-=item * C<< XML::Bare::obj2xml() >>
-=item * C<< XML::Bare::get_root() >>
+=item * C<< check() checkone() readxbs() free_tree_c() >>
+
+=item * C<< lineinfo() c_parse() c_parsefile() free_tree() xml2obj() >>
+
+=item * C<< obj2xml() get_root() obj2html() xml2obj_simple() >>
 
 =back
 
@@ -1187,54 +1341,30 @@ that do not generated trees ( notree.tmpl ).
 
 A full list of modules currently tested against is as follows:
 
-=over 2
-
-=item * Tiny XML (exe)
-
-=item * EzXML (exe)
-
-=item * XMLIO (exe)
-
-=item * XML::LibXML (notree)
-
-=item * XML::Parser (notree)
-
-=item * XML::Parser::Expat (notree)
-
-=item * XML::Descent (notree)
-
-=item * XML::Parser::EasyTree
-
-=item * XML::Handler::Trees
-
-=item * XML::Twig
-
-=item * XML::Smart
-
-=item * XML::Simple using XML::Parser
-
-=item * XML::Simple using XML::SAX::PurePerl
-
-=item * XML::Simple using XML::LibXML::SAX::Parser
-
-=item * XML::Simple using XML::Bare::SAX::Parser
-
-=item * XML::TreePP
-
-=item * XML::Trivial
-
-=item * XML::SAX::Simple
-
-=item * XML::Grove::Builder
-
-=item * XML::XPath::XMLParser
-
-=item * XML::DOM
-
-=back
+  Tiny XML (exe)
+  EzXML (exe)
+  XMLIO (exe)
+  XML::LibXML (notree)
+  XML::Parser (notree)
+  XML::Parser::Expat (notree)
+  XML::Descent (notree)
+  XML::Parser::EasyTree
+  XML::Handler::Trees
+  XML::Twig
+  XML::Smart
+  XML::Simple using XML::Parser
+  XML::Simple using XML::SAX::PurePerl
+  XML::Simple using XML::LibXML::SAX::Parser
+  XML::Simple using XML::Bare::SAX::Parser
+  XML::TreePP
+  XML::Trivial
+  XML::SAX::Simple
+  XML::Grove::Builder
+  XML::XPath::XMLParser
+  XML::DOM
 
 To run the comparisons, run the appropriate perl file within the
-bench directory. (exe.pl, tree.pl, or notree.pl )
+bench directory. ( exe.pl, tree.pl, or notree.pl )
 
 The script measures the milliseconds of loading and parsing, and
 compares the time against the time of XML::Bare. So a 7 means
@@ -1327,11 +1457,5 @@ the distribution
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-   ____ ________  ________ _________ 
-  /_   |\_____  \ \_____  \\______  \
-   |   |  _(__  <   _(__  <    /    /
-   |   | /       \ /       \  /    / 
-   |___|/______  //______  / /____/  
-               \/        \/          
 
 =cut
