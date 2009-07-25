@@ -8,11 +8,15 @@ my @basics = ( AUTHOR       => 'David Helkowski <cpan@codechild.com>',
                PREREQ_PM    => { Carp => 0, Exporter => 0, DynaLoader => 0 },
                #OPTIMIZE     => '-O3 -msse2 -march=pentium4 --omit-frame-pointer',
              );
+my $cc = getcc();
+if( $cc ) {
+  push( @basics, CC => $cc );
+}
 if( $ExtUtils::MakeMaker::VERSION >= 6.31 ) {
   push( @basics, LICENSE => 'perl' );
 }
 
-if( $^O eq 'MSWin32' && !has_cc() ) {
+if( $^O eq 'MSWin32' && !$cc ) {
   gen_msvc(); # special case for msvc
 }
 elsif( $^O eq 'darwin' ) {
@@ -24,14 +28,19 @@ else {
 sub gen_msvc {
   require Config;
   my $libpath = Config->{'archlibexp'};
-  my $ver = $]*1000; # correct for possibile division problems
-  my ($major,$minor,$sub) = unpack("AA3xA3","$ver");
-  $major *= 1; $minor *= 1; $sub *= 1;
+  my $ver = $]*1000000;
+  my $sub = $ver % 1000;
+  $ver -= $sub;
+  $ver /= 1000;
+  my $minor = $ver % 1000;
+  $ver -= $minor;
+  my $major = $ver / 1000;
   WriteMakefile( @basics,
     CCFLAGS   => "/MT /DWIN32 /TP /DNOSTRING",
     LIBS      => ["$libpath\\core\\perl$major$minor.lib"],
     OBJECT    => 'Bare.o parser.o',
-    LDDLFLAGS => '/DLL',
+    LDDLFLAGS => '/DLL /NODEFAULTLIB:libcmt',
+    #OPTIMIZE  => '-Zl -DNDEBUG -O1', # Because -MD is included by default BLEH
   );
 }
 sub gen_cc {
@@ -53,13 +62,33 @@ sub gen_darwin {
     LDDLFLAGS => '',
   );
 }
-sub has_cc {
+sub getcc {
   my $div = (substr($ENV{'PATH'},0,1) eq '/') ? ':' : ';';
   my @path = split($div,$ENV{'PATH'});
   foreach my $dir ( @path ) {
-    return 1 if( -e "$dir/cc" ||
-                 -e "$dir/gcc" ||
-                 -e "$dir/cc.exe" ||
-                 -e "$dir/gcc.exe" ); }
+    return 'gcc' if( -e "$dir/gcc" || -e "$dir/gcc.exe" ); # prefer gcc
+    return 'cc'  if( -e "$dir/cc"  || -e "$dir/cc.exe"  );
+  }               
   return 0;
 }
+
+# The following are hacks to force static linking and so remove need for msvcr## dll
+package MY;
+
+sub cflags {
+  my $res = shift->SUPER::cflags( @_ );
+  if( $^O eq 'MSWin32' ) {
+    $res =~ s/-O1/-O2/g;
+    $res =~ s/-MD/-MT/g;
+  }
+  return $res;
+}
+
+sub const_loadlibs {
+  my $res = shift->SUPER::const_loadlibs( @_ );
+  if( $^O eq 'MSWin32' ) {
+    $res =~ s/msvcrt\.lib/libcmt\.lib/gi;
+  }
+  return $res;
+}
+

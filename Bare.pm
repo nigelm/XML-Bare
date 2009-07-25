@@ -8,7 +8,7 @@ require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
 
-$VERSION = "0.43";
+$VERSION = "0.44";
 
 
 use vars qw($VERSION *AUTOLOAD);
@@ -552,7 +552,7 @@ sub obj2xml {
   my ( $objs, $name, $pad, $level, $pdex ) = @_;
   
   $level  = 0  if( !$level );
-  $pad    = '' if(  $level == 1 );
+  $pad    = '' if(  $level <= 2 );
   my $xml = '';
   my $att = '';
   my $imm = 1;
@@ -561,18 +561,21 @@ sub obj2xml {
   my @dex = sort { 
     my $oba = $objs->{ $a };
     my $obb = $objs->{ $b };
-    if( !$oba ) { return 0; }
-    if( !$obb ) { return 0; }
+    my $posa = 0;
+    my $posb = 0;
+    if( !$oba ) { $posa = 0; }
+    if( !$obb ) { $posb = 0; }
     $oba = $oba->[0] if( ref( $oba ) eq 'ARRAY' );
     $obb = $obb->[0] if( ref( $obb ) eq 'ARRAY' );
-    if( ref( $oba ) eq 'HASH' && ref( $obb ) eq 'HASH' ) {
-      my $posa = $oba->{'_pos'}*1;
-      my $posb = $obb->{'_pos'}*1;
+    if( ref( $oba ) eq 'HASH' ) {
+      $posa = $oba->{'_pos'};
       if( !$posa ) { $posa = 0; }
-      if( !$posb ) { $posb = 0; }
-      return $posa <=> $posb;
     }
-    return 0;
+    if( ref( $obb ) eq 'HASH' ) {
+      $posb = $obb->{'_pos'};
+      if( !$posb ) { $posb = 0; }
+    }
+    return $posa <=> $posb;
   } keys %$objs;
   for my $i ( @dex ) {
     my $obj  = $objs->{ $i } || '';
@@ -621,8 +624,15 @@ sub obj2xml {
   my $pad2 = $imm ? '' : $pad;
   my $cr = $imm ? '' : "\n";
   if( substr( $name, 0, 1 ) ne '_' ) {
-    if( $name ) { $xml = $pad . '<' . $name . $att . '>' . $cr . $xml . $pad2 . '</' . $name . '>'; }
-    return $xml."\n" if( $level );
+    if( $name ) {
+      if( $xml ) {
+        $xml = $pad . '<' . $name . $att . '>' . $cr . $xml . $pad2 . '</' . $name . '>';
+      }
+      else {
+        $xml = $pad . '<' . $name . $att . ' />';
+      }
+    }
+    return $xml."\n" if( $level > 1 );
     return $xml;
   }
   return '';
@@ -653,18 +663,18 @@ sub obj2html {
   my @dex = sort { 
     my $oba = $objs->{ $a };
     my $obb = $objs->{ $b };
-    if( !$oba ) { return 0; }
-    if( !$obb ) { return 0; }
+    my ( $posa, $posb );
+    if( !$oba ) { $posa = 0; }
+    if( !$obb ) { $posb = 0; }
     $oba = $oba->[0] if( ref( $oba ) eq 'ARRAY' );
     $obb = $obb->[0] if( ref( $obb ) eq 'ARRAY' );
     if( ref( $oba ) eq 'HASH' && ref( $obb ) eq 'HASH' ) {
-      my $posa = $oba->{'_pos'}*1;
-      my $posb = $obb->{'_pos'}*1;
+      $posa = $oba->{'_pos'};
+      $posb = $obb->{'_pos'};
       if( !$posa ) { $posa = 0; }
       if( !$posb ) { $posb = 0; }
-      return $posa <=> $posb;
     }
-    return 0;
+    return $posa <=> $posb;
   } keys %$objs;
   
   if( $objs->{'_cdata'} ) {

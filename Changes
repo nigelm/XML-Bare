@@ -1,5 +1,12 @@
 XML::Bare Changelog
 
+0.44
+  - Self closing nodes now printed by xml function
+  - UTF8 Handling fixed; thanks go to Nigel Metheringham for the fix
+    recommendation as well as the test files
+  - Static linking has been fixed
+  - 'cc' now used properly in cases where 'gcc' is absent
+
 0.43 ( 3-17-09 )
   - Fixed newly broken add_node problem from 0.42
   - Added a new test to detect fixed problem

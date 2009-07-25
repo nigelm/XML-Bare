@@ -39,6 +39,7 @@ SV *cxml2obj() {
   if( !length ) {
     if( curnode->vallen ) {
       SV * sv = newSVpvn( curnode->value, curnode->vallen );
+      SvUTF8_on(sv);
       hv_store( output, "value", 5, sv, vhash );
       if( curnode->type ) {
         SV *svi = newSViv( 1 );
@@ -47,12 +48,14 @@ SV *cxml2obj() {
     }
     if( curnode->comlen ) {
       SV * sv = newSVpvn( curnode->comment, curnode->comlen );
+      SvUTF8_on(sv);
       hv_store( output, "comment", 7, sv, chash );
     }
   }
   else {
     if( curnode->vallen ) {
       SV *sv = newSVpvn( curnode->value, curnode->vallen );
+      SvUTF8_on(sv);
       hv_store( output, "value", 5, sv, vhash );
       if( curnode->type ) {
         SV *svi = newSViv( 1 );
@@ -61,6 +64,7 @@ SV *cxml2obj() {
     }
     if( curnode->comlen ) {
       SV *sv = newSVpvn( curnode->comment, curnode->comlen );
+      SvUTF8_on(sv);
       hv_store( output, "comment", 7, sv, chash );
     }
     
@@ -97,13 +101,12 @@ SV *cxml2obj() {
         if( SvTYPE( SvRV(*cur) ) == SVt_PVHV ) {
           AV *newarray = newAV();
           SV *newarrayref = newRV_noinc( (SV *) newarray );
-          
           SV *newref = newRV( (SV *) SvRV( *cur ) );
-          
+          SV *ob;
           hv_delete( output, curnode->name, curnode->namelen, 0 );
           hv_store( output, curnode->name, curnode->namelen, newarrayref, 0 );
           av_push( newarray, newref );
-          SV *ob = cxml2obj();
+          ob = cxml2obj();
           av_push( newarray, ob );
         }
         else {
@@ -126,6 +129,7 @@ SV *cxml2obj() {
       hv_store( output, curatt->name, curatt->namelen, atthref, 0 );
       
       attval = newSVpvn( curatt->value, curatt->vallen );
+      SvUTF8_on(attval);
       hv_store( atth, "value", 5, attval, vhash );
       attatt = newSViv( 1 );
       hv_store( atth, "_att", 4, attatt, ahash );
@@ -141,23 +145,27 @@ SV *cxml2obj_simple() {
   int numatts = curnode->numatt;
   SV *attval;
   SV *attatt;
-    
+  HV *output;
+  SV *outputref;
+  
   int length = curnode->numchildren;
   if( ( length + numatts ) == 0 ) {
     if( curnode->vallen ) {
       SV * sv = newSVpvn( curnode->value, curnode->vallen );
+      SvUTF8_on(sv);
       return sv;
     }
     return newSViv( 1 ); //&PL_sv_undef;
   }
   
-  HV *output = newHV();
-  SV *outputref = newRV( (SV *) output );
+  output = newHV();
+  outputref = newRV( (SV *) output );
   
   if( length ) {
     curnode = curnode->firstchild;
     for( i = 0; i < length; i++ ) {
       SV *namesv = newSVpvn( curnode->name, curnode->namelen );
+      SvUTF8_on(namesv);
       
       SV **cur = hv_fetch( output, curnode->name, curnode->namelen, 0 );
       
@@ -209,6 +217,7 @@ SV *cxml2obj_simple() {
           STRLEN len;
           char *ptr = SvPV(*cur, len);
           SV *newsv = newSVpvn( ptr, len );
+          SvUTF8_on(newsv);
           
           av_push( newarray, newsv );
           hv_delete( output, curnode->name, curnode->namelen, 0 );
@@ -225,6 +234,7 @@ SV *cxml2obj_simple() {
     curatt = curnode->firstatt;
     for( i = 0; i < numatts; i++ ) {
       attval = newSVpvn( curatt->value, curatt->vallen );
+      SvUTF8_on(attval);
       hv_store( output, curatt->name, curatt->namelen, attval, 0 );
       if( i != ( numatts - 1 ) ) curatt = curatt->next;
     }
@@ -273,6 +283,10 @@ void
 c_parsefile(filename)
   char * filename
   CODE:
+    char *data;
+    unsigned long len;
+    FILE *handle;
+    
     PERL_HASH(vhash, "value", 5);
     PERL_HASH(ahash, "_att", 4);
     PERL_HASH(chash, "comment", 7);
@@ -280,9 +294,7 @@ c_parsefile(filename)
     PERL_HASH(ihash, "_i", 2 );
     PERL_HASH(zhash, "_z", 2 );
     PERL_HASH(cdhash, "_cdata", 6 );
-    char *data;
-    unsigned long len;
-    FILE *handle;
+    
     handle = fopen(filename,"r");
     
     fseek( handle, 0, SEEK_END );
