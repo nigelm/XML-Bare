@@ -3,12 +3,13 @@ package XML::Bare;
 use Carp;
 use strict;
 use vars qw( @ISA @EXPORT @EXPORT_OK $VERSION );
+use utf8;
 require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
 
-$VERSION = "0.44";
+$VERSION = "0.45";
 
 
 use vars qw($VERSION *AUTOLOAD);
@@ -27,7 +28,7 @@ XML::Bare - Minimal XML parser implemented via a C state engine
 
 =head1 VERSION
 
-0.42
+0.45
 
 =cut
 
@@ -500,7 +501,8 @@ sub simplify {
   my $root = shift;
   my %ret;
   foreach my $name ( keys %$root ) {
-    my $val = $root->{$name}{'value'} || '';
+    next if( $name =~ m|^_| || $name eq 'comment' || $name eq 'value' );
+    my $val = xval $root->{$name};
     $ret{ $name } = $val;
   }
   return \%ret;
@@ -515,8 +517,29 @@ sub save {
   my $self = shift;
   return if( ! $self->{ 'xml' } );
   
-  open  F, '>' . $self->{ 'file' };
-  print F $self->xml( $self->{'xml'} );
+  my $xml = $self->xml( $self->{'xml'} );
+  
+  my $len;
+  {
+    use bytes;  
+    $len = length( $xml );
+  }
+  return if( !$len );
+  
+  open  F, '>:utf8', $self->{ 'file' };
+  print F $xml;
+  
+  seek( F, 0, 2 );
+  my $cursize = tell( F );
+  if( $cursize != $len ) { # concurrency; we are writing a smaller file
+    warn "Truncating File $self->{'file'}";
+    truncate( F, $len );
+  }
+  seek( F, 0, 2 );
+  $cursize = tell( F );
+  if( $cursize != $len ) { # still not the right size even after truncate??
+    die "Write problem; $cursize != $len";
+  }
   close F;
 }
 
@@ -550,7 +573,6 @@ sub html {
 
 sub obj2xml {
   my ( $objs, $name, $pad, $level, $pdex ) = @_;
-  
   $level  = 0  if( !$level );
   $pad    = '' if(  $level <= 2 );
   my $xml = '';
@@ -563,18 +585,10 @@ sub obj2xml {
     my $obb = $objs->{ $b };
     my $posa = 0;
     my $posb = 0;
-    if( !$oba ) { $posa = 0; }
-    if( !$obb ) { $posb = 0; }
     $oba = $oba->[0] if( ref( $oba ) eq 'ARRAY' );
     $obb = $obb->[0] if( ref( $obb ) eq 'ARRAY' );
-    if( ref( $oba ) eq 'HASH' ) {
-      $posa = $oba->{'_pos'};
-      if( !$posa ) { $posa = 0; }
-    }
-    if( ref( $obb ) eq 'HASH' ) {
-      $posb = $obb->{'_pos'};
-      if( !$posb ) { $posb = 0; }
-    }
+    if( ref( $oba ) eq 'HASH' ) { $posa = $oba->{'_pos'} || 0; }
+    if( ref( $obb ) eq 'HASH' ) { $posb = $obb->{'_pos'} || 0; }
     return $posa <=> $posb;
   } keys %$objs;
   for my $i ( @dex ) {
@@ -663,17 +677,12 @@ sub obj2html {
   my @dex = sort { 
     my $oba = $objs->{ $a };
     my $obb = $objs->{ $b };
-    my ( $posa, $posb );
-    if( !$oba ) { $posa = 0; }
-    if( !$obb ) { $posb = 0; }
+    my $posa = 0;
+    my $posb = 0;
     $oba = $oba->[0] if( ref( $oba ) eq 'ARRAY' );
     $obb = $obb->[0] if( ref( $obb ) eq 'ARRAY' );
-    if( ref( $oba ) eq 'HASH' && ref( $obb ) eq 'HASH' ) {
-      $posa = $oba->{'_pos'};
-      $posb = $obb->{'_pos'};
-      if( !$posa ) { $posa = 0; }
-      if( !$posb ) { $posb = 0; }
-    }
+    if( ref( $oba ) eq 'HASH' ) { $posa = $oba->{'_pos'} || 0; }
+    if( ref( $obb ) eq 'HASH' ) { $posb = $obb->{'_pos'} || 0; }
     return $posa <=> $posb;
   } keys %$objs;
   

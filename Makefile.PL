@@ -6,6 +6,7 @@ my @basics = ( AUTHOR       => 'David Helkowski <cpan@codechild.com>',
                NAME         => 'XML::Bare',
                VERSION_FROM => 'Bare.pm',
                PREREQ_PM    => { Carp => 0, Exporter => 0, DynaLoader => 0 },
+               XSOPT        => '-nolinenumbers', # line number defines were causing issues on some platforms
                #OPTIMIZE     => '-O3 -msse2 -march=pentium4 --omit-frame-pointer',
              );
 my $cc = getcc();
@@ -20,7 +21,10 @@ if( $^O eq 'MSWin32' && !$cc ) {
   gen_msvc(); # special case for msvc
 }
 elsif( $^O eq 'darwin' ) {
-  gen_darwin(); # darwin
+  gen_darwin();
+}
+elsif( $^O eq 'solaris' ) {
+  gen_solaris();
 }
 else {
   gen_cc(); # all others
@@ -48,6 +52,13 @@ sub gen_cc {
     LIBS      => ['-lm'],
     OBJECT    => 'Bare.o parser.o',
     LDDLFLAGS => '-shared -L/usr/local/lib',
+  );
+}
+sub gen_solaris {
+  WriteMakefile( @basics,
+    LIBS      => ['-lm'],
+    OBJECT    => 'Bare.o parser.o',
+    LDDLFLAGS => '-G -L/usr/local/lib', # -G is equiv of -shared
   );
 }
 sub gen_darwin {

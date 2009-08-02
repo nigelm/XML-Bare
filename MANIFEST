@@ -22,3 +22,6 @@ bench/license.txt
 t/Basic.t
 t/Pod_Coverage.t
 t/Pod.t
+t/UTF8_Values.t
+t/UTF8_Attributes.t
+t/test.xml

@@ -2,7 +2,6 @@
 #include "EXTERN.h"
 #define PERL_IN_HV_C
 #define PERL_HASH_INTERNAL_ACCESS
-#define BLIND_PV(a,b) SV *sv;sv=newSV(0);SvUPGRADE(sv,SVt_PV);SvPV_set(sv,a);SvCUR_set(sv,b);SvPOK_only_UTF8(sv);
 
 #include "perl.h"
 #include "XSUB.h"

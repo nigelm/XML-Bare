@@ -1,5 +1,13 @@
 XML::Bare Changelog
 
+0.45
+  - Missing UTF8 test files now included
+  - XML Saving functionality now does size checks to ensure concurrency
+    issues do not corrupt XML.
+  - Linking under Solaris should now be fixed
+  - Line number defines removed from XS compilation to attempt to
+    fix some strange compilation problems.
+
 0.44
   - Self closing nodes now printed by xml function
   - UTF8 Handling fixed; thanks go to Nigel Metheringham for the fix
