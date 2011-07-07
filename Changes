@@ -1,5 +1,10 @@
 XML::Bare Changelog
 
+NEXT
+  - Bug #49906 Simple mode reports content of empty node as integer 1
+  - Bug #52762 XML::Simple compatibility mode doesn't support CDATA with attributes
+  - Bug #52832 Several memory leaks
+
 0.45
   - Missing UTF8 test files now included
   - XML Saving functionality now does size checks to ensure concurrency
