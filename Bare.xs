@@ -154,7 +154,7 @@ SV *cxml2obj_simple() {
       SvUTF8_on(sv);
       return sv;
     }
-    return newSViv( 1 ); //&PL_sv_undef;
+    return newSVpv("", 0); // an empty tag has empty string content
   }
   
   output = newHV();

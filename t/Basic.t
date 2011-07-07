@@ -16,7 +16,7 @@ is( $simple->{node}, 'val', 'simple - normal node value reading' );
 
 ( $xml, $root, $simple ) = reparse( "<xml><node/></xml>" );
 is( ref( $root->{xml}->{node} ), 'HASH', 'existence of blank node' );
-is( $simple->{node}, 1, 'simple - existence of blank node' );
+is( $simple->{node}, '', 'simple - existence of blank node' );
 
 ( $xml, $root, $simple ) = reparse( "<xml><node att=12>val</node></xml>" );
 is( $root->{xml}->{node}->{att}->{value}, '12', 'reading of attribute value' );
