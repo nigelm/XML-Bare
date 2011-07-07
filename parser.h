@@ -50,9 +50,4 @@ struct attc {
 
 struct attc* new_attc( struct nodec *newparent );
 
-struct parserc {
-  struct nodec *pcurnode;
-  struct attc  *curatt;
-};
-
-struct nodec* parserc_parse( struct parserc *self, char *newbuf );
+struct nodec* parserc_parse( char *newbuf );

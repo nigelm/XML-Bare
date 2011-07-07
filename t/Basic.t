@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 
 use strict;
-
 use Test::More qw(no_plan);
 
 use_ok( 'XML::Bare', qw/xmlin/ );
@@ -29,6 +28,10 @@ is( $simple->{node}{att}, '12', 'simple - reading of " surrounded attribute valu
 ( $xml, $root, $simple ) = reparse( "<xml><node><![CDATA[<cval>]]></node></xml>" );
 is( $root->{xml}->{node}->{value}, '<cval>', 'reading of cdata' );
 is( $simple->{node}, '<cval>', 'simple - reading of cdata' );
+
+( $xml, $root, $simple ) = reparse( "<xml><node att=\"12\"><![CDATA[<cval>]]></node></xml>" );
+is( $root->{xml}->{node}->{value}, '<cval>', 'reading of cdata' );
+is( $simple->{node}->{content}, '<cval>', 'simple - reading of cdata' );
 
 ( $xml, $root, $simple ) = reparse( "<xml><node>a</node><node>b</node></xml>" );
 is( $root->{xml}->{node}->[1]->{value}, 'b', 'multiple node array creation' );

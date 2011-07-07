@@ -227,6 +227,10 @@ SV *cxml2obj_simple() {
       if( i != ( length - 1 ) ) curnode = curnode->next;
     }
     curnode = curnode->parent;
+  } else {
+    SV * sv = newSVpvn( curnode->value, curnode->vallen );
+    SvUTF8_on(sv);
+    hv_store( output, "content", 7, sv, vhash );
   }
   
   if( numatts ) {
@@ -242,23 +246,24 @@ SV *cxml2obj_simple() {
   return outputref;
 }
 
-struct parserc *parser = 0;
-
 MODULE = XML::Bare         PACKAGE = XML::Bare
 
 SV *
 xml2obj()
   CODE:
-    curnode = parser->pcurnode;
-    if( curnode->err ) RETVAL = newSViv( curnode->err );
-    else RETVAL = cxml2obj();
+    if( root->err ) RETVAL = newSViv( root->err );
+    else {
+      curnode = root;
+      RETVAL = cxml2obj();
+    }
   OUTPUT:
     RETVAL
     
 SV *
 xml2obj_simple()
   CODE:
-    curnode = parser->pcurnode;
+    PERL_HASH(vhash, "content", 7);
+    curnode = root;
     RETVAL = cxml2obj_simple();
   OUTPUT:
     RETVAL
@@ -275,9 +280,8 @@ c_parse(text)
     PERL_HASH(ihash, "_i", 2 );
     PERL_HASH(zhash, "_z", 2 );
     PERL_HASH(cdhash, "_cdata", 6 );
-    parser = (struct parserc *) malloc( sizeof( struct parserc ) );
-    root = parserc_parse( parser, text );
-    
+    root = parserc_parse( text );
+
 void
 c_parsefile(filename)
   char * filename
@@ -305,8 +309,8 @@ c_parsefile(filename)
     rootpos = data;
     fread( data, 1, len, handle );
     fclose( handle );
-    parser = (struct parserc *) malloc( sizeof( struct parserc ) );
-    root = parserc_parse( parser, data );
+    root = parserc_parse( data );
+    free( data );
 
 SV *
 get_root()

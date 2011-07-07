@@ -38,6 +38,7 @@ sub new {
   
   if( $self->{ 'text' } ) {
     XML::Bare::c_parse( $self->{'text'} );
+    $self->{'structroot'} = XML::Bare::get_root();
   }
   else {
     my $res = open( XML, $self->{ 'file' } );
@@ -51,6 +52,7 @@ sub new {
     }
     close( XML );
     XML::Bare::c_parse( $self->{'text'} );
+    $self->{'structroot'} = XML::Bare::get_root();
   }
   bless $self, $class;
   return $self if( !wantarray );
@@ -59,6 +61,7 @@ sub new {
 
 sub DESTROY {
   my $self = shift;
+  $self->free_tree();
   undef $self->{'xml'};
 }
 
@@ -779,7 +782,13 @@ sub obj2html {
   return '';
 }
 
-sub free_tree { my $self = shift; XML::Bare::free_tree_c( $self->{'structroot'} ); }
+sub free_tree {
+    my $self = shift;
+    if($self->{'structroot'}) {
+	XML::Bare::free_tree_c($self->{'structroot'});
+	delete($self->{'structroot'});
+    }
+}
 
 1;
 

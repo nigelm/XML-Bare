@@ -1,5 +1,6 @@
 #include "parser.h"
-#include<stdio.h>
+#include <stdlib.h>
+#include <stdio.h>
 #ifdef DARWIN
   #include "stdlib.h"
 #endif
@@ -69,7 +70,7 @@ struct attc* new_attc( struct nodec *newparent ) {
 
 //#define DEBUG
 
-struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
+struct nodec* parserc_parse( char *xmlin ) {
     char  *tagname, *attname, *attval, *val;
     struct nodec *root    = new_nodec();
     int    tagname_len    = 0;
@@ -582,15 +583,12 @@ struct nodec* parserc_parse( struct parserc *self, char *xmlin ) {
       goto ename_x;
     error:
       root->err = - ( int ) ( cpos - &xmlin[0] );
-      self->pcurnode = root;
       //root->err = 1;
       return root;
     done:
       #ifdef DEBUG
       printf("done\n", *cpos);
       #endif
-      self->pcurnode = root;
-      self->pcurnode->curchild = self->pcurnode->firstchild;
       #ifdef DEBUG
       printf("returning\n", *cpos);
       #endif
