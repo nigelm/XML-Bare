@@ -97,6 +97,9 @@ struct nodec* parserc_parse( char *xmlin ) {
       switch( let ) {
         case 0:   goto done;
         case '<': goto val_x;
+        case '&':
+          /* this node has escaped characters in it - flag this */
+          curnode->type |= NODE_TYPE_ESCAPED;
       }
       if( !curnode->numvals ) {
         curnode->value = cpos;
@@ -124,7 +127,7 @@ struct nodec* parserc_parse( char *xmlin ) {
                     *(cpos+6) == 'T' &&
                     *(cpos+7) == 'A'    ) {
                   cpos += 9;
-                  curnode->type = 1;
+                  curnode->type |= NODE_TYPE_CDATA;
                   goto cdata;
                 }
                 else {
@@ -148,6 +151,9 @@ struct nodec* parserc_parse( char *xmlin ) {
           tagname_len = 0; // for safety
           cpos++;
           goto name_1;
+        case '&':
+          /* this node has escaped characters in it - flag this */
+          curnode->type |= NODE_TYPE_ESCAPED;
       }
       if( curnode->numvals == 1 ) curnode->vallen++;
       cpos++;
@@ -653,7 +659,7 @@ struct utfchar {
                     *(cpos+6) == 'T' &&
                     *(cpos+7) == 'A'    ) {
                   cpos += 9;
-                  curnode->type = 1;
+                  curnode->type |= NODE_TYPE_CDATA;
                   goto cdata;
                 }
                 else {

@@ -6,6 +6,9 @@
   #define NULL 0x00
 #endif
 
+#define NODE_TYPE_CDATA    1
+#define NODE_TYPE_ESCAPED  2
+
 struct nodec {
   struct nodec *curchild;
   struct nodec *parent;
@@ -22,7 +25,7 @@ struct nodec {
   char  *comment;
   int   vallen;
   int   comlen;
-  int   type;// cdata or normal
+  int   type;// cdata, normal or possibly escaped - see defines
   int   numvals;
   int   numcoms;
   int   pos;

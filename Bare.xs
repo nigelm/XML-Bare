@@ -41,8 +41,10 @@ SV *cxml2obj() {
       SvUTF8_on(sv);
       hv_store( output, "value", 5, sv, vhash );
       if( curnode->type ) {
-        SV *svi = newSViv( 1 );
-        hv_store( output, "_cdata", 6, svi, cdhash );
+        if( curnode->type & NODE_TYPE_CDATA ) {
+          SV *svi = newSViv( 1 );
+          hv_store( output, "_cdata", 6, svi, cdhash );
+        }
       }
     }
     if( curnode->comlen ) {
@@ -57,8 +59,10 @@ SV *cxml2obj() {
       SvUTF8_on(sv);
       hv_store( output, "value", 5, sv, vhash );
       if( curnode->type ) {
-        SV *svi = newSViv( 1 );
-        hv_store( output, "_cdata", 6, svi, cdhash );
+        if( curnode->type & NODE_TYPE_CDATA ) {
+          SV *svi = newSViv( 1 );
+          hv_store( output, "_cdata", 6, svi, cdhash );
+        }
       }
     }
     if( curnode->comlen ) {
