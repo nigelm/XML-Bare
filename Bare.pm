@@ -9,7 +9,7 @@ require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
 
-$VERSION = "0.45_01";
+$VERSION = "0.45_02";
 
 
 use vars qw($VERSION *AUTOLOAD);
@@ -1010,6 +1010,13 @@ are parsed to check for xml incompatible data using a regular
 expression. If 'CDATA like' stuff is encountered, the node
 is output as CDATA.
 
+=item * Standard XML quoted characters are decoded
+
+The basic XML quoted characters - C<&amp;> C<&gt;> C<&lt;> C<quot;>
+and C<&apos;> - are recognised and decoded when reading values.
+However when writing the builder will put any values that need quoting
+into a CDATA wrapper as described above.
+
 =item * Node position stored, but hash remains unsorted
 
 The ordering of nodes is noted using the '_pos' value, but
@@ -1469,6 +1476,11 @@ executables are not included with this program. Any
 source modifications used to generate the shown test
 results can be found in the bench/src directory of
 the distribution
+
+=head1 CONTRIBUTED CODE
+
+The XML dequoting code used is taken from L<XML::Quote> by I<Sergey
+Skvortsov> (I<GDSL> on CPAN) with very minor modifications.
 
 =head1 LICENSE
 
