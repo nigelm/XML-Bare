@@ -195,7 +195,9 @@ SV *cxml2obj()
   hv_store(output, "_z", 2, newSViv(curnode->z), zhash);
   if (!length) {
     if (curnode->vallen) {
-      SV *sv = newSVpvn(curnode->value, curnode->vallen);
+      SV *sv = (curnode->type == NODE_TYPE_ESCAPED) ? xml_dequote_string(curnode->value,
+                                                                         curnode->vallen) : newSVpvn(curnode->value,
+                                                                                                     curnode->vallen);
       SvUTF8_on(sv);
       hv_store(output, "value", 5, sv, vhash);
       if (curnode->type & NODE_TYPE_CDATA) {
@@ -210,7 +212,9 @@ SV *cxml2obj()
     }
   } else {
     if (curnode->vallen) {
-      SV *sv = newSVpvn(curnode->value, curnode->vallen);
+      SV *sv = (curnode->type == NODE_TYPE_ESCAPED) ? xml_dequote_string(curnode->value,
+                                                                         curnode->vallen) : newSVpvn(curnode->value,
+                                                                                                     curnode->vallen);
       SvUTF8_on(sv);
       hv_store(output, "value", 5, sv, vhash);
       if (curnode->type & NODE_TYPE_CDATA) {
