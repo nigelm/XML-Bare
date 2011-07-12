@@ -20,6 +20,163 @@ U32 ahash;
 struct nodec *curnode;
 char *rootpos;
 
+/* -------------------------------------------------------------------- */
+
+/*
+-- xml_dequote_string is a slightly adapted version of xml_dequote
+-- from the XML::Quote package by Sergey Skvortsov
+*/
+static SV *xml_dequote_string(unsigned char *src, STRLEN src_len)
+{
+  SV *dstSV;
+  unsigned char *src2;
+  unsigned char *dst;
+  unsigned char c, c1, c2, c3, c4;
+  STRLEN src_len2, dst_len;
+
+  src2 = src;
+  src_len2 = src_len;
+  dst_len = src_len;
+
+  // calculate dequoted string length
+  while (src_len >= 3) {
+    c = *src++;
+    src_len--;
+
+    if ('&' != c) {
+      continue;
+    }
+
+    /* We have "&", now look for:- &amp; &quot; &apos; &lt; &gt; */
+    c = *src;
+    c1 = *(src + 1);
+    c2 = *(src + 2);
+    if (c2 == ';' && c1 == 't' && (c == 'l' || c == 'g')) {
+      dst_len -= 3;
+      src += 3;
+      src_len -= 3;
+      continue;
+    }
+
+    if (src_len >= 4) {
+      c3 = *(src + 3);
+    } else {
+      continue;
+    }
+
+    if (c == 'a' && c1 == 'm' && c2 == 'p' && c3 == ';') {
+      dst_len -= 4;
+      src += 4;
+      src_len -= 4;
+      continue;
+    }
+
+    if (src_len >= 5) {
+      c4 = *(src + 4);
+    } else {
+      continue;
+    }
+
+    if (c4 == ';'
+        && ((c == 'q' && c1 == 'u' && c2 == 'o' && c3 == 't') || (c == 'a' && c1 == 'p' && c2 == 'o' && c3 == 's'))) {
+      dst_len -= 5;
+      src += 5;
+      src_len -= 5;
+      continue;
+    }                           //if
+  }                             //while
+
+  if (dst_len == src_len2) {
+    // nothing to dequote
+    dstSV = newSVpv(src2, dst_len);
+    return dstSV;
+  }
+
+  /* We have someting to dequote, so make a SV to put it into */
+  dstSV = newSV(dst_len);
+  SvCUR_set(dstSV, dst_len);
+  SvPOK_on(dstSV);
+  dst = SvPVX(dstSV);
+
+  while (src_len2 >= 3) {       // 3 is min length of quoted symbol
+    c = *src2++;
+    src_len2--;
+    if ('&' != c) {
+      *dst++ = c;
+      continue;
+    }
+    c = *src2;
+    c1 = *(src2 + 1);
+    c2 = *(src2 + 2);
+
+    // 1. test len=3: &lt; &gt;
+    if (c1 == 't' && c2 == ';') {
+      if (c == 'l') {
+        *dst++ = '<';
+        src2 += 3;
+        src_len2 -= 3;
+        continue;
+      } else if (c == 'g') {
+        *dst++ = '>';
+      } else {
+        *dst++ = '&';
+        continue;
+      }
+      src2 += 3;
+      src_len2 -= 3;
+      continue;
+    }                           //if lt | gt
+
+
+    // 2. test len=4: &amp;
+    if (src_len2 >= 4) {
+      c3 = *(src2 + 3);
+    } else {
+      *dst++ = '&';
+      continue;
+    }
+
+    if (c == 'a' && c1 == 'm' && c2 == 'p' && c3 == ';') {
+      *dst++ = '&';
+      src2 += 4;
+      src_len2 -= 4;
+      continue;
+    }
+    // 3. test len=5: &quot; &apos;
+    if (src_len2 >= 5) {
+      c4 = *(src2 + 4);
+    } else {
+      *dst++ = '&';
+      continue;
+    }
+
+    if (c4 == ';') {
+      if (c == 'q' && c1 == 'u' && c2 == 'o' && c3 == 't') {
+        *dst++ = '"';
+      } else if (c == 'a' && c1 == 'p' && c2 == 'o' && c3 == 's') {
+        *dst++ = '\'';
+      } else {
+        *dst++ = '&';
+        continue;
+      }
+      src2 += 5;
+      src_len2 -= 5;
+      continue;
+    }                           //if ;
+
+    *dst++ = '&';
+  }                             //while
+
+
+  while (src_len2-- > 0) {      // also copy trailing \0
+    *dst++ = *src2++;
+  }
+
+  return dstSV;
+}
+
+/* -------------------------------------------------------------------- */
+
 SV *cxml2obj()
 {
   HV *output = newHV();
@@ -41,11 +198,9 @@ SV *cxml2obj()
       SV *sv = newSVpvn(curnode->value, curnode->vallen);
       SvUTF8_on(sv);
       hv_store(output, "value", 5, sv, vhash);
-      if (curnode->type) {
-        if (curnode->type & NODE_TYPE_CDATA) {
-          SV *svi = newSViv(1);
-          hv_store(output, "_cdata", 6, svi, cdhash);
-        }
+      if (curnode->type & NODE_TYPE_CDATA) {
+        SV *svi = newSViv(1);
+        hv_store(output, "_cdata", 6, svi, cdhash);
       }
     }
     if (curnode->comlen) {
@@ -58,11 +213,9 @@ SV *cxml2obj()
       SV *sv = newSVpvn(curnode->value, curnode->vallen);
       SvUTF8_on(sv);
       hv_store(output, "value", 5, sv, vhash);
-      if (curnode->type) {
-        if (curnode->type & NODE_TYPE_CDATA) {
-          SV *svi = newSViv(1);
-          hv_store(output, "_cdata", 6, svi, cdhash);
-        }
+      if (curnode->type & NODE_TYPE_CDATA) {
+        SV *svi = newSViv(1);
+        hv_store(output, "_cdata", 6, svi, cdhash);
       }
     }
     if (curnode->comlen) {
@@ -141,6 +294,8 @@ SV *cxml2obj()
   return outputref;
 }
 
+/* -------------------------------------------------------------------- */
+
 SV *cxml2obj_simple()
 {
   int i;
@@ -154,7 +309,9 @@ SV *cxml2obj_simple()
   int length = curnode->numchildren;
   if ((length + numatts) == 0) {
     if (curnode->vallen) {
-      SV *sv = newSVpvn(curnode->value, curnode->vallen);
+      SV *sv = (curnode->type == NODE_TYPE_ESCAPED) ? xml_dequote_string(curnode->value,
+                                                                         curnode->vallen) : newSVpvn(curnode->value,
+                                                                                                     curnode->vallen);
       SvUTF8_on(sv);
       return sv;
     }
@@ -229,7 +386,9 @@ SV *cxml2obj_simple()
     }
     curnode = curnode->parent;
   } else {
-    SV *sv = newSVpvn(curnode->value, curnode->vallen);
+    SV *sv = (curnode->type == NODE_TYPE_ESCAPED) ? xml_dequote_string(curnode->value,
+                                                                       curnode->vallen) : newSVpvn(curnode->value,
+                                                                                                   curnode->vallen);
     SvUTF8_on(sv);
     hv_store(output, "content", 7, sv, vhash);
   }
@@ -247,6 +406,8 @@ SV *cxml2obj_simple()
 
   return outputref;
 }
+
+/* -------------------------------------------------------------------- */
 
 // *INDENT-OFF*
 // Indent and XS declarations do not mix well :-(
