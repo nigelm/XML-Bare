@@ -360,14 +360,11 @@ sub readxbs { # xbs = xml bare schema
 sub simple {
   my $self = shift;
   
-  my $res = XML::Bare::xml2obj_simple();#$self->xml2obj();
+  my $res = XML::Bare::xml2obj_simple();
   $self->{'structroot'} = XML::Bare::get_root();
   $self->free_tree();
   
-  if( $res < 0 ) { croak "Error at ".$self->lineinfo( -$res ); }
-  $self->{ 'xml' } = $res;
-  
-  return $self->{ 'xml' };
+  return $res;
 }
 
 sub add_node {
