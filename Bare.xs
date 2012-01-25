@@ -177,6 +177,22 @@ static SV *xml_dequote_string(unsigned char *src, STRLEN src_len)
 
 /* -------------------------------------------------------------------- */
 
+SV *node_val_unescaped(struct nodec *thisnode)
+{
+  SV *sv;
+
+  if (curnode->type == NODE_TYPE_ESCAPED)
+    sv = xml_dequote_string(curnode->value, curnode->vallen);
+  else
+    sv = newSVpvn(curnode->value, curnode->vallen);
+
+  SvUTF8_on(sv);
+
+  return sv;
+}
+
+/* -------------------------------------------------------------------- */
+
 SV *cxml2obj()
 {
   HV *output = newHV();
@@ -195,10 +211,7 @@ SV *cxml2obj()
   hv_store(output, "_z", 2, newSViv(curnode->z), zhash);
   if (!length) {
     if (curnode->vallen) {
-      SV *sv = (curnode->type == NODE_TYPE_ESCAPED) ? xml_dequote_string(curnode->value,
-                                                                         curnode->vallen) : newSVpvn(curnode->value,
-                                                                                                     curnode->vallen);
-      SvUTF8_on(sv);
+      SV *sv = node_val_unescaped(curnode);
       hv_store(output, "value", 5, sv, vhash);
       if (curnode->type & NODE_TYPE_CDATA) {
         SV *svi = newSViv(1);
@@ -212,10 +225,7 @@ SV *cxml2obj()
     }
   } else {
     if (curnode->vallen) {
-      SV *sv = (curnode->type == NODE_TYPE_ESCAPED) ? xml_dequote_string(curnode->value,
-                                                                         curnode->vallen) : newSVpvn(curnode->value,
-                                                                                                     curnode->vallen);
-      SvUTF8_on(sv);
+      SV *sv = node_val_unescaped(curnode);
       hv_store(output, "value", 5, sv, vhash);
       if (curnode->type & NODE_TYPE_CDATA) {
         SV *svi = newSViv(1);
@@ -313,11 +323,7 @@ SV *cxml2obj_simple()
   int length = curnode->numchildren;
   if ((length + numatts) == 0) {
     if (curnode->vallen) {
-      SV *sv = (curnode->type == NODE_TYPE_ESCAPED) ? xml_dequote_string(curnode->value,
-                                                                         curnode->vallen) : newSVpvn(curnode->value,
-                                                                                                     curnode->vallen);
-      SvUTF8_on(sv);
-      return sv;
+      return node_val_unescaped(curnode);
     }
     return newSVpv("", 0);      // an empty tag has empty string content
   }
@@ -364,6 +370,9 @@ SV *cxml2obj_simple()
             hv_store( output, curnode->name, curnode->namelen, newarrayref, 0 );
             av_push( newarray, newref );
             av_push( newarray, cxml2obj_simple() );
+          } else {
+            AV *av = (AV *) SvRV(*cur);
+            av_push(av, cxml2obj_simple());
           }
         } else {
           AV *newarray = newAV();
@@ -385,10 +394,7 @@ SV *cxml2obj_simple()
     }
     curnode = curnode->parent;
   } else {
-    SV *sv = (curnode->type == NODE_TYPE_ESCAPED) ? xml_dequote_string(curnode->value,
-                                                                       curnode->vallen) : newSVpvn(curnode->value,
-                                                                                                   curnode->vallen);
-    SvUTF8_on(sv);
+    SV *sv = node_val_unescaped(curnode);
     hv_store(output, "content", 7, sv, vhash);
   }
 
