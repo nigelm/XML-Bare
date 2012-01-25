@@ -240,50 +240,52 @@ SV *cxml2obj()
 
     curnode = curnode->firstchild;
     for (i = 0; i < length; i++) {
-      SV **cur = hv_fetch(output, curnode->name, curnode->namelen, 0);
+      SV *key = newSVpv(curnode->name, curnode->namelen);
+      SvUTF8_on(key);
+      HE *curh = hv_fetch_ent(output, key, 0, 0);
 
       if (curnode->namelen > 6) {
         if (!strncmp(curnode->name, "multi_", 6)) {
-          char *subname = &curnode->name[6];
-          int subnamelen = curnode->namelen - 6;
-          SV **old = hv_fetch(output, subname, subnamelen, 0);
+          SV *subkey = newSVpv(&curnode->name[6], curnode->namelen - 6);
+          SvUTF8_on(subkey);
+          HE *oldh = hv_fetch_ent(output, subkey, 0, 0);
           AV *newarray = newAV();
           SV *newarrayref = newRV_noinc((SV *) newarray);
-          if (!old) {
-            hv_store(output, subname, subnamelen, newarrayref, 0);
+          if (!oldh) {
+            hv_store_ent(output, subkey, newarrayref, 0);
           } else {
-            if (SvTYPE(SvRV(*old)) == SVt_PVHV) {       // check for hash ref
-              SV *newref = newRV((SV *) SvRV(*old));
-              hv_delete(output, subname, subnamelen, 0);
-              hv_store(output, subname, subnamelen, newarrayref, 0);
+            SV *old = HeVAL(oldh);
+            if (SvTYPE(SvRV(old)) == SVt_PVHV) {        // check for hash ref
+              SV *newref = newRV((SV *) SvRV(old));
+              hv_delete_ent(output, subkey, 0, 0);
+              hv_store_ent(output, subkey, newarrayref, 0);
               av_push(newarray, newref);
             }
           }
+          SvREFCNT_dec(subkey); // no longer need the subkey
         }
       }
 
-      if (!cur) {
-        SV *ob = cxml2obj();
-        hv_store(output, curnode->name, curnode->namelen, ob, 0);
+      if (!curh) {
+        hv_store_ent(output, key, cxml2obj(), 0);
       } else {
-        if (SvTYPE(SvRV(*cur)) == SVt_PVHV) {
+        SV *cur = HeVAL(curh);
+        if (SvTYPE(SvRV(cur)) == SVt_PVHV) {
           AV *newarray = newAV();
           SV *newarrayref = newRV_noinc((SV *) newarray);
-          SV *newref = newRV((SV *) SvRV(*cur));
-          SV *ob;
-          hv_delete(output, curnode->name, curnode->namelen, 0);
-          hv_store(output, curnode->name, curnode->namelen, newarrayref, 0);
+          SV *newref = newRV((SV *) SvRV(cur));
+          hv_delete_ent(output, key, 0, 0);
+          hv_store_ent(output, key, newarrayref, 0);
           av_push(newarray, newref);
-          ob = cxml2obj();
-          av_push(newarray, ob);
+          av_push(newarray, cxml2obj());
         } else {
-          AV *av = (AV *) SvRV(*cur);
-          SV *ob = cxml2obj();
-          av_push(av, ob);
+          AV *av = (AV *) SvRV(cur);
+          av_push(av, cxml2obj());
         }
       }
       if (i != (length - 1))
         curnode = curnode->next;
+      SvREFCNT_dec(key);        // no longer need the key
     }
 
     curnode = curnode->parent;
@@ -322,10 +324,10 @@ SV *cxml2obj_simple()
 
   int length = curnode->numchildren;
   if ((length + numatts) == 0) {
-    if (curnode->vallen) {
+    if (curnode->vallen)
       return node_val_unescaped(curnode);
-    }
-    return newSVpv("", 0);      // an empty tag has empty string content
+    else
+      return newSVpv("", 0);    // an empty tag has empty string content
   }
 
   output = newHV();
@@ -334,43 +336,47 @@ SV *cxml2obj_simple()
   if (length) {
     curnode = curnode->firstchild;
     for (i = 0; i < length; i++) {
-      SV **cur = hv_fetch(output, curnode->name, curnode->namelen, 0);
+      SV *key = newSVpv(curnode->name, curnode->namelen);
+      SvUTF8_on(key);
+      HE *curh = hv_fetch_ent(output, key, 0, 0);
 
       if (curnode->namelen > 6) {
         if (!strncmp(curnode->name, "multi_", 6)) {
-          char *subname = &curnode->name[6];
-          int subnamelen = curnode->namelen - 6;
-          SV **old = hv_fetch(output, subname, subnamelen, 0);
+          SV *subkey = newSVpv(&curnode->name[6], curnode->namelen - 6);
+          SvUTF8_on(subkey);
+          HE *oldh = hv_fetch_ent(output, subkey, 0, 0);
           AV *newarray = newAV();
           SV *newarrayref = newRV_noinc((SV *) newarray);
-          if (!old) {
-            hv_store(output, subname, subnamelen, newarrayref, 0);
+          if (!oldh) {
+            hv_store_ent(output, subkey, newarrayref, 0);
           } else {
-            if (SvTYPE(SvRV(*old)) == SVt_PVHV) {       // check for hash ref
-              SV *newref = newRV((SV *) SvRV(*old));
-              hv_delete(output, subname, subnamelen, 0);
-              hv_store(output, subname, subnamelen, newarrayref, 0);
+            SV *old = HeVAL(oldh);
+            if (SvTYPE(SvRV(old)) == SVt_PVHV) {        // check for hash ref
+              SV *newref = newRV((SV *) SvRV(old));
+              hv_delete_ent(output, subkey, 0, 0);
+              hv_store_ent(output, subkey, newarrayref, 0);
               av_push(newarray, newref);
             }
           }
+          SvREFCNT_dec(subkey); // no longer need the subkey
         }
       }
 
-      if (!cur) {
-        SV *ob = cxml2obj_simple();
-        hv_store(output, curnode->name, curnode->namelen, ob, 0);
+      if (!curh) {
+        hv_store_ent(output, key, cxml2obj_simple(), 0);
       } else {
-        if (SvROK(*cur)) {
-          if (SvTYPE(SvRV(*cur)) == SVt_PVHV) {
+        SV *cur = HeVAL(curh);
+        if (SvROK(cur)) {
+          if (SvTYPE(SvRV(cur)) == SVt_PVHV) {
             AV *newarray = newAV();
             SV *newarrayref = newRV_noinc((SV *) newarray);
-            SV *newref = newRV((SV *) SvRV(*cur));
-            hv_delete(output, curnode->name, curnode->namelen, 0);
-            hv_store(output, curnode->name, curnode->namelen, newarrayref, 0);
+            SV *newref = newRV((SV *) SvRV(cur));
+            hv_delete_ent(output, key, 0, 0);
+            hv_store_ent(output, key, newarrayref, 0);
             av_push(newarray, newref);
             av_push(newarray, cxml2obj_simple());
           } else {
-            AV *av = (AV *) SvRV(*cur);
+            AV *av = (AV *) SvRV(cur);
             av_push(av, cxml2obj_simple());
           }
         } else {
@@ -378,18 +384,19 @@ SV *cxml2obj_simple()
           SV *newarrayref = newRV_noinc((SV *) newarray);
 
           STRLEN len;
-          char *ptr = SvPV(*cur, len);
+          char *ptr = SvPV(cur, len);
           SV *newsv = newSVpvn(ptr, len);
           SvUTF8_on(newsv);
 
           av_push(newarray, newsv);
-          hv_delete(output, curnode->name, curnode->namelen, 0);
-          hv_store(output, curnode->name, curnode->namelen, newarrayref, 0);
+          hv_delete_ent(output, key, 0, 0);
+          hv_store_ent(output, key, newarrayref, 0);
           av_push(newarray, cxml2obj_simple());
         }
       }
       if (i != (length - 1))
         curnode = curnode->next;
+      SvREFCNT_dec(key);        // no longer need the key
     }
     curnode = curnode->parent;
   } else {
