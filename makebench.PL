@@ -98,7 +98,7 @@ foreach my $part ( @parts ) {
     $type = $1;
   }
   #print "[$type $module]\n";
-  
+
   if( $type eq 'c' ) {
     $part =~ s/c\n//g;
     $part = "##".$part."##";
@@ -108,11 +108,11 @@ foreach my $part ( @parts ) {
     next;
   }
   if( $type eq '0' ) {
-    
+
     if( $module ) {
       $part =~ s/(#0)\W*.*/$1/;
     }
-    
+
     while( $part =~ m/(require [A-Za-z\:]+;)/g ) {
       my $req = $1;
       if( !$module ) {
@@ -123,17 +123,17 @@ foreach my $part ( @parts ) {
       push( @requires, $req );
     }
     $part =~ s/require [A-Za-z\:]+;\n//g;
-    
+
     $part = "##".$part."##";
     $part =~ s/^##[#0 \n]+//;
     $part =~ s/[ \n]+##$//;
-    
+
     print OUT "
     if( \$ARGV[0]*1 >= $i ) {
       (\$s, \$usec) = gettimeofday();
       if( eval( '@requires' ) ) {
         (\$s2, \$usec2) = gettimeofday();
-        
+
 $part
 
         (\$s3, \$usec3) = gettimeofday();
@@ -144,11 +144,11 @@ $part
     ";
   }
   if( $type eq '-' ) {
-    
+
     if( $module ) {
       $part =~ s/(#[\-\0\+])\W*.*/$1/;
     }
-    
+
     while( $part =~ m/(require [A-Za-z\:]+;)/g ) {
       my $req = $1;
       if( !$module ) {
@@ -159,17 +159,17 @@ $part
       push( @requires, $req );
     }
     $part =~ s/require [A-Za-z\:]+;\n//g;
-    
+
     $part = "##".$part."##";
     $part =~ s/^##[#\- \n]+//;
     $part =~ s/[ \n]+##$//;
-    
+
     print OUT "
     if( \$ARGV[0] eq '$i' ) {
       (\$s, \$usec) = gettimeofday();
       if( eval( '@requires' ) ) {
         (\$s2, \$usec2) = gettimeofday();
-        
+
 $part
 
         (\$s3, \$usec3) = gettimeofday();
@@ -185,9 +185,9 @@ $part
     $part =~ s/[ \n]+##$//;
     print OUT "
     if( \$ARGV[0] eq '$i' ) {
-    
+
 $part
-    
+
     }
     ";
   }
@@ -197,9 +197,9 @@ $part
     $part =~ s/[ \n]+##$//;
     print OUT "
     #if( \$ARGV[0] eq '$i' ) {
-    
+
 $part
-    
+
     #}
     ";
   }
@@ -220,9 +220,9 @@ sub unload {
 sub timeit {
   my \$name = shift;
   my \$base = shift;
-  \$sa = \$s2-\$s + ((\$usec2-\$usec)/1000000); 
-  \$sb = \$s3-\$s2 + ((\$usec3-\$usec2)/1000000); 
-  \$sc = \$s3-\$s + ((\$usec3-\$usec)/1000000); 
+  \$sa = \$s2-\$s + ((\$usec2-\$usec)/1000000);
+  \$sb = \$s3-\$s2 + ((\$usec3-\$usec2)/1000000);
+  \$sc = \$s3-\$s + ((\$usec3-\$usec)/1000000);
   if( \$base ) {
     \$base1 = \$sa;
     \$base2 = \$sb;

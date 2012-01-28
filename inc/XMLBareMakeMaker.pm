@@ -9,8 +9,8 @@ override _build_WriteMakefile_args => sub {
     return +{
         %{ super() },
         OBJECT => 'Bare.o parser.o',
-        XSOPT        => '-nolinenumbers', # line number defines were causing issues on some platforms
-        
+        XSOPT  => '-nolinenumbers',    # line number defines were causing issues on some platforms
+
     };
 };
 
