@@ -2,15 +2,6 @@ package XML::Bare;
 
 # ABSTRACT: Minimal XML parser implemented via a C state engine
 
-=begin :prelude
-
-=for stopwords CDATA GDSL LibXML Sergey Skvortsov XBS dequoting exe
-executables html iff keeproot makebench nodeset notree recognised
-subnode templated tmpl xml xmlin
-
-=end :prelude
-
-=cut
 
 use 5.008;
 use Carp;
@@ -21,8 +12,8 @@ require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-# VERSION
-# AUTHORITY
+our $VERSION = '0.46_03'; # VERSION
+our $AUTHORITY = 'cpan:NIGELM'; # AUTHORITY
 
 use vars qw($VERSION *AUTOLOAD);
 
@@ -799,7 +790,21 @@ sub free_tree {
 
 1;
 
-__END__
+
+
+=pod
+
+=for stopwords CDATA GDSL LibXML Sergey Skvortsov XBS dequoting exe
+executables html iff keeproot makebench nodeset notree recognised
+subnode templated tmpl xml xmlin
+
+=head1 NAME
+
+XML::Bare - Minimal XML parser implemented via a C state engine
+
+=head1 VERSION
+
+version 0.46_03
 
 =head1 SYNOPSIS
 
@@ -1489,4 +1494,54 @@ the distribution
 The XML dequoting code used is taken from L<XML::Quote> by I<Sergey
 Skvortsov> (I<GDSL> on CPAN) with very minor modifications.
 
+=head1 INSTALLATION
+
+See perlmodinstall for information and options on installing Perl modules.
+
+=head1 BUGS AND LIMITATIONS
+
+No bugs have been reported.
+
+Please report any bugs or feature requests through the web interface at
+L<http://rt.cpan.org/Public/Dist/Display.html?Name=XML-Bare>.
+
+=head1 AVAILABILITY
+
+The project homepage is L<https://metacpan.org/release/XML-Bare>.
+
+The latest version of this module is available from the Comprehensive Perl
+Archive Network (CPAN). Visit L<http://www.perl.com/CPAN/> to find a CPAN
+site near you, or see L<http://search.cpan.org/dist/XML-Bare/>.
+
+The development version lives at L<http://github.com/nigelm/xml-bare>
+and may be cloned from L<git://github.com/nigelm/xml-bare.git>.
+Instead of sending patches, please fork this project using the standard
+git and github infrastructure.
+
+=head1 AUTHORS
+
+=over 4
+
+=item *
+
+David Helkowski <cpan@codechild.com>
+
+=item *
+
+Nigel Metheringham <nigelm@cpan.org>
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is Copyright (c) 2012 by David Helkowski.
+
+This is free software, licensed under:
+
+  The GNU General Public License, Version 2, June 1991
+
 =cut
+
+
+__END__
+

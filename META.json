@@ -1,0 +1,344 @@
+{
+   "abstract" : "Minimal XML parser implemented via a C state engine",
+   "author" : [
+      "David Helkowski <cpan@codechild.com>",
+      "Nigel Metheringham <nigelm@cpan.org>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "Dist::Zilla version 4.200009, CPAN::Meta::Converter version 2.110440",
+   "license" : [
+      "gpl_2"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "XML-Bare",
+   "prereqs" : {
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "6.30"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Carp" : 0,
+            "DynaLoader" : 0,
+            "Exporter" : 0,
+            "bytes" : 0,
+            "perl" : "5.008",
+            "utf8" : 0,
+            "vars" : 0
+         }
+      },
+      "test" : {
+         "requires" : {
+            "Data::Dumper" : 0,
+            "English" : 0,
+            "File::Find" : 0,
+            "File::Temp" : 0,
+            "Scalar::Util" : 0,
+            "Test::Harness" : 0,
+            "Test::More" : "0.94"
+         }
+      }
+   },
+   "provides" : {
+      "XML::Bare" : {
+         "file" : "lib/XML/Bare.pm",
+         "version" : "0.46_03"
+      }
+   },
+   "release_status" : "testing",
+   "resources" : {
+      "bugtracker" : {
+         "mailto" : "bug-XML-Bare@rt.cpan.org",
+         "web" : "http://rt.cpan.org/Public/Dist/Display.html?Name=XML-Bare"
+      },
+      "homepage" : "https://metacpan.org/release/XML-Bare",
+      "repository" : {
+         "type" : "git",
+         "url" : "git://github.com/nigelm/xml-bare.git",
+         "web" : "http://github.com/nigelm/xml-bare"
+      }
+   },
+   "version" : "0.46_03",
+   "x_Dist_Zilla" : {
+      "plugins" : [
+         {
+            "class" : "Dist::Zilla::Plugin::Git::NextVersion",
+            "name" : "@NIGELM/Git::NextVersion",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Git::Check",
+            "name" : "@NIGELM/Git::Check",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::GatherDir",
+            "name" : "@NIGELM/GatherDir",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::CompileTests",
+            "name" : "@NIGELM/CompileTests",
+            "version" : "1.110930"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::CriticTests",
+            "name" : "@NIGELM/CriticTests",
+            "version" : "1.111450"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaTests",
+            "name" : "@NIGELM/MetaTests",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::PodCoverageTests",
+            "name" : "@NIGELM/PodCoverageTests",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::PodSyntaxTests",
+            "name" : "@NIGELM/PodSyntaxTests",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::PodSpellingTests",
+            "name" : "@NIGELM/PodSpellingTests",
+            "version" : "1.111520"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::KwaliteeTests",
+            "name" : "@NIGELM/KwaliteeTests",
+            "version" : "1.101420"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::PortabilityTests",
+            "name" : "@NIGELM/PortabilityTests",
+            "version" : "1.111840"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::SynopsisTests",
+            "name" : "@NIGELM/SynopsisTests",
+            "version" : "1.101420"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MinimumVersionTests",
+            "name" : "@NIGELM/MinimumVersionTests",
+            "version" : "1.101421"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::HasVersionTests",
+            "name" : "@NIGELM/HasVersionTests",
+            "version" : "1.101420"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::DistManifestTests",
+            "name" : "@NIGELM/DistManifestTests",
+            "version" : "1.101420"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::UnusedVarsTests",
+            "name" : "@NIGELM/UnusedVarsTests",
+            "version" : "1.100860"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::NoTabsTests",
+            "name" : "@NIGELM/NoTabsTests",
+            "version" : "0.01"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::EOLTests",
+            "name" : "@NIGELM/EOLTests",
+            "version" : "0.02"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::InlineFiles",
+            "name" : "@NIGELM/InlineFiles",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::ReportVersions",
+            "name" : "@NIGELM/ReportVersions",
+            "version" : "1.110730"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::PruneCruft",
+            "name" : "@NIGELM/PruneCruft",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::PruneFiles",
+            "name" : "@NIGELM/PruneFiles",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::ManifestSkip",
+            "name" : "@NIGELM/ManifestSkip",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::AutoPrereqs",
+            "name" : "@NIGELM/AutoPrereqs",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaConfig",
+            "name" : "@NIGELM/MetaConfig",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaProvides::Class",
+            "name" : "@NIGELM/MetaProvides::Class",
+            "version" : "1.12060501"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaProvides::Package",
+            "name" : "@NIGELM/MetaProvides::Package",
+            "version" : "1.12060501"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaResources",
+            "name" : "@NIGELM/MetaResources",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Authority",
+            "name" : "@NIGELM/Authority",
+            "version" : "1.005"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::ExtraTests",
+            "name" : "@NIGELM/ExtraTests",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::NextRelease",
+            "name" : "@NIGELM/NextRelease",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::OurPkgVersion",
+            "name" : "@NIGELM/OurPkgVersion",
+            "version" : "0.1.8"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::PodWeaver",
+            "name" : "@NIGELM/PodWeaver",
+            "version" : "3.101641"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::License",
+            "name" : "@NIGELM/License",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "inc::XMLBareMakeMaker",
+            "name" : "@NIGELM/XMLBareMakeMaker",
+            "version" : null
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaYAML",
+            "name" : "@NIGELM/MetaYAML",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::MetaJSON",
+            "name" : "@NIGELM/MetaJSON",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::ReadmeAnyFromPod",
+            "name" : "@NIGELM/ReadmeAnyFromPod",
+            "version" : "0.103522"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::ReadmeAnyFromPod",
+            "name" : "@NIGELM/ReadmePodInRoot",
+            "version" : "0.103522"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::InstallGuide",
+            "name" : "@NIGELM/InstallGuide",
+            "version" : "1.101461"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Manifest",
+            "name" : "@NIGELM/Manifest",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Git::Commit",
+            "name" : "@NIGELM/Git::Commit",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Git::Tag",
+            "name" : "@NIGELM/Git::Tag",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Git::CommitBuild",
+            "name" : "@NIGELM/Git::CommitBuild",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::Git::Push",
+            "name" : "@NIGELM/Git::Push",
+            "version" : "1.111590"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::CheckChangeLog",
+            "name" : "@NIGELM/CheckChangeLog",
+            "version" : "0.01"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::UploadToCPAN",
+            "name" : "@NIGELM/UploadToCPAN",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::FinderCode",
+            "name" : ":InstallModules",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::FinderCode",
+            "name" : ":IncModules",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::FinderCode",
+            "name" : ":TestFiles",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::FinderCode",
+            "name" : ":ExecFiles",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::FinderCode",
+            "name" : ":ShareFiles",
+            "version" : "4.200009"
+         },
+         {
+            "class" : "Dist::Zilla::Plugin::FinderCode",
+            "name" : ":MainModule",
+            "version" : "4.200009"
+         }
+      ],
+      "zilla" : {
+         "class" : "Dist::Zilla::Dist::Builder",
+         "config" : {
+            "is_trial" : 1
+         },
+         "version" : "4.200009"
+      }
+   },
+   "x_authority" : "cpan:NIGELM"
+}
+
