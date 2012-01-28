@@ -9,6 +9,8 @@ use warnings;
 
 use Test::More;
 
+plan skip_all => "This tests is for release candidate testing" unless ( $ENV{RELEASE_TESTING} );
+
 eval "use Unix::Getrusage";
 plan skip_all => "Unix::Getrusage required for testing memory leakiness" if $@;
 

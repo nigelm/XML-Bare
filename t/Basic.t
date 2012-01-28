@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More qw(no_plan);
+use Test::More;
 
 use_ok( 'XML::Bare', qw/xmlin/ );
 
@@ -94,3 +94,5 @@ sub cyclic {
 
 # test bad closing tags
 # we need to a way to ensure that something dies... ?
+
+done_testing;
