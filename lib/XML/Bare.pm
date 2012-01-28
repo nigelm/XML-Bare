@@ -1,4 +1,8 @@
+## no critic
 package XML::Bare;
+
+## use critic
+# ABSTRACT: Minimal XML parser implemented via a C state engine
 
 use Carp;
 use strict;
@@ -8,7 +12,8 @@ require Exporter;
 require DynaLoader;
 @ISA = qw(Exporter DynaLoader);
 
-$VERSION = "0.45_02";
+# VERSION
+# AUTHORITY
 
 use vars qw($VERSION *AUTOLOAD);
 
@@ -17,16 +22,6 @@ bootstrap XML::Bare $VERSION;
 
 @EXPORT    = qw( );
 @EXPORT_OK = qw( xget merge clean add_node del_node find_node del_node forcearray del_by_perl xmlin xval );
-
-=head1 NAME
-
-XML::Bare - Minimal XML parser implemented via a C state engine
-
-=head1 VERSION
-
-0.45_01
-
-=cut
 
 sub new {
     my $class = shift;
@@ -1480,21 +1475,5 @@ the distribution
 
 The XML dequoting code used is taken from L<XML::Quote> by I<Sergey
 Skvortsov> (I<GDSL> on CPAN) with very minor modifications.
-
-=head1 LICENSE
-
-  Copyright (C) 2008 David Helkowski
-  
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License as
-  published by the Free Software Foundation; either version 2 of the
-  License, or (at your option) any later version.  You may also can
-  redistribute it and/or modify it under the terms of the Perl
-  Artistic License.
-  
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
 
 =cut
