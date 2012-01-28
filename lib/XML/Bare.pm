@@ -1,9 +1,18 @@
-## no critic
 package XML::Bare;
 
-## use critic
 # ABSTRACT: Minimal XML parser implemented via a C state engine
 
+=begin :prelude
+
+=for stopwords CDATA GDSL LibXML Sergey Skvortsov XBS dequoting exe
+executables html iff keeproot makebench nodeset notree recognised
+subnode templated tmpl xml xmlin
+
+=end :prelude
+
+=cut
+
+use 5.008;
 use Carp;
 use strict;
 use vars qw( @ISA @EXPORT @EXPORT_OK $VERSION );
@@ -32,16 +41,16 @@ sub new {
         $self->{'structroot'} = XML::Bare::get_root();
     }
     else {
-        my $res = open( XML, $self->{'file'} );
+        my $res = open( my $XML, '<', $self->{'file'} );
         if ( !$res ) {
             $self->{'xml'} = 0;
             return 0;
         }
         {
             local $/ = undef;
-            $self->{'text'} = <XML>;
+            $self->{'text'} = <$XML>;
         }
-        close(XML);
+        close($XML);
         XML::Bare::c_parse( $self->{'text'} );
         $self->{'structroot'} = XML::Bare::get_root();
     }
@@ -308,15 +317,16 @@ sub readxbs {    # xbs = xml bare schema
                 $t   = 'r';    # range
             }
 
+            my $res;
             if ( ref($sub) eq 'HASH' ) {
-                my $res = readxbs($sub);
+                $res = readxbs($sub);
                 $sub->{'_t'}   = $t;
                 $sub->{'_min'} = $min;
                 $sub->{'_max'} = $max;
             }
             if ( ref($sub) eq 'ARRAY' ) {
                 for my $item (@$sub) {
-                    my $res = readxbs($item);
+                    $res = readxbs($item);
                     $item->{'_t'}   = $t;
                     $item->{'_min'} = $min;
                     $item->{'_max'} = $max;
@@ -399,7 +409,9 @@ sub find_by_perl {
     my $cond = shift;
     $cond =~ s/-([a-z]+)/\$ob->\{'$1'\}->\{'value'\}/g;
     my @res;
+    ## no critic
     foreach my $ob (@$arr) { push( @res, $ob ) if ( eval($cond) ); }
+    ## use critic
     return \@res;
 }
 
@@ -463,7 +475,9 @@ sub del_by_perl {
     my @res;
     for ( my $i = 0; $i <= $#$arr; $i++ ) {
         my $ob = $arr->[$i];
+        ## no critic
         delete $arr->[$i] if ( eval($cond) );
+        ## use critic
     }
     return \@res;
 }
@@ -519,21 +533,21 @@ sub save {
     }
     return if ( !$len );
 
-    open F, '>:utf8', $self->{'file'};
-    print F $xml;
+    open my $F, '>:encoding(UTF-8)', $self->{'file'};
+    print $F $xml;
 
-    seek( F, 0, 2 );
-    my $cursize = tell(F);
+    seek( $F, 0, 2 );
+    my $cursize = tell($F);
     if ( $cursize != $len ) {    # concurrency; we are writing a smaller file
         warn "Truncating File $self->{'file'}";
-        truncate( F, $len );
+        truncate( $F, $len );
     }
-    seek( F, 0, 2 );
-    $cursize = tell(F);
+    seek( $F, 0, 2 );
+    $cursize = tell($F);
     if ( $cursize != $len ) {    # still not the right size even after truncate??
         die "Write problem; $cursize != $len";
     }
-    close F;
+    close $F;
 }
 
 sub xml {
@@ -565,7 +579,7 @@ sub html {
 }
 
 sub obj2xml {
-    my ( $objs, $name, $pad, $level, $pdex ) = @_;
+    my ( $objs, $name, $pad, $level ) = @_;
     $level = 0  if ( !$level );
     $pad   = '' if ( $level <= 2 );
     my $xml = '';
@@ -647,7 +661,7 @@ sub obj2xml {
 }
 
 sub obj2html {
-    my ( $objs, $name, $pad, $level, $pdex ) = @_;
+    my ( $objs, $name, $pad, $level ) = @_;
 
     my $less = "<span class='ang'>&lt;</span>";
     my $more = "<span class='ang'>></span>";
@@ -741,7 +755,6 @@ sub obj2html {
             else                 { $xml .= "$less$tn0$i$tn1$more$obj$less/$tn0$i$tn1$more"; }
         }
     }
-    my $pad2 = $imm ? '' : $pad;
     if ( substr( $name, 0, 1 ) ne '_' ) {
         if ($name) {
             if ($imm) {
@@ -791,34 +804,34 @@ __END__
 =head1 SYNOPSIS
 
   use XML::Bare;
-  
+
   my $ob = new XML::Bare( text => '<xml><name>Bob</name></xml>' );
-  
+
   # Parse the xml into a hash tree
   my $root = $ob->parse();
-  
+
   # Print the content of the name node
   print $root->{xml}->{name}->{value};
-  
-  ---
-  
+
+  # --------------------------------------------------------------
+
   # Load xml from a file ( assume same contents as first example )
   my $ob2 = new XML::Bare( file => 'test.xml' );
-  
+
   my $root2 = $ob2->parse();
-  
+
   $root2->{xml}->{name}->{value} = 'Tim';
-  
+
   # Save the changes back to the file
   $ob2->save();
-  
-  ---
-  
+
+  # --------------------------------------------------------------
+
   # Load xml and verify against XBS ( XML Bare Schema )
-  my $xml_text = '<xml><item name=bob/></xml>''
-  my $schema_text = '<xml><item* name=[a-z]+></item*></xml>'
-  my $ob = new XML::Bare( text => $xml_text, schema => { text => $schema_text } );
-  $ob->parse(); # this will error out if schema is invalid
+  my $xml_text = '<xml><item name=bob/></xml>';
+  my $schema_text = '<xml><item* name=[a-z]+></item*></xml>';
+  my $ob3 = new XML::Bare( text => $xml_text, schema => { text => $schema_text } );
+  $ob3->parse(); # this will error out if schema is invalid
 
 =head1 DESCRIPTION
 
@@ -899,7 +912,7 @@ The following information is provided in the error message:
 
 =item * The type of error
 
-=item * Where the error occured ( line and char )
+=item * Where the error occurred ( line and char )
 
 =item * A short snippet of the XML at the point of failure
 
@@ -960,7 +973,7 @@ The hash structure returned from XML parsing is created in a specific format.
 Besides as described above, the structure contains some additional nodes in
 order to preserve information that will allow that structure to be correctly
 converted back to XML.
-  
+
 Nodes may contain the following 3 additional subnodes:
 
 =over 2
@@ -1127,7 +1140,7 @@ html. [root node name] is optional.
 =item * C<< $object->save() >>
 
 The the current tree in the object, cleanly indent it, and save it
-to the file paramter specified when creating the object.
+to the file parameter specified when creating the object.
 
 =item * C<< $value = xval $node, $default >>
 
@@ -1171,7 +1184,7 @@ Root is optional, and specifies the name of the root node for the xml
 
   Example:
     $object->add_node( $root->{xml}, 'item', name => 'Bob' );
-    
+
   Result:
     <xml>
       <item>
@@ -1193,10 +1206,10 @@ Root is optional, and specifies the name of the root node for the xml
           <b>2</b>
         </a>
       </xml>
-      
+
     Code:
       $xml->del_node( $root->{xml}, 'a', b=>'1' );
-    
+
     Ending XML:
       <xml>
         <a>
@@ -1218,10 +1231,10 @@ Root is optional, and specifies the name of the root node for the xml
           <val>b</val>
         </ob>
       </xml>
-      
+
     Code:
       $object->find_node( $root->{xml}, 'ob', key => '1' )->{val}->{value} = 'test';
-      
+
     Ending XML:
       <xml>
         <ob>
@@ -1257,10 +1270,10 @@ node unlike the find_node function.
           <val>b</val>
         </ob>
       </xml>
-      
+
     Code:
       $object->find_by_perl( $root->{xml}->{ob}, "-key eq '1'" )->[0]->{val}->{value} = 'test';
-      
+
     Ending XML:
       <xml>
         <ob>
@@ -1304,7 +1317,7 @@ Example:
     my $root2 = $ob2->parse();
     merge( $root1->{'xml'}->{'a'}, $root2->{'xml'}->{'a'}, 'id' );
     print $ob1->xml( $root1 );
-  
+
   Output:
     <xml>
       <multi_a></multi_a>
