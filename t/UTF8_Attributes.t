@@ -8,7 +8,7 @@ use warnings;
 # are no longer exposed without the use line.
 use utf8;
 
-use Test::More qw(no_plan);
+use Test::More;
 
 use_ok('XML::Bare');
 
@@ -48,3 +48,6 @@ while ( my ( $name, $char ) = each %{$data} ) {
 
     is( $str, $char, "Character $name OK" );
 }
+
+
+done_testing;

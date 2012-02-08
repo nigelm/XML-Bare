@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-
-use Test::More qw(no_plan);
+use Test::More;
 
 use_ok( 'XML::Bare', qw/xmlin/ );
 
@@ -16,7 +15,7 @@ is( $simple->{node}, 'val', 'simple - normal node value reading' );
 
 ( $xml, $root, $simple ) = reparse( "<xml><node/></xml>" );
 is( ref( $root->{xml}->{node} ), 'HASH', 'existence of blank node' );
-is( $simple->{node}, 1, 'simple - existence of blank node' );
+is( $simple->{node}, '', 'simple - existence of blank node' );
 
 ( $xml, $root, $simple ) = reparse( "<xml><node att=12>val</node></xml>" );
 is( $root->{xml}->{node}->{att}->{value}, '12', 'reading of attribute value' );
@@ -29,6 +28,10 @@ is( $simple->{node}{att}, '12', 'simple - reading of " surrounded attribute valu
 ( $xml, $root, $simple ) = reparse( "<xml><node><![CDATA[<cval>]]></node></xml>" );
 is( $root->{xml}->{node}->{value}, '<cval>', 'reading of cdata' );
 is( $simple->{node}, '<cval>', 'simple - reading of cdata' );
+
+( $xml, $root, $simple ) = reparse( "<xml><node att=\"12\"><![CDATA[<cval>]]></node></xml>" );
+is( $root->{xml}->{node}->{value}, '<cval>', 'reading of cdata' );
+is( $simple->{node}->{content}, '<cval>', 'simple - reading of cdata' );
 
 ( $xml, $root, $simple ) = reparse( "<xml><node>a</node><node>b</node></xml>" );
 is( $root->{xml}->{node}->[1]->{value}, 'b', 'multiple node array creation' );
@@ -91,3 +94,5 @@ sub cyclic {
 
 # test bad closing tags
 # we need to a way to ensure that something dies... ?
+
+done_testing;
