@@ -1,6 +1,11 @@
 XML::Bare Changelog
 
 {{$NEXT}}
+  - Preping release unchanged from trial release.
+    The 0.45 release and previous set particular compile options for several different
+    platforms.  My release refactoring stripped the Makefile.PL customisations, however
+    it appears these are not needed by any of the smoker CPANTS systems, so am releasing
+    with really basic compilation driver - see how it goes...
 
 0.46_03   2012-01-28 20:48:45 Europe/London
   - Bug #49906 Simple mode reports content of empty node as integer 1
