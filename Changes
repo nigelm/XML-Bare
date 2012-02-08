@@ -1,6 +1,8 @@
 XML::Bare Changelog
 
 {{$NEXT}}
+
+0.47      2012-02-08 20:24:24 Europe/London
   - Preping release unchanged from trial release.
     The 0.45 release and previous set particular compile options for several different
     platforms.  My release refactoring stripped the Makefile.PL customisations, however
